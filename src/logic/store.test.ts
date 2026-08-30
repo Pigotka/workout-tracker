@@ -4,6 +4,7 @@ import { formatElapsed, formatWeight } from "./format";
 import {
   pickChoices,
   pickSchemes,
+  pairWithNext,
   restAfterLogging,
   slotsFor,
 } from "./prescription";
@@ -34,7 +35,7 @@ describe("reduce", () => {
     expect(next.active?.pendingReps).toBe(6);
   });
 
-  it("logs a set and starts rest", () => {
+  it("logs a set and starts rest that counts up", () => {
     let s = reduce(store(), {
       type: "start-workout",
       programId: "t1",
@@ -45,7 +46,8 @@ describe("reduce", () => {
     const log = s.active?.logs["t1-drep"];
     expect(log?.sets).toHaveLength(1);
     expect(log?.sets[0]?.reps).toBe(6);
-    expect(s.active?.restUntil).toBe(t0 + 40_000 + 180_000);
+    expect(s.active?.restStartedAt).toBe(t0 + 40_000);
+    expect(s.active?.restTargetSeconds).toBe(180);
   });
 
   it("does not rest between superset halves", () => {
@@ -57,10 +59,11 @@ describe("reduce", () => {
     });
     s = reduce(s, { type: "select-exercise", exerciseId: "t1-predkop", now: t0 });
     s = reduce(s, { type: "log-set", now: t0 + 20_000 });
-    expect(s.active?.restUntil).toBeNull();
+    expect(s.active?.restStartedAt).toBeNull();
     expect(s.active?.activeExerciseId).toBe("t1-zakop");
     s = reduce(s, { type: "log-set", now: t0 + 40_000 });
-    expect(s.active?.restUntil).toBe(t0 + 40_000 + 45_000);
+    expect(s.active?.restStartedAt).toBe(t0 + 40_000);
+    expect(s.active?.restTargetSeconds).toBe(45);
     expect(s.active?.activeExerciseId).toBe("t1-predkop");
   });
 
@@ -96,17 +99,94 @@ describe("reduce", () => {
     expect(s.active?.pendingReps).toBe(12);
   });
 
-  it("keeps next weight on the program immediately", () => {
+  it("keeps last logged reps for the next set", () => {
     let s = reduce(store(), {
       type: "start-workout",
       programId: "t1",
       now: t0,
       sessionId: "s1",
     });
-    s = reduce(s, { type: "set-next-weight", weight: 80 });
-    const drep = s.programs[0]?.exercises[0];
-    expect(drep?.workingWeight).toBe(80);
-    expect(s.active?.logs["t1-drep"]?.currentWeight).toBe(0);
+    s = reduce(s, { type: "set-pending-reps", reps: 4 });
+    s = reduce(s, { type: "log-set", now: t0 + 1000 });
+    expect(s.active?.logs["t1-drep"]?.sets[0]?.reps).toBe(4);
+    expect(s.active?.pendingReps).toBe(4);
+    s = reduce(s, { type: "end-rest", now: t0 + 20_000 });
+    s = reduce(s, { type: "select-exercise", exerciseId: "t1-drep", now: t0 + 21_000 });
+    expect(s.active?.pendingReps).toBe(4);
+  });
+
+  it("writes logged weight onto the plan for next time", () => {
+    let s = reduce(store(), {
+      type: "start-workout",
+      programId: "t1",
+      now: t0,
+      sessionId: "s1",
+    });
+    s = reduce(s, { type: "set-weight", weight: 80 });
+    s = reduce(s, { type: "log-set", now: t0 + 1000 });
+    expect(s.active?.logs["t1-drep"]?.currentWeight).toBe(80);
+    expect(s.programs[0]?.exercises[0]?.workingWeight).toBe(80);
+    s = reduce(s, { type: "finish-workout", now: t0 + 30 * 60 * 1000 });
+    s = reduce(s, {
+      type: "start-workout",
+      programId: "t1",
+      now: t0 + 2 * 86_400_000,
+      sessionId: "s2",
+      choices: { "t1-quads": "t1-drep", "t1-pull": "t1-shyby" },
+      schemes: { "t1-quads": "A" },
+    });
+    expect(s.active?.logs["t1-drep"]?.currentWeight).toBe(80);
+  });
+
+  it("records rest duration when rest is stopped", () => {
+    let s = reduce(store(), {
+      type: "start-workout",
+      programId: "t1",
+      now: t0,
+      sessionId: "s1",
+    });
+    s = reduce(s, { type: "log-set", now: t0 + 1000 });
+    s = reduce(s, { type: "end-rest", now: t0 + 91_000 });
+    expect(s.active?.restStartedAt).toBeNull();
+    expect(s.active?.logs["t1-drep"]?.sets[0]?.restAfterMs).toBe(90_000);
+  });
+
+  it("discards an in-progress workout", () => {
+    let s = reduce(store(), {
+      type: "start-workout",
+      programId: "t1",
+      now: t0,
+      sessionId: "s1",
+    });
+    s = reduce(s, { type: "log-set", now: t0 + 1000 });
+    s = reduce(s, { type: "discard-workout" });
+    expect(s.active).toBeNull();
+    expect(s.sessions).toHaveLength(0);
+  });
+
+  it("pairs neighboring exercises as a superset or alternate", () => {
+    let s = reduce(store(), {
+      type: "pair-with-next",
+      programId: "t1",
+      exerciseId: "t1-incline",
+      kind: "alternate",
+      groupId: "g-alt",
+    });
+    const incline = s.programs[0]?.exercises.find((item) => item.id === "t1-incline");
+    const military = s.programs[0]?.exercises.find((item) => item.id === "t1-military");
+    expect(incline?.alternateGroup).toBe("g-alt");
+    expect(military?.alternateGroup).toBe("g-alt");
+    s = reduce(s, { type: "unpair", programId: "t1", exerciseId: "t1-incline" });
+    expect(s.programs[0]?.exercises.find((item) => item.id === "t1-incline")?.alternateGroup).toBeUndefined();
+    s = reduce(s, {
+      type: "pair-with-next",
+      programId: "t1",
+      exerciseId: "t1-incline",
+      kind: "superset",
+      groupId: "g-ss",
+    });
+    expect(s.programs[0]?.exercises.find((item) => item.id === "t1-incline")?.supersetGroup).toBe("g-ss");
+    expect(s.programs[0]?.exercises.find((item) => item.id === "t1-military")?.supersetGroup).toBe("g-ss");
   });
 
   it("persists notes onto the program exercise", () => {
@@ -146,7 +226,7 @@ describe("reduce", () => {
     s = reduce(s, { type: "log-set", now: t0 + 1000 });
     s = reduce(s, { type: "undo-set", now: t0 + 2000 });
     expect(s.active?.logs["t1-drep"]?.sets).toHaveLength(0);
-    expect(s.active?.restUntil).toBeNull();
+    expect(s.active?.restStartedAt).toBeNull();
   });
 });
 
@@ -215,6 +295,14 @@ describe("prescription", () => {
     expect(afterPair.restSeconds).toBe(45);
     expect(afterPair.nextExerciseId).toBe("t1-predkop");
   });
+
+  it("pairs the next lift as a superset", () => {
+    const program = createSeedStore().programs[0];
+    if (!program) throw new Error("missing program");
+    const next = pairWithNext(program.exercises, 6, "superset", "g1");
+    expect(next[6]?.supersetGroup).toBe("g1");
+    expect(next[7]?.supersetGroup).toBe("g1");
+  });
 });
 
 describe("storage", () => {
@@ -270,6 +358,8 @@ describe("routes", () => {
       name: "exercise",
       id: "t1-drep",
     });
+    expect(parseHash("#/setup/t1")).toEqual({ name: "setup", id: "t1" });
+    expect(hashFor({ name: "setup", id: "t1" })).toBe("#/setup/t1");
     expect(hashFor({ name: "programs" })).toBe("#/programs");
   });
 });

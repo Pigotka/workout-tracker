@@ -10,8 +10,10 @@ import { HistoryScreen } from "./screens/HistoryScreen";
 import { HomeScreen } from "./screens/HomeScreen";
 import { ProgramEditScreen } from "./screens/ProgramEditScreen";
 import { ProgramsScreen } from "./screens/ProgramsScreen";
+import { SetupScreen } from "./screens/SetupScreen";
 import { WorkoutScreen } from "./screens/WorkoutScreen";
 import { StoreContext } from "./store-context";
+import type { Route } from "./types";
 
 export function App() {
   const [store, dispatch] = useReducer(reduce, undefined, () => loadStore(window.localStorage));
@@ -22,17 +24,6 @@ export function App() {
   useEffect(() => {
     saveStore(window.localStorage, store);
   }, [store]);
-
-  useEffect(() => {
-    const until = store.active?.restUntil;
-    if (!until) return;
-    const wait = Math.max(0, until - Date.now());
-    const id = window.setTimeout(() => {
-      dispatch({ type: "skip-rest", now: Date.now() });
-      navigator.vibrate?.([160, 70, 160]);
-    }, wait);
-    return () => window.clearTimeout(id);
-  }, [store.active?.restUntil]);
 
   const inSession = route.name === "workout" || route.name === "exercise";
 
@@ -49,6 +40,9 @@ export function App() {
       break;
     case "program-edit":
       body = <ProgramEditScreen id={route.id} />;
+      break;
+    case "setup":
+      body = <SetupScreen programId={route.id} />;
       break;
     case "workout":
       body = <WorkoutScreen />;
@@ -69,10 +63,25 @@ export function App() {
           </button>
         ) : null}
         {body}
-        {inSession ? null : (
-          <BottomNav current={route.name === "program-edit" ? "programs" : route.name} />
-        )}
+        {inSession ? null : <BottomNav current={navTab(route)} />}
       </div>
     </StoreContext.Provider>
   );
+}
+
+function navTab(route: Route): "home" | "history" | "programs" {
+  switch (route.name) {
+    case "history":
+      return "history";
+    case "programs":
+    case "program-edit":
+      return "programs";
+    case "home":
+    case "setup":
+    case "workout":
+    case "exercise":
+      return "home";
+    default:
+      return assertNever(route);
+  }
 }

@@ -73,11 +73,13 @@ function SessionDetail({ session, unit }: { session: CompletedSession; unit: "kg
             <p>{exercise.name}</p>
             <p className="muted">
               {exercise.sets
-                .map((set) =>
-                  set.reps > 0
-                    ? `${set.reps}×${formatWeight(set.weight, unit)}`
-                    : formatElapsed(set.durationMs),
-                )
+                .map((set) => {
+                  const work =
+                    set.reps > 0
+                      ? `${set.reps}×${formatWeight(set.weight, unit)}`
+                      : formatElapsed(set.durationMs);
+                  return set.restAfterMs != null ? `${work} rest ${formatElapsed(set.restAfterMs)}` : work;
+                })
                 .join(" · ")}
             </p>
             {exercise.note ? <p className="cue">{exercise.note}</p> : null}

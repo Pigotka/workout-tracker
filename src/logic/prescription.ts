@@ -181,14 +181,36 @@ export function lastMaxReps(sessions: CompletedSession[], exerciseId: string): n
   return undefined;
 }
 
+export function lastLoggedReps(
+  log: ExerciseLog | undefined,
+  sessions: CompletedSession[],
+  exerciseId: string,
+  schemeId?: string,
+): number | undefined {
+  const fromNow = [...(log?.sets ?? [])].reverse().find((set) => set.reps > 0)?.reps;
+  if (fromNow != null) return fromNow;
+  for (const session of sessions) {
+    const found = session.exercises.find((item) => item.exerciseId === exerciseId);
+    if (!found || found.sets.length === 0) continue;
+    if (schemeId && found.schemeId && found.schemeId !== schemeId) continue;
+    const fromLast = [...found.sets].reverse().find((set) => set.reps > 0)?.reps;
+    if (fromLast != null) return fromLast;
+  }
+  return undefined;
+}
+
 export function pendingForExercise(
   exercise: Exercise,
   schemes: Record<string, string>,
   setIndex: number,
-  lastMax?: number,
+  lastLogged?: number,
 ): number {
   if (exercise.mode === "timed") return exercise.targetSeconds;
-  return pendingForSet(schemeOf(exercise, schemes), setIndex, lastMax);
+  const scheme = schemeOf(exercise, schemes);
+  const target = targetForSet(scheme, setIndex);
+  if (lastLogged != null && lastLogged > 0) return lastLogged;
+  if (target.isMax) return 8;
+  return target.max;
 }
 
 export function restAfterLogging(
@@ -246,8 +268,80 @@ export function slotsFor(
   return slots;
 }
 
-export function emptyChoices(): Record<string, string> {
-  return {};
+export function needsSetup(program: Program): boolean {
+  return program.exercises.some(
+    (exercise) => exercise.alternateGroup || (exercise.schemes?.length ?? 0) > 1,
+  );
+}
+
+export function alternateGroups(program: Program): { group: string; members: Exercise[] }[] {
+  const seen = new Set<string>();
+  const groups: { group: string; members: Exercise[] }[] = [];
+  for (const exercise of program.exercises) {
+    if (!exercise.alternateGroup || seen.has(exercise.alternateGroup)) continue;
+    seen.add(exercise.alternateGroup);
+    groups.push({
+      group: exercise.alternateGroup,
+      members: program.exercises.filter((item) => item.alternateGroup === exercise.alternateGroup),
+    });
+  }
+  return groups;
+}
+
+export function pairWithNext(
+  exercises: Exercise[],
+  index: number,
+  kind: "superset" | "alternate",
+  groupId: string,
+): Exercise[] {
+  const first = exercises[index];
+  const second = exercises[index + 1];
+  if (!first || !second) return exercises;
+  return exercises.map((exercise, i) => {
+    if (i !== index && i !== index + 1) return exercise;
+    const cleared: Exercise = {
+      ...exercise,
+      alternateGroup: undefined,
+      supersetGroup: undefined,
+      schemeGroup: undefined,
+    };
+    if (kind === "alternate") {
+      return { ...cleared, alternateGroup: groupId, schemeGroup: groupId };
+    }
+    return {
+      ...cleared,
+      supersetGroup: groupId,
+      restSeconds: i === index ? 0 : Math.max(exercise.restSeconds, 45),
+    };
+  });
+}
+
+export function unpairExercise(exercises: Exercise[], exerciseId: string): Exercise[] {
+  const target = exercises.find((item) => item.id === exerciseId);
+  if (!target) return exercises;
+  const group = target.alternateGroup ?? target.supersetGroup;
+  if (!group) return exercises;
+  return exercises.map((exercise) => {
+    if (exercise.alternateGroup !== group && exercise.supersetGroup !== group) return exercise;
+    return {
+      ...exercise,
+      alternateGroup: undefined,
+      supersetGroup: undefined,
+      schemeGroup: exercise.schemeGroup === group ? undefined : exercise.schemeGroup,
+    };
+  });
+}
+
+export function pairLabel(exercise: Exercise, program: Program): string | undefined {
+  if (exercise.alternateGroup) {
+    const other = otherAlternate(program, exercise);
+    return other ? `Alternate with ${other.name}` : "Alternate";
+  }
+  if (exercise.supersetGroup) {
+    const other = supersetPartner(program, exercise);
+    return other ? `Superset with ${other.name}` : "Superset";
+  }
+  return undefined;
 }
 
 export function withSessionDefaults(active: ActiveSession): ActiveSession {

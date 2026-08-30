@@ -1,12 +1,9 @@
 import { useEffect } from "react";
-import { Glyph } from "../components/Glyph";
+import { Glyph, ICON_LABELS } from "../components/Glyph";
 import { RestOverlay } from "../components/RestOverlay";
 import { formatElapsed, formatRest, formatWeight } from "../logic/format";
 import {
-  formatScheme,
   formatSetTarget,
-  otherAlternate,
-  schemeKey,
   schemeOf,
   setCount,
   supersetPartner,
@@ -48,13 +45,13 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
     return null;
   }
 
-  const remaining = store.active.restUntil ? store.active.restUntil - now : 0;
+  const restElapsed =
+    store.active.restStartedAt != null ? now - store.active.restStartedAt : 0;
   const step = weightStep(store.weightUnit);
   const scheme = schemeOf(exercise, store.active.schemes);
   const totalSets = setCount(scheme);
   const setIndex = log.sets.length;
   const workMs = store.active.workStartedAt != null ? now - store.active.workStartedAt : 0;
-  const other = otherAlternate(program, exercise);
   const partner = supersetPartner(program, exercise);
   const visible = visibleExercises(program, store.active.choices);
   const nextExercise = visible.find((item) => {
@@ -82,33 +79,10 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
 
       <div className="hero-block">
         <Glyph id={exercise.icon} size="lg" />
+        <p className="icon-caption">{ICON_LABELS[exercise.icon]}</p>
         <h1>{exercise.name}</h1>
         {partner ? <p className="slot-kicker">Supersérie → {partner.name}</p> : null}
       </div>
-
-      {other ? (
-        <button
-          type="button"
-          className="btn-ghost wide"
-          onClick={() =>
-            dispatch({ type: "swap-alternate", group: exercise.alternateGroup ?? "", now: Date.now() })
-          }
-        >
-          Střídat → {other.name}
-        </button>
-      ) : null}
-
-      {(exercise.schemes?.length ?? 0) > 1 ? (
-        <button
-          type="button"
-          className="scheme-btn"
-          onClick={() =>
-            dispatch({ type: "flip-scheme", group: schemeKey(exercise), now: Date.now() })
-          }
-        >
-          {formatScheme(scheme)} · tap to flip A/B
-        </button>
-      ) : null}
 
       <label className="note-field">
         <span>Cue</span>
@@ -121,22 +95,13 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
         />
       </label>
 
-      <div className="weight-grid">
+      <div className="weight-grid single">
         <WeightRow
-          label="Today"
+          label="Weight"
           value={log.currentWeight}
           unit={store.weightUnit}
           step={step}
           onAdjust={(delta) => dispatch({ type: "adjust-weight", delta })}
-        />
-        <WeightRow
-          label="Next time"
-          value={exercise.workingWeight}
-          unit={store.weightUnit}
-          step={step}
-          onAdjust={(delta) =>
-            dispatch({ type: "set-next-weight", weight: exercise.workingWeight + delta })
-          }
         />
       </div>
 
@@ -234,13 +199,19 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
                 ? formatElapsed(set.durationMs)
                 : `${set.reps} × ${formatWeight(set.weight, store.weightUnit)}`}
             </span>
-            <span className="muted">{formatElapsed(set.durationMs)}</span>
+            <span className="muted">
+              {set.restAfterMs != null ? `rest ${formatElapsed(set.restAfterMs)}` : formatElapsed(set.durationMs)}
+            </span>
           </li>
         ))}
       </ol>
 
-      {remaining > 0 ? (
-        <RestOverlay remainingMs={remaining} onSkip={() => dispatch({ type: "skip-rest", now: Date.now() })} />
+      {store.active.restStartedAt != null ? (
+        <RestOverlay
+          elapsedMs={restElapsed}
+          targetSeconds={store.active.restTargetSeconds}
+          onStop={() => dispatch({ type: "end-rest", now: Date.now() })}
+        />
       ) : null}
     </div>
   );

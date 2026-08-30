@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Confirm } from "../components/Confirm";
-import { Glyph } from "../components/Glyph";
+import { Glyph, ICON_LABELS } from "../components/Glyph";
 import { RestOverlay } from "../components/RestOverlay";
 import { formatElapsed, formatWeight, relativeDay } from "../logic/format";
 import {
@@ -31,7 +30,8 @@ export function WorkoutScreen() {
     return null;
   }
 
-  const remaining = store.active.restUntil ? store.active.restUntil - now : 0;
+  const restElapsed =
+    store.active.restStartedAt != null ? now - store.active.restStartedAt : 0;
   const slots = slotsFor(program, store.active.choices);
 
   return (
@@ -61,13 +61,8 @@ export function WorkoutScreen() {
             case "alternate":
               return (
                 <li key={slot.group}>
-                  <ExerciseRow
-                    exercise={slot.today}
-                    swapLabel={slot.members.find((item) => item.id !== slot.today.id)?.name}
-                    onSwap={() =>
-                      dispatch({ type: "swap-alternate", group: slot.group, now: Date.now() })
-                    }
-                  />
+                  <p className="slot-kicker">Today · locked</p>
+                  <ExerciseRow exercise={slot.today} />
                 </li>
               );
             case "superset":
@@ -85,22 +80,40 @@ export function WorkoutScreen() {
         })}
       </ul>
 
-      {remaining > 0 ? (
-        <RestOverlay remainingMs={remaining} onSkip={() => dispatch({ type: "skip-rest", now: Date.now() })} />
+      {store.active.restStartedAt != null ? (
+        <RestOverlay
+          elapsedMs={restElapsed}
+          targetSeconds={store.active.restTargetSeconds}
+          onStop={() => dispatch({ type: "end-rest", now: Date.now() })}
+        />
       ) : null}
 
       {confirmFinish ? (
-        <Confirm
-          title="Finish workout?"
-          body="This saves today's session to your log."
-          confirmLabel="Save"
-          onCancel={() => setConfirmFinish(false)}
-          onConfirm={() => {
-            dispatch({ type: "finish-workout", now: Date.now() });
-            setConfirmFinish(false);
-            go({ name: "history" });
-          }}
-        />
+        <div className="modal-backdrop" role="dialog" aria-modal="true">
+          <div className="modal-card">
+            <h2>End workout?</h2>
+            <p>Save keeps it in your log. Discard throws this session away.</p>
+            <div className="modal-actions stack">
+              <button type="button" className="btn-primary" onClick={() => {
+                dispatch({ type: "finish-workout", now: Date.now() });
+                setConfirmFinish(false);
+                go({ name: "history" });
+              }}>
+                Save
+              </button>
+              <button type="button" className="btn-danger" onClick={() => {
+                dispatch({ type: "discard-workout" });
+                setConfirmFinish(false);
+                go({ name: "home" });
+              }}>
+                Discard
+              </button>
+              <button type="button" className="btn-ghost" onClick={() => setConfirmFinish(false)}>
+                Keep going
+              </button>
+            </div>
+          </div>
+        </div>
       ) : null}
     </div>
   );
@@ -108,13 +121,9 @@ export function WorkoutScreen() {
 
 function ExerciseRow({
   exercise,
-  swapLabel,
-  onSwap,
   nested,
 }: {
   exercise: Exercise;
-  swapLabel?: string;
-  onSwap?: () => void;
   nested?: boolean;
 }) {
   const { store, dispatch } = useStore();
@@ -136,6 +145,7 @@ function ExerciseRow({
         <Glyph id={exercise.icon} size="md" />
         <div className="exercise-copy">
           <p className="exercise-name">{exercise.name}</p>
+          <p className="icon-caption">{ICON_LABELS[exercise.icon]}</p>
           <p className="muted">
             {formatWeight(current, store.weightUnit)}
             {" · "}
@@ -152,18 +162,6 @@ function ExerciseRow({
         </div>
         <Dots total={setCount(scheme)} done={done} />
       </button>
-      {swapLabel && onSwap ? (
-        <button
-          type="button"
-          className="swap-link"
-          onClick={(event) => {
-            event.stopPropagation();
-            onSwap();
-          }}
-        >
-          Dnes {exercise.name} · střídat → {swapLabel}
-        </button>
-      ) : null}
     </div>
   );
 }
