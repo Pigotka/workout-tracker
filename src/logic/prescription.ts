@@ -1,0 +1,256 @@
+import type {
+  ActiveSession,
+  CompletedSession,
+  Exercise,
+  ExerciseLog,
+  Program,
+  RepScheme,
+} from "../types";
+
+export function schemesOf(exercise: Exercise): RepScheme[] {
+  if (exercise.schemes && exercise.schemes.length > 0) return exercise.schemes;
+  return [
+    {
+      id: "default",
+      label: `${exercise.targetSets}×${exercise.targetReps}`,
+      sets: exercise.targetSets,
+      repsMin: exercise.targetReps,
+      repsMax: exercise.targetReps,
+    },
+  ];
+}
+
+export function schemeKey(exercise: Exercise): string {
+  return exercise.schemeGroup ?? exercise.id;
+}
+
+export function schemeOf(exercise: Exercise, schemes: Record<string, string>): RepScheme {
+  const list = schemesOf(exercise);
+  const wanted = schemes[schemeKey(exercise)];
+  const match = list.find((item) => item.id === wanted);
+  const fallback = list[0];
+  if (match) return match;
+  if (fallback) return fallback;
+  return {
+    id: "default",
+    label: `${exercise.targetSets}×${exercise.targetReps}`,
+    sets: exercise.targetSets,
+    repsMin: exercise.targetReps,
+    repsMax: exercise.targetReps,
+  };
+}
+
+export function setCount(scheme: RepScheme): number {
+  return scheme.pyramid?.length ?? scheme.sets;
+}
+
+export function targetForSet(
+  scheme: RepScheme,
+  setIndex: number,
+): { min: number; max: number; isMax: boolean } {
+  if (scheme.isMax) return { min: 0, max: 0, isMax: true };
+  const pyramid = scheme.pyramid?.[setIndex];
+  if (pyramid != null) return { min: pyramid, max: pyramid, isMax: false };
+  return { min: scheme.repsMin, max: scheme.repsMax, isMax: false };
+}
+
+export function pendingForSet(scheme: RepScheme, setIndex: number, lastMax?: number): number {
+  const target = targetForSet(scheme, setIndex);
+  if (target.isMax) return lastMax ?? 8;
+  return target.max;
+}
+
+export function formatScheme(scheme: RepScheme): string {
+  if (scheme.label) return scheme.label;
+  if (scheme.isMax) return `${scheme.sets} × MAX`;
+  if (scheme.pyramid && scheme.pyramid.length > 0) return scheme.pyramid.join(" ");
+  if (scheme.repsMin === scheme.repsMax) return `${scheme.sets} × ${scheme.repsMin}`;
+  return `${scheme.sets} × ${scheme.repsMin}–${scheme.repsMax}`;
+}
+
+export function formatSetTarget(scheme: RepScheme, setIndex: number): string {
+  const target = targetForSet(scheme, setIndex);
+  if (target.isMax) return "MAX";
+  if (target.min === target.max) return `${target.max} reps`;
+  return `${target.min}–${target.max} reps`;
+}
+
+export function lastOfProgram(
+  sessions: CompletedSession[],
+  programId: string,
+): CompletedSession | undefined {
+  return sessions.find((session) => session.programId === programId);
+}
+
+export function pickChoices(
+  program: Program,
+  last: CompletedSession | undefined,
+): Record<string, string> {
+  const choices: Record<string, string> = {};
+  const groups = new Map<string, Exercise[]>();
+  for (const exercise of program.exercises) {
+    if (!exercise.alternateGroup) continue;
+    const list = groups.get(exercise.alternateGroup) ?? [];
+    list.push(exercise);
+    groups.set(exercise.alternateGroup, list);
+  }
+  for (const [group, members] of groups) {
+    const first = members[0];
+    if (!first) continue;
+    const lastId = last?.choices?.[group];
+    const lastIndex = members.findIndex((item) => item.id === lastId);
+    if (lastIndex >= 0) {
+      const next = members[(lastIndex + 1) % members.length];
+      choices[group] = next?.id ?? first.id;
+    } else {
+      const used = members.find((item) =>
+        last?.exercises.some((logged) => logged.exerciseId === item.id && logged.sets.length > 0),
+      );
+      if (!used) {
+        choices[group] = first.id;
+      } else {
+        const idx = members.findIndex((item) => item.id === used.id);
+        const next = members[(idx + 1) % members.length];
+        choices[group] = next?.id ?? first.id;
+      }
+    }
+  }
+  return choices;
+}
+
+export function pickSchemes(
+  program: Program,
+  last: CompletedSession | undefined,
+): Record<string, string> {
+  const schemes: Record<string, string> = {};
+  const seen = new Set<string>();
+  for (const exercise of program.exercises) {
+    const list = schemesOf(exercise);
+    const key = schemeKey(exercise);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (list.length <= 1) {
+      const only = list[0];
+      if (only) schemes[key] = only.id;
+      continue;
+    }
+    const previous = last?.schemes?.[key];
+    if (!previous) {
+      const firstScheme = list[0];
+      if (firstScheme) schemes[key] = firstScheme.id;
+      continue;
+    }
+    const idx = list.findIndex((item) => item.id === previous);
+    const next = list[(idx + 1) % list.length] ?? list[0];
+    if (next) schemes[key] = next.id;
+  }
+  return schemes;
+}
+
+export function visibleExercises(program: Program, choices: Record<string, string>): Exercise[] {
+  return program.exercises.filter((exercise) => {
+    if (!exercise.alternateGroup) return true;
+    return choices[exercise.alternateGroup] === exercise.id;
+  });
+}
+
+export function otherAlternate(
+  program: Program,
+  exercise: Exercise,
+): Exercise | undefined {
+  if (!exercise.alternateGroup) return undefined;
+  return program.exercises.find(
+    (item) => item.alternateGroup === exercise.alternateGroup && item.id !== exercise.id,
+  );
+}
+
+export function supersetPartner(program: Program, exercise: Exercise): Exercise | undefined {
+  if (!exercise.supersetGroup) return undefined;
+  return program.exercises.find(
+    (item) => item.supersetGroup === exercise.supersetGroup && item.id !== exercise.id,
+  );
+}
+
+export function lastMaxReps(sessions: CompletedSession[], exerciseId: string): number | undefined {
+  for (const session of sessions) {
+    const found = session.exercises.find((item) => item.exerciseId === exerciseId);
+    if (found && found.sets.length > 0) {
+      return Math.max(...found.sets.map((set) => set.reps));
+    }
+  }
+  return undefined;
+}
+
+export function pendingForExercise(
+  exercise: Exercise,
+  schemes: Record<string, string>,
+  setIndex: number,
+  lastMax?: number,
+): number {
+  if (exercise.mode === "timed") return exercise.targetSeconds;
+  return pendingForSet(schemeOf(exercise, schemes), setIndex, lastMax);
+}
+
+export function restAfterLogging(
+  program: Program,
+  exercise: Exercise,
+  logs: Record<string, ExerciseLog>,
+): { restSeconds: number; nextExerciseId: string } {
+  const partner = supersetPartner(program, exercise);
+  const mine = logs[exercise.id]?.sets.length ?? 0;
+  if (partner) {
+    const theirs = logs[partner.id]?.sets.length ?? 0;
+    if (mine > theirs) {
+      return { restSeconds: 0, nextExerciseId: partner.id };
+    }
+  }
+  return { restSeconds: exercise.restSeconds, nextExerciseId: exercise.id };
+}
+
+export type Slot =
+  | { kind: "single"; exercise: Exercise }
+  | { kind: "alternate"; group: string; members: Exercise[]; today: Exercise }
+  | { kind: "superset"; group: string; members: Exercise[] };
+
+export function slotsFor(
+  program: Program,
+  choices: Record<string, string>,
+): Slot[] {
+  const slots: Slot[] = [];
+  const seen = new Set<string>();
+  for (const exercise of program.exercises) {
+    if (exercise.alternateGroup) {
+      const group = exercise.alternateGroup;
+      if (seen.has(`a:${group}`)) continue;
+      seen.add(`a:${group}`);
+      const members = program.exercises.filter((item) => item.alternateGroup === group);
+      const today = members.find((item) => item.id === choices[group]) ?? members[0];
+      if (!today) continue;
+      slots.push({ kind: "alternate", group, members, today });
+      continue;
+    }
+    if (exercise.supersetGroup) {
+      if (seen.has(`s:${exercise.supersetGroup}`)) continue;
+      seen.add(`s:${exercise.supersetGroup}`);
+      const members = program.exercises.filter(
+        (item) => item.supersetGroup === exercise.supersetGroup,
+      );
+      slots.push({ kind: "superset", group: exercise.supersetGroup, members });
+      continue;
+    }
+    slots.push({ kind: "single", exercise });
+  }
+  return slots;
+}
+
+export function emptyChoices(): Record<string, string> {
+  return {};
+}
+
+export function withSessionDefaults(active: ActiveSession): ActiveSession {
+  return {
+    ...active,
+    choices: active.choices ?? {},
+    schemes: active.schemes ?? {},
+  };
+}

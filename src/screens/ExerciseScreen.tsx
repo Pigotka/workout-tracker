@@ -2,6 +2,16 @@ import { useEffect } from "react";
 import { Glyph } from "../components/Glyph";
 import { RestOverlay } from "../components/RestOverlay";
 import { formatElapsed, formatRest, formatWeight } from "../logic/format";
+import {
+  formatScheme,
+  formatSetTarget,
+  otherAlternate,
+  schemeKey,
+  schemeOf,
+  setCount,
+  supersetPartner,
+  visibleExercises,
+} from "../logic/prescription";
 import { go } from "../logic/routes";
 import { activeExercise, activeProgram, weightStep } from "../logic/store";
 import { useNow, useWakeLock } from "../hooks";
@@ -24,9 +34,9 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
       return;
     }
     if (store.active.activeExerciseId !== exerciseId) {
-      dispatch({ type: "select-exercise", exerciseId, now: Date.now() });
+      go({ name: "exercise", id: store.active.activeExerciseId });
     }
-  }, [dispatch, exerciseId, program, store.active]);
+  }, [exerciseId, program, store.active]);
 
   if (!store.active || !program) {
     return null;
@@ -40,12 +50,17 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
 
   const remaining = store.active.restUntil ? store.active.restUntil - now : 0;
   const step = weightStep(store.weightUnit);
-  const setIndex = log.sets.length + 1;
-  const workMs =
-    store.active.workStartedAt != null ? now - store.active.workStartedAt : 0;
-  const nextExercise = program.exercises.find((item) => {
+  const scheme = schemeOf(exercise, store.active.schemes);
+  const totalSets = setCount(scheme);
+  const setIndex = log.sets.length;
+  const workMs = store.active.workStartedAt != null ? now - store.active.workStartedAt : 0;
+  const other = otherAlternate(program, exercise);
+  const partner = supersetPartner(program, exercise);
+  const visible = visibleExercises(program, store.active.choices);
+  const nextExercise = visible.find((item) => {
     const itemLog = store.active?.logs[item.id];
-    return itemLog && itemLog.sets.length < item.targetSets && item.id !== exercise.id;
+    const itemScheme = schemeOf(item, store.active?.schemes ?? {});
+    return itemLog && itemLog.sets.length < setCount(itemScheme) && item.id !== exercise.id;
   });
 
   const logSet = () => dispatch({ type: "log-set", now: Date.now() });
@@ -61,14 +76,39 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
           <p className="session-timer">{formatElapsed(now - store.active.startedAt)}</p>
         </div>
         <span className="set-chip">
-          Set {Math.min(setIndex, exercise.targetSets)}/{exercise.targetSets}
+          Set {Math.min(setIndex + 1, totalSets)}/{totalSets}
         </span>
       </header>
 
       <div className="hero-block">
         <Glyph id={exercise.icon} size="lg" />
         <h1>{exercise.name}</h1>
+        {partner ? <p className="slot-kicker">Supersérie → {partner.name}</p> : null}
       </div>
+
+      {other ? (
+        <button
+          type="button"
+          className="btn-ghost wide"
+          onClick={() =>
+            dispatch({ type: "swap-alternate", group: exercise.alternateGroup ?? "", now: Date.now() })
+          }
+        >
+          Střídat → {other.name}
+        </button>
+      ) : null}
+
+      {(exercise.schemes?.length ?? 0) > 1 ? (
+        <button
+          type="button"
+          className="scheme-btn"
+          onClick={() =>
+            dispatch({ type: "flip-scheme", group: schemeKey(exercise), now: Date.now() })
+          }
+        >
+          {formatScheme(scheme)} · tap to flip A/B
+        </button>
+      ) : null}
 
       <label className="note-field">
         <span>Cue</span>
@@ -101,16 +141,16 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
       </div>
 
       <div className="set-meta">
+        <span>{exercise.mode === "timed" ? `${exercise.targetSeconds}s hold` : formatSetTarget(scheme, setIndex)}</span>
         <span>
-          {exercise.mode === "timed"
-            ? `${exercise.targetSeconds}s hold`
-            : `${exercise.targetReps} reps`}
+          {partner && (store.active.logs[partner.id]?.sets.length ?? 0) < log.sets.length + 1
+            ? "then partner"
+            : formatRest(exercise.restSeconds)}
         </span>
-        <span>{formatRest(exercise.restSeconds)}</span>
       </div>
 
       <div className="dots-lg">
-        {Array.from({ length: Math.max(exercise.targetSets, log.sets.length) }, (_, i) => (
+        {Array.from({ length: Math.max(totalSets, log.sets.length) }, (_, i) => (
           <i key={i} className={i < log.sets.length ? "dot on" : i === log.sets.length ? "dot now" : "dot"} />
         ))}
       </div>
@@ -155,7 +195,7 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
             </button>
           </div>
           <button type="button" className="btn-primary" onClick={logSet}>
-            Log {store.active.pendingReps} reps
+            {scheme.isMax ? `Log ${store.active.pendingReps} MAX` : `Log ${store.active.pendingReps} reps`}
           </button>
         </>
       )}
@@ -166,7 +206,7 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
         </button>
       ) : null}
 
-      {log.sets.length >= exercise.targetSets && nextExercise ? (
+      {log.sets.length >= totalSets && nextExercise ? (
         <button
           type="button"
           className="btn-ghost wide"
@@ -179,12 +219,8 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
         </button>
       ) : null}
 
-      {log.sets.length >= exercise.targetSets && !nextExercise ? (
-        <button
-          type="button"
-          className="btn-ghost wide"
-          onClick={() => go({ name: "workout" })}
-        >
+      {log.sets.length >= totalSets && !nextExercise ? (
+        <button type="button" className="btn-ghost wide" onClick={() => go({ name: "workout" })}>
           All sets done — back to list
         </button>
       ) : null}
