@@ -7,6 +7,16 @@ import type {
   Program,
   Store,
 } from "../types";
+import {
+  lastMaxReps,
+  lastOfProgram,
+  otherAlternate,
+  pendingForExercise,
+  pickChoices,
+  pickSchemes,
+  restAfterLogging,
+  visibleExercises,
+} from "./prescription";
 import { assertNever, clamp, roundWeight } from "./util";
 
 export function programById(store: Store, id: string): Program | undefined {
@@ -40,8 +50,17 @@ function emptyLog(exercise: Exercise): ExerciseLog {
   };
 }
 
-function startSession(program: Program, now: number, sessionId: string): ActiveSession {
-  const first = program.exercises[0];
+function startSession(
+  program: Program,
+  now: number,
+  sessionId: string,
+  last: ReturnType<typeof lastOfProgram>,
+  lastMax: (exerciseId: string) => number | undefined,
+): ActiveSession {
+  const choices = pickChoices(program, last);
+  const schemes = pickSchemes(program, last);
+  const visible = visibleExercises(program, choices);
+  const first = visible[0] ?? program.exercises[0];
   if (!first) {
     throw new Error("Program has no exercises");
   }
@@ -57,8 +76,10 @@ function startSession(program: Program, now: number, sessionId: string): ActiveS
     restUntil: null,
     setStartedAt: now,
     workStartedAt: null,
-    pendingReps: first.mode === "timed" ? first.targetSeconds : first.targetReps,
+    pendingReps: pendingForExercise(first, schemes, 0, lastMax(first.id)),
     logs,
+    choices,
+    schemes,
   };
 }
 
@@ -96,18 +117,17 @@ function patchProgramExercise(
   };
 }
 
-function pendingFor(exercise: Exercise): number {
-  return exercise.mode === "timed" ? exercise.targetSeconds : exercise.targetReps;
-}
-
 export function reduce(state: Store, action: Action): Store {
   switch (action.type) {
     case "start-workout": {
       const program = programById(state, action.programId);
       if (!program || program.exercises.length === 0) return state;
+      const last = lastOfProgram(state.sessions, program.id);
       return {
         ...state,
-        active: startSession(program, action.now, action.sessionId),
+        active: startSession(program, action.now, action.sessionId, last, (id) =>
+          lastMaxReps(state.sessions, id),
+        ),
       };
     }
     case "select-exercise": {
@@ -115,11 +135,68 @@ export function reduce(state: Store, action: Action): Store {
       const program = programById(state, state.active.programId);
       const exercise = program ? exerciseById(program, action.exerciseId) : undefined;
       if (!exercise) return state;
+      const log = state.active.logs[exercise.id];
       return patchActive(state, {
         activeExerciseId: exercise.id,
-        pendingReps: pendingFor(exercise),
+        pendingReps: pendingForExercise(
+          exercise,
+          state.active.schemes,
+          log?.sets.length ?? 0,
+          lastMaxReps(state.sessions, exercise.id),
+        ),
         setStartedAt: action.now,
         workStartedAt: null,
+      });
+    }
+    case "swap-alternate": {
+      if (!state.active) return state;
+      const program = programById(state, state.active.programId);
+      if (!program) return state;
+      const currentId = state.active.choices[action.group];
+      const current = currentId ? exerciseById(program, currentId) : undefined;
+      const other = current
+        ? otherAlternate(program, current)
+        : program.exercises.find((item) => item.alternateGroup === action.group);
+      if (!other) return state;
+      const log = state.active.logs[other.id];
+      return patchActive(state, {
+        choices: { ...state.active.choices, [action.group]: other.id },
+        activeExerciseId: other.id,
+        pendingReps: pendingForExercise(
+          other,
+          state.active.schemes,
+          log?.sets.length ?? 0,
+          lastMaxReps(state.sessions, other.id),
+        ),
+        setStartedAt: action.now,
+        workStartedAt: null,
+      });
+    }
+    case "flip-scheme": {
+      if (!state.active) return state;
+      const program = programById(state, state.active.programId);
+      if (!program) return state;
+      const sample = program.exercises.find(
+        (item) => (item.schemeGroup ?? item.id) === action.group,
+      );
+      if (!sample) return state;
+      const list = sample.schemes ?? [];
+      if (list.length < 2) return state;
+      const current = state.active.schemes[action.group] ?? list[0]?.id;
+      const idx = list.findIndex((item) => item.id === current);
+      const next = list[(idx + 1) % list.length];
+      if (!next) return state;
+      const exercise = activeExercise({ ...state, active: state.active }) ?? sample;
+      const log = state.active.logs[exercise.id];
+      const schemes = { ...state.active.schemes, [action.group]: next.id };
+      return patchActive(state, {
+        schemes,
+        pendingReps: pendingForExercise(
+          exercise,
+          schemes,
+          log?.sets.length ?? 0,
+          lastMaxReps(state.sessions, exercise.id),
+        ),
       });
     }
     case "adjust-pending-reps": {
@@ -139,31 +216,43 @@ export function reduce(state: Store, action: Action): Store {
         ? exerciseById(program, state.active.activeExerciseId)
         : undefined;
       const log = state.active.logs[state.active.activeExerciseId];
-      if (!exercise || !log) return state;
+      if (!program || !exercise || !log) return state;
       const durationMs =
         state.active.workStartedAt != null
           ? Math.max(0, action.now - state.active.workStartedAt)
           : Math.max(0, action.now - state.active.setStartedAt);
-      const nextLog: ExerciseLog = {
-        ...log,
-        sets: [
-          ...log.sets,
-          {
-            reps: exercise.mode === "timed" ? 0 : state.active.pendingReps,
-            weight: log.currentWeight,
-            durationMs,
-            completedAt: action.now,
-          },
-        ],
+      const nextLogs = {
+        ...state.active.logs,
+        [exercise.id]: {
+          ...log,
+          sets: [
+            ...log.sets,
+            {
+              reps: exercise.mode === "timed" ? 0 : state.active.pendingReps,
+              weight: log.currentWeight,
+              durationMs,
+              completedAt: action.now,
+            },
+          ],
+        },
       };
+      const after = restAfterLogging(program, exercise, nextLogs);
+      const nextExercise = exerciseById(program, after.nextExerciseId) ?? exercise;
+      const nextLog = nextLogs[nextExercise.id];
       const restUntil =
-        exercise.restSeconds > 0 ? action.now + exercise.restSeconds * 1000 : null;
+        after.restSeconds > 0 ? action.now + after.restSeconds * 1000 : null;
       return patchActive(state, {
-        logs: { ...state.active.logs, [exercise.id]: nextLog },
+        logs: nextLogs,
+        activeExerciseId: nextExercise.id,
         restUntil,
         setStartedAt: restUntil ?? action.now,
         workStartedAt: null,
-        pendingReps: pendingFor(exercise),
+        pendingReps: pendingForExercise(
+          nextExercise,
+          state.active.schemes,
+          nextLog?.sets.length ?? 0,
+          lastMaxReps(state.sessions, nextExercise.id),
+        ),
       });
     }
     case "undo-set": {
@@ -171,10 +260,11 @@ export function reduce(state: Store, action: Action): Store {
       const id = state.active.activeExerciseId;
       const log = state.active.logs[id];
       if (!log || log.sets.length === 0) return state;
-      return patchActive(
-        patchLog(state, id, { sets: log.sets.slice(0, -1) }),
-        { restUntil: null, setStartedAt: action.now, workStartedAt: null },
-      );
+      return patchActive(patchLog(state, id, { sets: log.sets.slice(0, -1) }), {
+        restUntil: null,
+        setStartedAt: action.now,
+        workStartedAt: null,
+      });
     }
     case "skip-rest": {
       if (!state.active) return state;
@@ -232,6 +322,8 @@ export function reduce(state: Store, action: Action): Store {
         programName: program.name,
         startedAt: state.active.startedAt,
         completedAt: action.now,
+        choices: state.active.choices,
+        schemes: state.active.schemes,
         exercises: program.exercises
           .map((exercise) => {
             const log = state.active?.logs[exercise.id];
@@ -241,6 +333,7 @@ export function reduce(state: Store, action: Action): Store {
               name: exercise.name,
               icon: exercise.icon,
               note: exercise.note,
+              schemeId: state.active?.schemes[exercise.schemeGroup ?? exercise.id],
               sets: log.sets,
             };
           })

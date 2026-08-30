@@ -3,11 +3,18 @@ import { Confirm } from "../components/Confirm";
 import { Glyph } from "../components/Glyph";
 import { RestOverlay } from "../components/RestOverlay";
 import { formatElapsed, formatWeight, relativeDay } from "../logic/format";
+import {
+  formatScheme,
+  schemeOf,
+  setCount,
+  slotsFor,
+} from "../logic/prescription";
 import { go } from "../logic/routes";
 import { activeProgram } from "../logic/store";
 import { useNow, useWakeLock } from "../hooks";
 import { useStore } from "../store-context";
-import type { SetLog } from "../types";
+import type { Exercise, SetLog } from "../types";
+import { assertNever } from "../logic/util";
 
 export function WorkoutScreen() {
   const { store, dispatch } = useStore();
@@ -25,6 +32,7 @@ export function WorkoutScreen() {
   }
 
   const remaining = store.active.restUntil ? store.active.restUntil - now : 0;
+  const slots = slotsFor(program, store.active.choices);
 
   return (
     <div className="screen workout-screen">
@@ -42,43 +50,38 @@ export function WorkoutScreen() {
       </header>
 
       <ul className="exercise-list">
-        {program.exercises.map((exercise) => {
-          const log = store.active?.logs[exercise.id];
-          const done = log?.sets.length ?? 0;
-          const last = lastSets(store.sessions, exercise.id);
-          const current = log?.currentWeight ?? exercise.workingWeight;
-          const isActive = store.active?.activeExerciseId === exercise.id;
-          return (
-            <li key={exercise.id}>
-              <button
-                type="button"
-                className={isActive ? "exercise-row current" : "exercise-row"}
-                onClick={() => {
-                  dispatch({ type: "select-exercise", exerciseId: exercise.id, now: Date.now() });
-                  go({ name: "exercise", id: exercise.id });
-                }}
-              >
-                <Glyph id={exercise.icon} size="md" />
-                <div className="exercise-copy">
-                  <p className="exercise-name">{exercise.name}</p>
-                  <p className="muted">
-                    {formatWeight(current, store.weightUnit)}
-                    {" · "}
-                    {exercise.mode === "timed"
-                      ? `${exercise.targetSets} × ${exercise.targetSeconds}s`
-                      : `${exercise.targetSets} × ${exercise.targetReps}`}
-                  </p>
-                  {last && last.length > 0 ? (
-                    <p className="last-line">
-                      last {relativeDay(last[0] ? lastCompletedAt(last) : 0, Date.now())}:{" "}
-                      {summarize(last, store.weightUnit)}
-                    </p>
-                  ) : null}
-                </div>
-                <Dots total={exercise.targetSets} done={done} />
-              </button>
-            </li>
-          );
+        {slots.map((slot) => {
+          switch (slot.kind) {
+            case "single":
+              return (
+                <li key={slot.exercise.id}>
+                  <ExerciseRow exercise={slot.exercise} />
+                </li>
+              );
+            case "alternate":
+              return (
+                <li key={slot.group}>
+                  <ExerciseRow
+                    exercise={slot.today}
+                    swapLabel={slot.members.find((item) => item.id !== slot.today.id)?.name}
+                    onSwap={() =>
+                      dispatch({ type: "swap-alternate", group: slot.group, now: Date.now() })
+                    }
+                  />
+                </li>
+              );
+            case "superset":
+              return (
+                <li key={slot.group}>
+                  <p className="slot-kicker">Supersérie</p>
+                  {slot.members.map((exercise) => (
+                    <ExerciseRow key={exercise.id} exercise={exercise} nested />
+                  ))}
+                </li>
+              );
+            default:
+              return assertNever(slot);
+          }
         })}
       </ul>
 
@@ -98,6 +101,68 @@ export function WorkoutScreen() {
             go({ name: "history" });
           }}
         />
+      ) : null}
+    </div>
+  );
+}
+
+function ExerciseRow({
+  exercise,
+  swapLabel,
+  onSwap,
+  nested,
+}: {
+  exercise: Exercise;
+  swapLabel?: string;
+  onSwap?: () => void;
+  nested?: boolean;
+}) {
+  const { store, dispatch } = useStore();
+  if (!store.active) return null;
+  const log = store.active.logs[exercise.id];
+  const scheme = schemeOf(exercise, store.active.schemes);
+  const done = log?.sets.length ?? 0;
+  const last = lastSets(store.sessions, exercise.id);
+  const current = log?.currentWeight ?? exercise.workingWeight;
+  const isActive = store.active.activeExerciseId === exercise.id;
+  const open = () => {
+    dispatch({ type: "select-exercise", exerciseId: exercise.id, now: Date.now() });
+    go({ name: "exercise", id: exercise.id });
+  };
+
+  return (
+    <div className={nested ? "nested-row" : undefined}>
+      <button type="button" className={isActive ? "exercise-row current" : "exercise-row"} onClick={open}>
+        <Glyph id={exercise.icon} size="md" />
+        <div className="exercise-copy">
+          <p className="exercise-name">{exercise.name}</p>
+          <p className="muted">
+            {formatWeight(current, store.weightUnit)}
+            {" · "}
+            {exercise.mode === "timed"
+              ? `${exercise.targetSets} × ${exercise.targetSeconds}s`
+              : formatScheme(scheme)}
+          </p>
+          {last && last.length > 0 ? (
+            <p className="last-line">
+              last {relativeDay(last[0] ? lastCompletedAt(last) : 0, Date.now())}:{" "}
+              {summarize(last, store.weightUnit)}
+            </p>
+          ) : null}
+        </div>
+        <Dots total={setCount(scheme)} done={done} />
+      </button>
+      {swapLabel && onSwap ? (
+        <button
+          type="button"
+          className="swap-link"
+          onClick={(event) => {
+            event.stopPropagation();
+            onSwap();
+          }}
+        >
+          Dnes {exercise.name} · střídat → {swapLabel}
+        </button>
       ) : null}
     </div>
   );

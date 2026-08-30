@@ -20,6 +20,7 @@ const COLORS: Record<IconId, string> = {
   dip: "#ffa06c",
   lunge: "#c6f24a",
   legpress: "#8ee000",
+  legext: "#c8ff6a",
   legcurl: "#6fd67a",
   calf: "#b6ff73",
   hipthrust: "#d0ff6a",
@@ -204,6 +205,14 @@ const SHAPES: Record<IconId, ReactNode> = {
       <path d="M10 14h20v20H10z" {...ST} />
       <path d="M30 18h8v12h-8" {...ST} />
       <path d="M14 34h12" {...ST} />
+    </Svg>
+  ),
+  legext: (
+    <Svg>
+      <path d="M14 12h16v8H14z" {...ST} />
+      <path d="M22 20v6" {...ST} />
+      <path d="M18 26 14 38" {...ST} />
+      <path d="M26 26l8 10" {...ST} />
     </Svg>
   ),
   legcurl: (

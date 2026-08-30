@@ -48,8 +48,8 @@ export function ProgramsScreen() {
         <p className="eyebrow">Plans</p>
         <h1>Your trainings</h1>
         <p className="lede">
-          Seeded with Push / Pull / Legs. Edit these to match what you actually do — names, icons,
-          sets, rest, starting weights.
+          Seeded with your Trénink 1. Add the other days here — names, icons, sets, rest,
+          starting weights.
         </p>
       </header>
 

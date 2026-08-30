@@ -199,6 +199,43 @@ button {
   gap: 10px;
 }
 
+.exercise-list > li {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.slot-kicker {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.swap-link,
+.scheme-btn {
+  background: none;
+  border: 0;
+  color: var(--accent);
+  text-align: left;
+  padding: 4px 6px 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.scheme-btn {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  text-align: center;
+}
+
+.nested-row + .nested-row {
+  margin-top: 8px;
+}
+
 .program-accent {
   width: 8px;
   align-self: stretch;

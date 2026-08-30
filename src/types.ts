@@ -17,6 +17,7 @@ export const ICON_IDS = [
   "dip",
   "lunge",
   "legpress",
+  "legext",
   "legcurl",
   "calf",
   "hipthrust",
@@ -30,6 +31,16 @@ export type IconId = (typeof ICON_IDS)[number];
 
 export type ExerciseMode = "reps" | "timed";
 
+export type RepScheme = {
+  id: string;
+  label: string;
+  sets: number;
+  repsMin: number;
+  repsMax: number;
+  isMax?: boolean;
+  pyramid?: number[];
+};
+
 export type Exercise = {
   id: string;
   name: string;
@@ -41,6 +52,10 @@ export type Exercise = {
   restSeconds: number;
   workingWeight: number;
   note: string;
+  alternateGroup?: string;
+  supersetGroup?: string;
+  schemeGroup?: string;
+  schemes?: RepScheme[];
 };
 
 export type Program = {
@@ -73,6 +88,8 @@ export type ActiveSession = {
   workStartedAt: number | null;
   pendingReps: number;
   logs: Record<string, ExerciseLog>;
+  choices: Record<string, string>;
+  schemes: Record<string, string>;
 };
 
 export type CompletedExercise = {
@@ -80,6 +97,7 @@ export type CompletedExercise = {
   name: string;
   icon: IconId;
   note: string;
+  schemeId?: string;
   sets: SetLog[];
 };
 
@@ -89,11 +107,13 @@ export type CompletedSession = {
   programName: string;
   startedAt: number;
   completedAt: number;
+  choices?: Record<string, string>;
+  schemes?: Record<string, string>;
   exercises: CompletedExercise[];
 };
 
 export type Store = {
-  version: 1;
+  version: 1 | 2;
   weightUnit: "kg" | "lb";
   programs: Program[];
   sessions: CompletedSession[];
@@ -111,6 +131,8 @@ export type Route =
 export type Action =
   | { type: "start-workout"; programId: string; now: number; sessionId: string }
   | { type: "select-exercise"; exerciseId: string; now: number }
+  | { type: "swap-alternate"; group: string; now: number }
+  | { type: "flip-scheme"; group: string; now: number }
   | { type: "adjust-pending-reps"; delta: number }
   | { type: "set-pending-reps"; reps: number }
   | { type: "log-set"; now: number }
