@@ -61,7 +61,7 @@ describe("reduce", () => {
     expect(s.active?.activeExerciseId).toBe("t1-zakop");
     s = reduce(s, { type: "log-set", now: t0 + 40_000 });
     expect(s.active?.restUntil).toBe(t0 + 40_000 + 45_000);
-    expect(s.active?.activeExerciseId).toBe("t1-zakop");
+    expect(s.active?.activeExerciseId).toBe("t1-predkop");
   });
 
   it("swaps dřep for legpress", () => {
@@ -213,6 +213,7 @@ describe("prescription", () => {
       },
     });
     expect(afterPair.restSeconds).toBe(45);
+    expect(afterPair.nextExerciseId).toBe("t1-predkop");
   });
 });
 

@@ -203,6 +203,9 @@ export function restAfterLogging(
     if (mine > theirs) {
       return { restSeconds: 0, nextExerciseId: partner.id };
     }
+    const first =
+      program.exercises.find((item) => item.supersetGroup === exercise.supersetGroup) ?? exercise;
+    return { restSeconds: exercise.restSeconds, nextExerciseId: first.id };
   }
   return { restSeconds: exercise.restSeconds, nextExerciseId: exercise.id };
 }

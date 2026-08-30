@@ -5,6 +5,7 @@ import { Confirm } from "../components/Confirm";
 import { formatElapsed, relativeDay } from "../logic/format";
 import { go } from "../logic/routes";
 import { thisWeekCount } from "../logic/stats";
+import { pickChoices, visibleExercises } from "../logic/prescription";
 import { useNow } from "../hooks";
 import { useStore } from "../store-context";
 
@@ -65,6 +66,7 @@ export function HomeScreen() {
       <ul className="program-list">
         {store.programs.map((program) => {
           const last = store.sessions.find((session) => session.programId === program.id);
+          const today = visibleExercises(program, pickChoices(program, last));
           return (
             <li key={program.id}>
               <button type="button" className="program-card" onClick={() => onPick(program.id)}>
@@ -77,11 +79,11 @@ export function HomeScreen() {
                     </span>
                   </div>
                   <div className="glyph-row">
-                    {program.exercises.slice(0, 6).map((exercise) => (
+                    {today.slice(0, 6).map((exercise) => (
                       <Glyph key={exercise.id} id={exercise.icon} size="sm" />
                     ))}
                   </div>
-                  <p className="muted">{program.exercises.length} exercises</p>
+                  <p className="muted">{today.length} lifts today</p>
                 </div>
               </button>
             </li>
