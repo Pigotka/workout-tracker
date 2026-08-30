@@ -199,7 +199,9 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
                 ? formatElapsed(set.durationMs)
                 : `${set.reps} × ${formatWeight(set.weight, store.weightUnit)}`}
             </span>
-            <span className="muted">{formatElapsed(set.durationMs)}</span>
+            <span className="muted">
+              {set.restAfterMs != null ? `rest ${formatElapsed(set.restAfterMs)}` : formatElapsed(set.durationMs)}
+            </span>
           </li>
         ))}
       </ol>
