@@ -242,6 +242,11 @@ describe("reduce", () => {
     expect(s.programs[0]?.exercises[0]?.note).toBe("hlouběji");
   });
 
+  it("switches the icon style", () => {
+    const next = reduce(store(), { type: "set-icon-style", style: "effort" });
+    expect(next.iconStyle).toBe("effort");
+  });
+
   it("finishes a workout into history", () => {
     let s = reduce(store(), {
       type: "start-workout",

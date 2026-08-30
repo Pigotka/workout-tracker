@@ -287,7 +287,39 @@ button {
   background: transparent;
 }
 
-.picker-row {
+.style-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.style-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.style-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px;
+  cursor: pointer;
+}
+
+.style-card.on {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.style-preview {
+  display: flex;
+  gap: 6px;
+}
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;

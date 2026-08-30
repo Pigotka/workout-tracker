@@ -488,6 +488,8 @@ export function reduce(state: Store, action: Action): Store {
       };
     case "set-unit":
       return { ...state, weightUnit: action.unit };
+    case "set-icon-style":
+      return { ...state, iconStyle: action.style };
     case "replace-store":
       return action.store;
     default:

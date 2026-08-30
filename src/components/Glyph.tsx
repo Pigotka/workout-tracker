@@ -1,4 +1,5 @@
-import type { IconId } from "../types";
+import type { IconId, IconStyle } from "../types";
+import { useStore } from "../store-context";
 
 export const ICON_COLORS: Record<IconId, string> = {
   bench: "#ff7a3d",
@@ -71,25 +72,40 @@ export function iconColor(id: IconId, override?: string): string {
   return ICON_COLORS[id];
 }
 
+export function iconSrc(id: IconId, style: IconStyle): string {
+  switch (style) {
+    case "photo":
+      return `/exercise-icons/${id}.jpg`;
+    case "effort":
+      return `/exercise-icons/${id}-effort.jpg`;
+    case "symbol":
+      return `/exercise-icons/${id}.svg`;
+  }
+}
+
 export function Glyph({
   id,
   size = "md",
   color,
+  style,
 }: {
   id: IconId;
   size?: Size;
   color?: string;
+  style?: IconStyle;
 }) {
+  const store = useStore().store;
+  const resolved = style ?? store.iconStyle ?? "photo";
   const bg = iconColor(id, color);
+  const photo = resolved !== "symbol";
   return (
-    <span className={SIZES[size]} style={{ background: bg, color: "#14180c" }} title={ICON_LABELS[id]}>
+    <span className={SIZES[size]} style={{ background: photo ? "#1b2214" : bg, color: "#14180c" }} title={ICON_LABELS[id]}>
       <img
-        className="glyph-img vector"
-        src={`/exercise-icons/${id}.svg`}
-        alt=""
+        className={photo ? "glyph-img" : "glyph-img vector"}
+        src={iconSrc(id, resolved)}
+        alt={ICON_LABELS[id]}
         width={48}
         height={48}
-        aria-hidden="true"
       />
     </span>
   );
