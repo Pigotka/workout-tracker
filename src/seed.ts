@@ -140,6 +140,7 @@ export function createSeedStore() {
   return {
     version: 2 as const,
     weightUnit: "kg" as const,
+    iconStyle: "photo" as const,
     programs: structuredClone(SEED_PROGRAMS),
     sessions: [],
     active: null,

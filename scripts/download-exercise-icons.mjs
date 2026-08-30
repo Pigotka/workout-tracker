@@ -44,22 +44,25 @@ async function download(url) {
   return Buffer.from(await res.arrayBuffer());
 }
 
-async function save(id, slug) {
+async function saveFrame(id, slug, frame, suffix) {
   let lastError;
   for (const base of BASES) {
     try {
-      const buf = await download(`${base}/${slug}/0.jpg`);
+      const buf = await download(`${base}/${slug}/${frame}.jpg`);
       if (buf.length < 1000) throw new Error("too small");
-      writeFileSync(join(OUT, `${id}.jpg`), buf);
-      console.log(`saved ${id} (${buf.length} bytes)`);
+      writeFileSync(join(OUT, `${id}${suffix}.jpg`), buf);
+      console.log(`saved ${id}${suffix} (${buf.length} bytes)`);
       return;
     } catch (error) {
       lastError = error;
     }
   }
-  throw lastError ?? new Error(`failed ${id}`);
+  throw lastError ?? new Error(`failed ${id}${suffix}`);
 }
 
 mkdirSync(OUT, { recursive: true });
-const jobs = Object.entries(MAP).map(([id, slug]) => save(id, slug));
+const jobs = Object.entries(MAP).flatMap(([id, slug]) => [
+  saveFrame(id, slug, 0, ""),
+  saveFrame(id, slug, 1, "-effort"),
+]);
 await Promise.all(jobs);

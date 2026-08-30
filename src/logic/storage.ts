@@ -56,7 +56,13 @@ function migrate(store: Store): Store {
       };
     }
   }
-  return { ...next, active: normalizeActive(next.active) };
+  return { ...next, iconStyle: readIconStyle(next), active: normalizeActive(next.active) };
+}
+
+function readIconStyle(store: Store): Store["iconStyle"] {
+  const style = (store as { iconStyle?: string }).iconStyle;
+  if (style === "photo" || style === "effort" || style === "symbol") return style;
+  return "photo";
 }
 
 function normalizeActive(active: Store["active"]): Store["active"] {
