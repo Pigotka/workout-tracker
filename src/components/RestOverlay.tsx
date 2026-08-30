@@ -1,18 +1,29 @@
-import { formatElapsed } from "../logic/format";
+import { useEffect, useRef } from "react";
+import { formatElapsed, formatRest } from "../logic/format";
 
 export function RestOverlay({
-  remainingMs,
-  onSkip,
+  elapsedMs,
+  targetSeconds,
+  onStop,
 }: {
-  remainingMs: number;
-  onSkip: () => void;
+  elapsedMs: number;
+  targetSeconds: number;
+  onStop: () => void;
 }) {
-  const totalShown = Math.max(0, remainingMs);
+  const overtime = elapsedMs > targetSeconds * 1000 && targetSeconds > 0;
+  const buzzed = useRef(false);
+
+  useEffect(() => {
+    if (!overtime || buzzed.current) return;
+    buzzed.current = true;
+    navigator.vibrate?.([160, 70, 160]);
+  }, [overtime]);
+
   return (
-    <button type="button" className="rest-overlay" onClick={onSkip}>
+    <button type="button" className={overtime ? "rest-overlay over" : "rest-overlay"} onClick={onStop}>
       <p className="rest-kicker">Rest</p>
-      <p className="rest-time">{formatElapsed(totalShown)}</p>
-      <p className="rest-hint">Tap to skip</p>
+      <p className={overtime ? "rest-time over" : "rest-time"}>{formatElapsed(elapsedMs)}</p>
+      <p className="rest-hint">Plan {formatRest(targetSeconds)} · tap when ready</p>
     </button>
   );
 }

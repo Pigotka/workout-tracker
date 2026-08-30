@@ -9,6 +9,7 @@ export function parseHash(hash: string): Route {
   if (head === "history") return { name: "history" };
   if (head === "programs" && parts[1]) return { name: "program-edit", id: decodeURIComponent(parts[1]) };
   if (head === "programs") return { name: "programs" };
+  if (head === "setup" && parts[1]) return { name: "setup", id: decodeURIComponent(parts[1]) };
   if (head === "workout" && parts[1] === "exercise" && parts[2]) {
     return { name: "exercise", id: decodeURIComponent(parts[2]) };
   }
@@ -26,6 +27,8 @@ export function hashFor(route: Route): string {
       return "#/programs";
     case "program-edit":
       return `#/programs/${encodeURIComponent(route.id)}`;
+    case "setup":
+      return `#/setup/${encodeURIComponent(route.id)}`;
     case "workout":
       return "#/workout";
     case "exercise":

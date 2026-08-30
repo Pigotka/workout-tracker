@@ -5,7 +5,7 @@ import { Confirm } from "../components/Confirm";
 import { formatElapsed, relativeDay } from "../logic/format";
 import { go } from "../logic/routes";
 import { thisWeekCount } from "../logic/stats";
-import { pickChoices, visibleExercises } from "../logic/prescription";
+import { pickChoices, visibleExercises, needsSetup } from "../logic/prescription";
 import { useNow } from "../hooks";
 import { useStore } from "../store-context";
 
@@ -16,6 +16,11 @@ export function HomeScreen() {
   const weekCount = thisWeekCount(store.sessions, Date.now());
 
   const start = (programId: string) => {
+    const program = store.programs.find((item) => item.id === programId);
+    if (program && needsSetup(program)) {
+      go({ name: "setup", id: programId });
+      return;
+    }
     dispatch({
       type: "start-workout",
       programId,

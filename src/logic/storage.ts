@@ -35,24 +35,38 @@ export function isStore(value: unknown): value is Store {
 }
 
 function migrate(store: Store): Store {
-  if (store.version === 2) return store;
-  const ids = store.programs.map((program) => program.id);
-  const onlySeedPpl =
-    ids.length === 3 && ids.every((id) => DEFAULT_PPL.has(id));
-  if (onlySeedPpl) {
-    const seed = createSeedStore();
-    return {
-      ...seed,
-      weightUnit: store.weightUnit,
-      sessions: store.sessions,
-    };
+  let next = store;
+  if (store.version !== 2) {
+    const ids = store.programs.map((program) => program.id);
+    const onlySeedPpl = ids.length === 3 && ids.every((id) => DEFAULT_PPL.has(id));
+    if (onlySeedPpl) {
+      const seed = createSeedStore();
+      next = {
+        ...seed,
+        weightUnit: store.weightUnit,
+        sessions: store.sessions,
+      };
+    } else {
+      const seed = createSeedStore();
+      const hasT1 = store.programs.some((program) => program.id === "t1");
+      next = {
+        ...store,
+        version: 2,
+        programs: hasT1 ? store.programs : [...seed.programs, ...store.programs],
+      };
+    }
   }
-  const seed = createSeedStore();
-  const hasT1 = store.programs.some((program) => program.id === "t1");
+  return { ...next, active: normalizeActive(next.active) };
+}
+
+function normalizeActive(active: Store["active"]): Store["active"] {
+  if (!active) return null;
   return {
-    ...store,
-    version: 2,
-    programs: hasT1 ? store.programs : [...seed.programs, ...store.programs],
+    ...active,
+    restStartedAt: active.restStartedAt ?? null,
+    restTargetSeconds: active.restTargetSeconds ?? 0,
+    choices: active.choices ?? {},
+    schemes: active.schemes ?? {},
   };
 }
 

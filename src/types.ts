@@ -69,6 +69,7 @@ export type SetLog = {
   reps: number;
   weight: number;
   durationMs: number;
+  restAfterMs?: number;
   completedAt: number;
 };
 
@@ -83,7 +84,8 @@ export type ActiveSession = {
   programId: string;
   startedAt: number;
   activeExerciseId: string;
-  restUntil: number | null;
+  restStartedAt: number | null;
+  restTargetSeconds: number;
   setStartedAt: number;
   workStartedAt: number | null;
   pendingReps: number;
@@ -125,11 +127,19 @@ export type Route =
   | { name: "history" }
   | { name: "programs" }
   | { name: "program-edit"; id: string }
+  | { name: "setup"; id: string }
   | { name: "workout" }
   | { name: "exercise"; id: string };
 
 export type Action =
-  | { type: "start-workout"; programId: string; now: number; sessionId: string }
+  | {
+      type: "start-workout";
+      programId: string;
+      now: number;
+      sessionId: string;
+      choices?: Record<string, string>;
+      schemes?: Record<string, string>;
+    }
   | { type: "select-exercise"; exerciseId: string; now: number }
   | { type: "swap-alternate"; group: string; now: number }
   | { type: "flip-scheme"; group: string; now: number }
@@ -137,10 +147,9 @@ export type Action =
   | { type: "set-pending-reps"; reps: number }
   | { type: "log-set"; now: number }
   | { type: "undo-set"; now: number }
-  | { type: "skip-rest"; now: number }
+  | { type: "end-rest"; now: number }
   | { type: "adjust-weight"; delta: number }
   | { type: "set-weight"; weight: number }
-  | { type: "set-next-weight"; weight: number }
   | { type: "set-note"; exerciseId: string; note: string }
   | { type: "start-work"; now: number }
   | { type: "stop-work" }
@@ -152,5 +161,7 @@ export type Action =
   | { type: "update-exercise"; programId: string; exercise: Exercise }
   | { type: "delete-exercise"; programId: string; exerciseId: string }
   | { type: "move-exercise"; programId: string; exerciseId: string; direction: "up" | "down" }
+  | { type: "pair-with-next"; programId: string; exerciseId: string; kind: "superset" | "alternate"; groupId: string }
+  | { type: "unpair"; programId: string; exerciseId: string }
   | { type: "set-unit"; unit: "kg" | "lb" }
   | { type: "replace-store"; store: Store };

@@ -670,9 +670,61 @@ button {
   border-color: var(--ink);
 }
 
+.rest-overlay.over {
+  background: #2a100c;
+}
+
+.rest-overlay.over .rest-kicker,
+.rest-overlay.over .rest-time,
+.rest-time.over {
+  color: #ff4d3a;
+}
+
+.modal-actions.stack {
+  grid-template-columns: 1fr;
+}
+
+.weight-grid.single {
+  grid-template-columns: 1fr;
+}
+
+.setup-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.setup-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.setup-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 10px;
+  cursor: pointer;
+}
+
+.setup-pick span {
+  font-weight: 700;
+}
+
+.setup-pick.on {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
 .icon-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
 }
 
@@ -680,13 +732,60 @@ button {
   background: var(--bg-2);
   border: 1px solid transparent;
   border-radius: 14px;
-  padding: 4px;
-  display: grid;
-  place-items: center;
+  padding: 6px 4px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.icon-caption {
+  font-size: 0.62rem;
+  line-height: 1.15;
+  color: var(--muted);
+  text-align: center;
+}
+
+.icon-pick.on .icon-caption {
+  color: var(--accent-ink);
+}
+
+.pair-badge {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.pair-banner,
+.pair-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pair-banner {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 12px;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pair-banner p {
+  margin: 0;
+  font-weight: 600;
 }
 
 .icon-pick.on {
   border-color: var(--accent);
+  background: var(--accent);
 }
 
 .edit-ex {

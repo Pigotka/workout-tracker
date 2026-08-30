@@ -48,8 +48,8 @@ export function ProgramsScreen() {
         <p className="eyebrow">Plans</p>
         <h1>Your trainings</h1>
         <p className="lede">
-          Seeded with your Trénink 1. Add the other days here — names, icons, sets, rest,
-          starting weights.
+          Seeded with your Trénink 1. In a plan, open an exercise and pair it with the next
+          one as a superset or an alternate.
         </p>
       </header>
 
@@ -106,7 +106,7 @@ export function ProgramsScreen() {
       {confirmReset ? (
         <Confirm
           title="Reset programs?"
-          body="This replaces trainings with the starter Push / Pull / Legs template. History is kept."
+          body="This replaces trainings with the starter Trénink 1 template. History is kept."
           confirmLabel="Reset"
           danger
           onCancel={() => setConfirmReset(false)}

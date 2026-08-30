@@ -30,6 +30,35 @@ const COLORS: Record<IconId, string> = {
   default: "#d6ff3e",
 };
 
+export const ICON_LABELS: Record<IconId, string> = {
+  bench: "Bench",
+  incline: "Incline",
+  ohp: "OH press",
+  squat: "Squat",
+  deadlift: "Deadlift",
+  rdls: "RDL",
+  row: "Row",
+  pulldown: "Pulldown",
+  pullup: "Pull-up",
+  fly: "Fly",
+  lateral: "Raise",
+  facepull: "Face pull",
+  curl: "Curl",
+  pushdown: "Pushdown",
+  skullcrusher: "Overhead ext",
+  dip: "Dip",
+  lunge: "Lunge",
+  legpress: "Leg press",
+  legext: "Leg ext",
+  legcurl: "Leg curl",
+  calf: "Calf",
+  hipthrust: "Hip thrust",
+  plank: "Abs",
+  shrug: "Shrug",
+  cable: "Cable",
+  default: "Other",
+};
+
 function Svg({ children }: { children: ReactNode }) {
   return (
     <svg viewBox="0 0 48 48" aria-hidden="true" className="glyph-svg">
@@ -38,235 +67,245 @@ function Svg({ children }: { children: ReactNode }) {
   );
 }
 
-const ST = {
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 2.6,
-  strokeLinecap: "round" as const,
-  strokeLinejoin: "round" as const,
-};
+const ink = "currentColor";
+
+function Head({ x, y, r = 3.6 }: { x: number; y: number; r?: number }) {
+  return <circle cx={x} cy={y} r={r} fill={ink} />;
+}
+
+function Bar({ y, left = 6, right = 42 }: { y: number; left?: number; right?: number }) {
+  return (
+    <g>
+      <rect x={left + 4} y={y - 1.2} width={right - left - 8} height="2.4" rx="1" fill={ink} />
+      <rect x={left} y={y - 4} width="4" height="8" rx="1" fill={ink} />
+      <rect x={right - 4} y={y - 4} width="4" height="8" rx="1" fill={ink} />
+    </g>
+  );
+}
 
 const SHAPES: Record<IconId, ReactNode> = {
   bench: (
     <Svg>
-      <path d="M8 30h32" {...ST} />
-      <path d="M12 30V22h24v8" {...ST} />
-      <path d="M6 16h36" {...ST} />
-      <circle cx="10" cy="16" r="3.2" {...ST} />
-      <circle cx="38" cy="16" r="3.2" {...ST} />
+      <rect x="10" y="28" width="28" height="5" rx="1.5" fill={ink} />
+      <rect x="14" y="33" width="4" height="7" fill={ink} />
+      <rect x="30" y="33" width="4" height="7" fill={ink} />
+      <Head x={24} y={16} />
+      <rect x="21" y="19" width="6" height="9" rx="2" fill={ink} />
+      <Bar y={18} />
     </Svg>
   ),
   incline: (
     <Svg>
-      <path d="M10 34h28" {...ST} />
-      <path d="M12 34 28 14h8v6" {...ST} />
-      <path d="M20 20h22" {...ST} />
-      <circle cx="24" cy="20" r="2.8" {...ST} />
-      <circle cx="38" cy="20" r="2.8" {...ST} />
+      <path d="M12 38 V22 L32 12 V18 L18 26 V38Z" fill={ink} />
+      <Head x={30} y={12} />
+      <Bar y={14} left={16} right={44} />
     </Svg>
   ),
   ohp: (
     <Svg>
-      <circle cx="24" cy="30" r="5" {...ST} />
-      <path d="M24 25V16" {...ST} />
-      <path d="M8 16h32" {...ST} />
-      <circle cx="10" cy="16" r="3" {...ST} />
-      <circle cx="38" cy="16" r="3" {...ST} />
+      <Head x={24} y={22} />
+      <rect x="20" y="25" width="8" height="12" rx="2" fill={ink} />
+      <path d="M16 38 Q24 32 32 38" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <Bar y={10} />
+      <path d="M18 22 L10 12" stroke={ink} strokeWidth="2.5" fill="none" strokeLinecap="round" />
+      <path d="M30 22 L38 12" stroke={ink} strokeWidth="2.5" fill="none" strokeLinecap="round" />
     </Svg>
   ),
   squat: (
     <Svg>
-      <circle cx="24" cy="14" r="4" {...ST} />
-      <path d="M24 18v6" {...ST} />
-      <path d="M16 34 24 24l8 10" {...ST} />
-      <path d="M10 16h28" {...ST} />
-      <circle cx="12" cy="16" r="2.6" {...ST} />
-      <circle cx="36" cy="16" r="2.6" {...ST} />
+      <Bar y={11} />
+      <Head x={24} y={16} />
+      <rect x="20" y="19" width="8" height="8" rx="2" fill={ink} />
+      <path d="M16 38 L20 27 H28 L32 38" stroke={ink} strokeWidth="3.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 22 L20 22" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <path d="M34 22 L28 22" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
     </Svg>
   ),
   deadlift: (
     <Svg>
-      <path d="M16 14v20" {...ST} />
-      <path d="M32 14v20" {...ST} />
-      <path d="M8 34h32" {...ST} />
-      <circle cx="10" cy="34" r="3" {...ST} />
-      <circle cx="38" cy="34" r="3" {...ST} />
+      <Head x={24} y={12} />
+      <rect x="20" y="15" width="8" height="10" rx="2" fill={ink} />
+      <path d="M18 38 V28 H30 V38" stroke={ink} strokeWidth="3.2" fill="none" strokeLinecap="round" />
+      <Bar y={34} />
     </Svg>
   ),
   rdls: (
     <Svg>
-      <circle cx="24" cy="12" r="3.4" {...ST} />
-      <path d="M24 16 14 28" {...ST} />
-      <path d="M24 22l8 6" {...ST} />
-      <path d="M8 34h20" {...ST} />
-      <circle cx="10" cy="34" r="2.8" {...ST} />
-      <circle cx="26" cy="34" r="2.8" {...ST} />
+      <Head x={18} y={14} />
+      <rect x="16" y="17" width="7" height="12" rx="2" transform="rotate(-25 19 23)" fill={ink} />
+      <path d="M22 30 L18 40" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <path d="M28 28 L34 38" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <Bar y={32} left={8} right={36} />
     </Svg>
   ),
   row: (
     <Svg>
-      <circle cx="16" cy="14" r="3.2" {...ST} />
-      <path d="M18 16 30 28" {...ST} />
-      <path d="M8 36h24" {...ST} />
-      <circle cx="10" cy="36" r="2.8" {...ST} />
-      <circle cx="30" cy="36" r="2.8" {...ST} />
+      <Head x={14} y={16} />
+      <rect x="13" y="19" width="12" height="7" rx="2" transform="rotate(-35 19 22)" fill={ink} />
+      <path d="M22 28 L16 40" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <path d="M26 26 L32 38" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <Bar y={30} left={18} right={44} />
     </Svg>
   ),
   pulldown: (
     <Svg>
-      <path d="M8 10h32" {...ST} />
-      <path d="M24 10v12" {...ST} />
-      <path d="M14 28h20" {...ST} />
-      <path d="M16 28v8" {...ST} />
-      <path d="M32 28v8" {...ST} />
+      <rect x="8" y="6" width="32" height="3" rx="1" fill={ink} />
+      <rect x="23" y="6" width="2" height="12" fill={ink} />
+      <rect x="14" y="16" width="20" height="3" rx="1" fill={ink} />
+      <Head x={24} y={26} />
+      <rect x="20" y="29" width="8" height="10" rx="2" fill={ink} />
     </Svg>
   ),
   pullup: (
     <Svg>
-      <path d="M6 10h36" {...ST} />
-      <path d="M16 10v8" {...ST} />
-      <path d="M32 10v8" {...ST} />
-      <circle cx="24" cy="28" r="4" {...ST} />
-      <path d="M24 22v2" {...ST} />
-      <path d="M18 36 24 30l6 6" {...ST} />
+      <rect x="6" y="6" width="36" height="3" rx="1" fill={ink} />
+      <path d="M14 7 V14" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <path d="M34 7 V14" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <Head x={24} y={22} />
+      <rect x="20" y="25" width="8" height="8" rx="2" fill={ink} />
+      <path d="M16 38 L24 33 L32 38" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
     </Svg>
   ),
   fly: (
     <Svg>
-      <circle cx="24" cy="22" r="4" {...ST} />
-      <path d="M8 16 20 20" {...ST} />
-      <path d="M40 16 28 20" {...ST} />
-      <path d="M24 26v10" {...ST} />
+      <Head x={24} y={14} />
+      <rect x="20" y="17" width="8" height="12" rx="2" fill={ink} />
+      <path d="M8 18 Q16 14 20 20" stroke={ink} strokeWidth="3" fill="none" />
+      <path d="M40 18 Q32 14 28 20" stroke={ink} strokeWidth="3" fill="none" />
+      <circle cx="8" cy="18" r="3" fill={ink} />
+      <circle cx="40" cy="18" r="3" fill={ink} />
     </Svg>
   ),
   lateral: (
     <Svg>
-      <circle cx="24" cy="20" r="4" {...ST} />
-      <path d="M8 20h12" {...ST} />
-      <path d="M28 20h12" {...ST} />
-      <path d="M20 24 16 36" {...ST} />
-      <path d="M28 24l4 12" {...ST} />
-      <circle cx="8" cy="20" r="2.4" {...ST} />
-      <circle cx="40" cy="20" r="2.4" {...ST} />
+      <Head x={24} y={14} />
+      <rect x="20" y="17" width="8" height="12" rx="2" fill={ink} />
+      <path d="M8 22 H20 M28 22 H40" stroke={ink} strokeWidth="3.2" fill="none" strokeLinecap="round" />
+      <circle cx="8" cy="22" r="3.2" fill={ink} />
+      <circle cx="40" cy="22" r="3.2" fill={ink} />
     </Svg>
   ),
   facepull: (
     <Svg>
-      <circle cx="24" cy="16" r="4" {...ST} />
-      <path d="M8 16h12" {...ST} />
-      <path d="M28 16h12" {...ST} />
-      <path d="M18 20 16 34" {...ST} />
-      <path d="M30 20l2 14" {...ST} />
+      <Head x={24} y={16} />
+      <rect x="20" y="19" width="8" height="10" rx="2" fill={ink} />
+      <path d="M8 16 H18 M30 16 H40" stroke={ink} strokeWidth="2.6" fill="none" />
+      <path d="M16 20 L12 30 M32 20 L36 30" stroke={ink} strokeWidth="2.6" fill="none" />
     </Svg>
   ),
   curl: (
     <Svg>
-      <path d="M16 36 22 20" {...ST} />
-      <circle cx="24" cy="16" r="5" {...ST} />
-      <path d="M18 16h12" {...ST} />
+      <Head x={24} y={10} />
+      <rect x="21" y="13" width="6" height="10" rx="2" fill={ink} />
+      <path d="M18 38 V24" stroke={ink} strokeWidth="3.2" fill="none" strokeLinecap="round" />
+      <circle cx="18" cy="20" r="5" fill="none" stroke={ink} strokeWidth="2.8" />
+      <rect x="22" y="24" width="10" height="3" rx="1" fill={ink} />
     </Svg>
   ),
   pushdown: (
     <Svg>
-      <path d="M24 8v14" {...ST} />
-      <path d="M16 22h16" {...ST} />
-      <path d="M18 22 16 36" {...ST} />
-      <path d="M30 22l2 14" {...ST} />
+      <rect x="23" y="6" width="2.4" height="16" fill={ink} />
+      <rect x="16" y="20" width="16" height="3" rx="1" fill={ink} />
+      <Head x={24} y={30} />
+      <path d="M16 22 V34 M32 22 V34" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
     </Svg>
   ),
   skullcrusher: (
     <Svg>
-      <circle cx="24" cy="16" r="4" {...ST} />
-      <path d="M24 20v8" {...ST} />
-      <path d="M10 28h28" {...ST} />
-      <circle cx="12" cy="28" r="2.6" {...ST} />
-      <circle cx="36" cy="28" r="2.6" {...ST} />
+      <Head x={24} y={20} />
+      <rect x="20" y="23" width="8" height="10" rx="2" fill={ink} />
+      <path d="M16 38 Q24 32 32 38" stroke={ink} strokeWidth="3" fill="none" />
+      <path d="M24 12 V20" stroke={ink} strokeWidth="2.6" fill="none" />
+      <Bar y={10} left={10} right={38} />
     </Svg>
   ),
   dip: (
     <Svg>
-      <path d="M10 12v24" {...ST} />
-      <path d="M38 12v24" {...ST} />
-      <path d="M10 18h8" {...ST} />
-      <path d="M38 18h-8" {...ST} />
-      <circle cx="24" cy="26" r="4" {...ST} />
+      <rect x="8" y="10" width="4" height="28" rx="1" fill={ink} />
+      <rect x="36" y="10" width="4" height="28" rx="1" fill={ink} />
+      <rect x="8" y="16" width="10" height="3" fill={ink} />
+      <rect x="30" y="16" width="10" height="3" fill={ink} />
+      <Head x={24} y={22} />
+      <rect x="20" y="25" width="8" height="8" rx="2" fill={ink} />
     </Svg>
   ),
   lunge: (
     <Svg>
-      <circle cx="20" cy="10" r="3.2" {...ST} />
-      <path d="M20 14 16 28" {...ST} />
-      <path d="M16 28 10 38" {...ST} />
-      <path d="M16 28l16 4 4 6" {...ST} />
+      <Head x={20} y={10} />
+      <rect x="17" y="13" width="6" height="10" rx="2" fill={ink} />
+      <path d="M16 24 L12 40 M20 24 L32 30 L36 40" stroke={ink} strokeWidth="3.2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
     </Svg>
   ),
   legpress: (
     <Svg>
-      <path d="M10 14h20v20H10z" {...ST} />
-      <path d="M30 18h8v12h-8" {...ST} />
-      <path d="M14 34h12" {...ST} />
+      <rect x="6" y="14" width="18" height="22" rx="2" fill={ink} opacity="0.35" />
+      <rect x="22" y="16" width="18" height="14" rx="2" fill={ink} />
+      <Head x={14} y={20} />
+      <path d="M16 26 L28 22" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <path d="M16 30 L30 28" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
     </Svg>
   ),
   legext: (
     <Svg>
-      <path d="M14 12h16v8H14z" {...ST} />
-      <path d="M22 20v6" {...ST} />
-      <path d="M18 26 14 38" {...ST} />
-      <path d="M26 26l8 10" {...ST} />
+      <rect x="10" y="10" width="16" height="10" rx="2" fill={ink} />
+      <Head x={18} y={8} r={3} />
+      <path d="M22 20 V28 L36 32" stroke={ink} strokeWidth="3.4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="32" y="30" width="10" height="4" rx="1" fill={ink} />
     </Svg>
   ),
   legcurl: (
     <Svg>
-      <path d="M12 14h16v8H12z" {...ST} />
-      <path d="M20 22 14 38" {...ST} />
-      <path d="M20 22l10 8" {...ST} />
+      <rect x="8" y="18" width="22" height="8" rx="2" fill={ink} />
+      <Head x={14} y={16} />
+      <path d="M26 26 Q32 18 38 28" stroke={ink} strokeWidth="3.4" fill="none" strokeLinecap="round" />
+      <rect x="34" y="26" width="8" height="4" rx="1" fill={ink} />
     </Svg>
   ),
   calf: (
     <Svg>
-      <path d="M22 8v20" {...ST} />
-      <path d="M16 28h16l-2 10H18z" {...ST} />
+      <Head x={24} y={8} />
+      <rect x="21" y="11" width="6" height="14" rx="2" fill={ink} />
+      <path d="M18 40 L22 26 H26 L30 32 L34 40" stroke={ink} strokeWidth="3" fill="none" strokeLinejoin="round" />
+      <rect x="14" y="39" width="22" height="3" rx="1" fill={ink} />
     </Svg>
   ),
   hipthrust: (
     <Svg>
-      <path d="M8 28h32" {...ST} />
-      <path d="M14 28V18h20v10" {...ST} />
-      <circle cx="24" cy="14" r="3.2" {...ST} />
+      <rect x="8" y="26" width="32" height="5" rx="1.5" fill={ink} />
+      <Head x={16} y={14} />
+      <rect x="14" y="17" width="20" height="9" rx="2" fill={ink} />
+      <path d="M34 26 L38 38" stroke={ink} strokeWidth="3" fill="none" />
     </Svg>
   ),
   plank: (
     <Svg>
-      <circle cx="12" cy="16" r="3" {...ST} />
-      <path d="M15 18h20" {...ST} />
-      <path d="M12 19v10" {...ST} />
-      <path d="M35 18v10" {...ST} />
-      <path d="M8 30h8" {...ST} />
-      <path d="M32 30h8" {...ST} />
+      <Head x={10} y={16} />
+      <rect x="12" y="18" width="24" height="6" rx="2" fill={ink} />
+      <path d="M10 22 V32 M36 24 V32" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
+      <path d="M6 32 H16 M32 32 H42" stroke={ink} strokeWidth="3" fill="none" strokeLinecap="round" />
     </Svg>
   ),
   shrug: (
     <Svg>
-      <circle cx="24" cy="14" r="4" {...ST} />
-      <path d="M12 24h24" {...ST} />
-      <path d="M18 18 12 24" {...ST} />
-      <path d="M30 18l6 6" {...ST} />
-      <circle cx="12" cy="24" r="2.4" {...ST} />
-      <circle cx="36" cy="24" r="2.4" {...ST} />
+      <Head x={24} y={12} />
+      <rect x="20" y="15" width="8" height="12" rx="2" fill={ink} />
+      <path d="M8 22 H20 M28 22 H40" stroke={ink} strokeWidth="3.2" fill="none" strokeLinecap="round" />
+      <circle cx="8" cy="22" r="3" fill={ink} />
+      <circle cx="40" cy="22" r="3" fill={ink} />
     </Svg>
   ),
   cable: (
     <Svg>
-      <path d="M24 8v28" {...ST} />
-      <path d="M16 12h16" {...ST} />
-      <path d="M18 36h12" {...ST} />
+      <rect x="22" y="6" width="4" height="28" rx="1" fill={ink} />
+      <rect x="16" y="10" width="16" height="3" fill={ink} />
+      <rect x="18" y="32" width="12" height="4" rx="1" fill={ink} />
     </Svg>
   ),
   default: (
     <Svg>
-      <path d="M16 24h16" {...ST} />
-      <circle cx="14" cy="24" r="6" {...ST} />
-      <circle cx="34" cy="24" r="6" {...ST} />
+      <circle cx="14" cy="24" r="7" fill="none" stroke={ink} strokeWidth="2.8" />
+      <circle cx="34" cy="24" r="7" fill="none" stroke={ink} strokeWidth="2.8" />
+      <rect x="18" y="22" width="12" height="4" fill={ink} />
     </Svg>
   ),
 };
@@ -281,7 +320,11 @@ const SIZES: Record<Size, string> = {
 
 export function Glyph({ id, size = "md" }: { id: IconId; size?: Size }) {
   return (
-    <span className={SIZES[size]} style={{ background: COLORS[id], color: "#14180c" }}>
+    <span
+      className={SIZES[size]}
+      style={{ background: COLORS[id], color: "#14180c" }}
+      title={ICON_LABELS[id]}
+    >
       {SHAPES[id]}
     </span>
   );

@@ -1,8 +1,7 @@
 import type { ReactNode } from "react";
 import { go } from "../logic/routes";
-import type { Route } from "../types";
 
-export function BottomNav({ current }: { current: Route["name"] }) {
+export function BottomNav({ current }: { current: "home" | "history" | "programs" }) {
   return (
     <nav className="bottom-nav">
       <NavBtn
@@ -35,7 +34,7 @@ export function BottomNav({ current }: { current: Route["name"] }) {
       />
       <NavBtn
         label="Plans"
-        active={current === "programs" || current === "program-edit"}
+        active={current === "programs"}
         onClick={() => go({ name: "programs" })}
         icon={
           <svg viewBox="0 0 24 24" className="nav-svg">
