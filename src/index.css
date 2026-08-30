@@ -271,6 +271,14 @@ button {
   place-items: center;
   border-radius: 14px;
   flex: none;
+  overflow: hidden;
+}
+
+.glyph-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .glyph-sm {
@@ -778,9 +786,10 @@ button {
   justify-content: space-between;
 }
 
-.pair-banner p {
-  margin: 0;
-  font-weight: 600;
+.scheme-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .icon-pick.on {

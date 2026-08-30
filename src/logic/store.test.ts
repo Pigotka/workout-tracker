@@ -2,6 +2,10 @@ import { describe, expect, it } from "vitest";
 import { createSeedStore } from "../seed";
 import { formatElapsed, formatWeight } from "./format";
 import {
+  buildScheme,
+  needsSetup,
+  parsePyramid,
+  pendingForExercise,
   pickChoices,
   pickSchemes,
   pairWithNext,
@@ -21,7 +25,7 @@ function store(): Store {
 }
 
 describe("reduce", () => {
-  it("starts Trénink 1 on dřep with rozpis A", () => {
+  it("starts Trénink 1 on dřep using that lift's own reps", () => {
     const next = reduce(store(), {
       type: "start-workout",
       programId: "t1",
@@ -31,7 +35,7 @@ describe("reduce", () => {
     expect(next.active?.programId).toBe("t1");
     expect(next.active?.activeExerciseId).toBe("t1-drep");
     expect(next.active?.choices["t1-quads"]).toBe("t1-drep");
-    expect(next.active?.schemes["t1-quads"]).toBe("A");
+    expect(next.active?.schemes["t1-drep"]).toBe("default");
     expect(next.active?.pendingReps).toBe(6);
   });
 
@@ -79,7 +83,7 @@ describe("reduce", () => {
     expect(s.active?.activeExerciseId).toBe("t1-legpress");
   });
 
-  it("rotates movement and A/B on the next session", () => {
+  it("rotates the alternate movement but keeps each lift's own reps", () => {
     let s = reduce(store(), {
       type: "start-workout",
       programId: "t1",
@@ -95,8 +99,28 @@ describe("reduce", () => {
       sessionId: "s2",
     });
     expect(s.active?.choices["t1-quads"]).toBe("t1-legpress");
-    expect(s.active?.schemes["t1-quads"]).toBe("B");
+    expect(s.active?.schemes["t1-legpress"]).toBe("default");
     expect(s.active?.pendingReps).toBe(12);
+  });
+
+  it("follows pyramid reps set by set", () => {
+    let s = reduce(store(), {
+      type: "start-workout",
+      programId: "t1",
+      now: t0,
+      sessionId: "s1",
+      choices: { "t1-quads": "t1-drep", "t1-pull": "t1-pritahy" },
+    });
+    s = reduce(s, { type: "select-exercise", exerciseId: "t1-pritahy", now: t0 });
+    expect(s.active?.pendingReps).toBe(10);
+    s = reduce(s, { type: "log-set", now: t0 + 1 });
+    s = reduce(s, { type: "end-rest", now: t0 + 2 });
+    s = reduce(s, { type: "log-set", now: t0 + 3 });
+    s = reduce(s, { type: "end-rest", now: t0 + 4 });
+    s = reduce(s, { type: "log-set", now: t0 + 5 });
+    s = reduce(s, { type: "end-rest", now: t0 + 6 });
+    expect(s.active?.logs["t1-pritahy"]?.sets).toHaveLength(3);
+    expect(s.active?.pendingReps).toBe(8);
   });
 
   it("keeps last logged reps for the next set", () => {
@@ -246,7 +270,7 @@ describe("prescription", () => {
     ]);
   });
 
-  it("rotates choices and schemes from the last session", () => {
+  it("rotates alternate choices but not a shared rozpis", () => {
     const program = createSeedStore().programs[0];
     if (!program) throw new Error("missing program");
     const last = {
@@ -256,13 +280,44 @@ describe("prescription", () => {
       startedAt: t0,
       completedAt: t0,
       choices: { "t1-quads": "t1-drep", "t1-pull": "t1-shyby" },
-      schemes: { "t1-quads": "A" },
+      schemes: { "t1-drep": "default" },
       exercises: [],
     };
     expect(pickChoices(program, last)["t1-quads"]).toBe("t1-legpress");
-    expect(pickSchemes(program, last)["t1-quads"]).toBe("B");
+    expect(pickSchemes(program)["t1-drep"]).toBe("default");
+    expect(pickSchemes(program)["t1-legpress"]).toBe("default");
     expect(pickChoices(program, undefined)["t1-quads"]).toBe("t1-drep");
-    expect(pickSchemes(program, undefined)["t1-quads"]).toBe("A");
+  });
+
+  it("only needs a Today screen when the plan has alternates", () => {
+    const program = createSeedStore().programs[0];
+    if (!program) throw new Error("missing program");
+    expect(needsSetup(program)).toBe(true);
+    expect(needsSetup({ ...program, exercises: program.exercises.filter((item) => !item.alternateGroup) })).toBe(
+      false,
+    );
+  });
+
+  it("parses pyramid reps and builds a scheme from them", () => {
+    expect(parsePyramid("10, 10, 10, 8, 8, 8, 6, 4")).toEqual([10, 10, 10, 8, 8, 8, 6, 4]);
+    expect(parsePyramid("10 8 6 4")).toEqual([10, 8, 6, 4]);
+    const scheme = buildScheme({
+      kind: "pyramid",
+      sets: 3,
+      reps: 8,
+      repsMin: 8,
+      repsMax: 8,
+      pyramid: [10, 8, 6, 4],
+    });
+    expect(scheme.pyramid).toEqual([10, 8, 6, 4]);
+    expect(scheme.sets).toBe(4);
+  });
+
+  it("uses the planned pyramid number when last logged would otherwise stick", () => {
+    const exercise = createSeedStore().programs[0]?.exercises.find((item) => item.id === "t1-pritahy");
+    if (!exercise) throw new Error("missing pyramid lift");
+    expect(pendingForExercise(exercise, {}, 3, 10)).toBe(8);
+    expect(pendingForExercise(exercise, {}, 0)).toBe(10);
   });
 
   it("rests only after both superset lifts", () => {

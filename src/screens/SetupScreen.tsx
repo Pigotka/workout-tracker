@@ -1,24 +1,14 @@
 import { useEffect, useState } from "react";
 import { Glyph } from "../components/Glyph";
-import {
-  alternateGroups,
-  formatScheme,
-  lastOfProgram,
-  pickChoices,
-  pickSchemes,
-  schemeKey,
-  schemesOf,
-} from "../logic/prescription";
+import { alternateGroups, lastOfProgram, pickChoices } from "../logic/prescription";
 import { go } from "../logic/routes";
 import { useStore } from "../store-context";
-import type { Program, RepScheme } from "../types";
 
 export function SetupScreen({ programId }: { programId: string }) {
   const { store, dispatch } = useStore();
   const program = store.programs.find((item) => item.id === programId);
   const last = program ? lastOfProgram(store.sessions, program.id) : undefined;
   const [choices, setChoices] = useState(() => (program ? pickChoices(program, last) : {}));
-  const [schemes, setSchemes] = useState(() => (program ? pickSchemes(program, last) : {}));
 
   useEffect(() => {
     if (!program) go({ name: "home" });
@@ -27,7 +17,6 @@ export function SetupScreen({ programId }: { programId: string }) {
   if (!program) return null;
 
   const groups = alternateGroups(program);
-  const schemeBlocks = uniqueSchemeBlocks(program);
 
   const start = () => {
     dispatch({
@@ -36,7 +25,6 @@ export function SetupScreen({ programId }: { programId: string }) {
       now: Date.now(),
       sessionId: crypto.randomUUID(),
       choices,
-      schemes,
     });
     go({ name: "workout" });
   };
@@ -50,7 +38,7 @@ export function SetupScreen({ programId }: { programId: string }) {
         <h1 className="inline-title">Today</h1>
         <span />
       </header>
-      <p className="lede">Pick the variants for this session. After you start, they stay locked.</p>
+      <p className="lede">Pick which alternate to do. After you start, it stays locked. Reps stay as set in the plan.</p>
 
       {groups.map((group) => (
         <section key={group.group} className="setup-block">
@@ -74,41 +62,9 @@ export function SetupScreen({ programId }: { programId: string }) {
         </section>
       ))}
 
-      {schemeBlocks.map((block) => (
-        <section key={block.key} className="setup-block">
-          <p className="eyebrow">{block.name} · rozpis</p>
-          <div className="chip-row">
-            {block.schemes.map((scheme) => (
-              <button
-                key={scheme.id}
-                type="button"
-                className={schemes[block.key] === scheme.id ? "chip on" : "chip"}
-                onClick={() => setSchemes({ ...schemes, [block.key]: scheme.id })}
-              >
-                {formatScheme(scheme)}
-              </button>
-            ))}
-          </div>
-        </section>
-      ))}
-
       <button type="button" className="btn-primary" onClick={start}>
         Start workout
       </button>
     </div>
   );
-}
-
-function uniqueSchemeBlocks(program: Program): { key: string; name: string; schemes: RepScheme[] }[] {
-  const seen = new Set<string>();
-  const blocks: { key: string; name: string; schemes: RepScheme[] }[] = [];
-  for (const exercise of program.exercises) {
-    const list = schemesOf(exercise);
-    if (list.length < 2) continue;
-    const key = schemeKey(exercise);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    blocks.push({ key, name: exercise.name, schemes: list });
-  }
-  return blocks;
 }

@@ -18,7 +18,6 @@ function exercise(
     targetSeconds?: number;
     alternateGroup?: string;
     supersetGroup?: string;
-    schemeGroup?: string;
     schemes?: RepScheme[];
   },
 ): Exercise {
@@ -36,15 +35,9 @@ function exercise(
     note: opts.note ?? "",
     alternateGroup: opts.alternateGroup,
     supersetGroup: opts.supersetGroup,
-    schemeGroup: opts.schemeGroup,
     schemes: opts.schemes,
   };
 }
-
-const AB_SCHEMES: RepScheme[] = [
-  scheme({ id: "A", label: "Rozpis A · 4–6", sets: 6, repsMin: 4, repsMax: 6 }),
-  scheme({ id: "B", label: "Rozpis B · 8–12", sets: 6, repsMin: 8, repsMax: 12 }),
-];
 
 export const SEED_PROGRAMS: Program[] = [
   {
@@ -57,17 +50,15 @@ export const SEED_PROGRAMS: Program[] = [
         reps: 6,
         rest: 180,
         alternateGroup: "t1-quads",
-        schemeGroup: "t1-quads",
-        schemes: AB_SCHEMES.map((item) => ({ ...item })),
-        note: "Střídat s legpressem ob trénink. Dnes platí rozpis A nebo B nahoře.",
+        schemes: [scheme({ id: "default", label: "6 × 4–6", sets: 6, repsMin: 4, repsMax: 6 })],
+        note: "Střídat s legpressem ob trénink.",
       }),
       exercise("t1-legpress", "Legpress", "legpress", {
         sets: 6,
-        reps: 6,
+        reps: 12,
         rest: 180,
         alternateGroup: "t1-quads",
-        schemeGroup: "t1-quads",
-        schemes: AB_SCHEMES.map((item) => ({ ...item })),
+        schemes: [scheme({ id: "default", label: "6 × 8–12", sets: 6, repsMin: 8, repsMax: 12 })],
         note: "Střídat s dřepem ob trénink.",
       }),
       exercise("t1-predkop", "Předkopávání", "legext", {
@@ -90,9 +81,7 @@ export const SEED_PROGRAMS: Program[] = [
         rest: 90,
         weight: 0,
         alternateGroup: "t1-pull",
-        schemes: [
-          scheme({ id: "max", label: "6 × MAX", sets: 6, repsMin: 0, repsMax: 0, isMax: true }),
-        ],
+        schemes: [scheme({ id: "default", label: "6 × MAX", sets: 6, repsMin: 0, repsMax: 0, isMax: true })],
         note: "Odlehčení spodních zad po dřepu. Střídat s přítahy s oporou.",
       }),
       exercise("t1-pritahy", "Přítahy činky s oporou", "row", {
@@ -102,8 +91,8 @@ export const SEED_PROGRAMS: Program[] = [
         alternateGroup: "t1-pull",
         schemes: [
           scheme({
-            id: "pyramid",
-            label: "3×10, 3×8, 6, 4",
+            id: "default",
+            label: "10 10 10 8 8 8 6 4",
             sets: 8,
             repsMin: 10,
             repsMax: 10,

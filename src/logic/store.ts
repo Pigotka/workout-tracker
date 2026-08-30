@@ -63,7 +63,7 @@ function startSession(
   schemeOverride?: Record<string, string>,
 ): ActiveSession {
   const choices = choiceOverride ?? pickChoices(program, last);
-  const schemes = schemeOverride ?? pickSchemes(program, last);
+  const schemes = schemeOverride ?? pickSchemes(program);
   const visible = visibleExercises(program, choices);
   const first = visible[0] ?? program.exercises[0];
   if (!first) {

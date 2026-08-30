@@ -48,8 +48,8 @@ export function ProgramsScreen() {
         <p className="eyebrow">Plans</p>
         <h1>Your trainings</h1>
         <p className="lede">
-          Seeded with your Trénink 1. In a plan, open an exercise and pair it with the next
-          one as a superset or an alternate.
+          Seeded with your Trénink 1. In a plan, set each lift’s rozpis (fixed, range, pyramid, or MAX),
+          then pair neighbors as a superset or alternate.
         </p>
       </header>
 
