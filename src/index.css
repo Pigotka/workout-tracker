@@ -56,6 +56,7 @@ button {
 
 .app-shell {
   min-height: 100dvh;
+  overflow-y: auto;
   padding: calc(12px + env(safe-area-inset-top)) 16px calc(88px + env(safe-area-inset-bottom));
   background:
     radial-gradient(900px 280px at 50% -8%, rgb(214 255 62 / 0.09), transparent 55%),
@@ -497,17 +498,16 @@ button {
 .rest-overlay {
   position: fixed;
   inset: 0;
-  z-index: 20;
-  background: rgb(17 20 12 / 0.94);
+  z-index: 40;
+  background: #0e110b;
   color: var(--ink);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   border: 0;
-  width: min(100%, 430px);
-  left: 50%;
-  transform: translateX(-50%);
+  width: 100%;
+  left: 0;
 }
 
 .rest-kicker {

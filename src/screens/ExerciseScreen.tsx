@@ -61,7 +61,7 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
           <p className="session-timer">{formatElapsed(now - store.active.startedAt)}</p>
         </div>
         <span className="set-chip">
-          {Math.min(setIndex, exercise.targetSets)}/{exercise.targetSets}
+          Set {Math.min(setIndex, exercise.targetSets)}/{exercise.targetSets}
         </span>
       </header>
 
