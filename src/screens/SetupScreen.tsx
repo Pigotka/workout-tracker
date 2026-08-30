@@ -53,7 +53,7 @@ export function SetupScreen({ programId }: { programId: string }) {
                   className={selected ? "setup-pick on" : "setup-pick"}
                   onClick={() => setChoices({ ...choices, [group.group]: exercise.id })}
                 >
-                  <Glyph id={exercise.icon} size="md" />
+                  <Glyph id={exercise.icon} size="md" color={exercise.color} />
                   <span>{exercise.name}</span>
                 </button>
               );

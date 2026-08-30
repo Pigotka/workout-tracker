@@ -85,7 +85,7 @@ export function HomeScreen() {
                   </div>
                   <div className="glyph-row">
                     {today.slice(0, 6).map((exercise) => (
-                      <Glyph key={exercise.id} id={exercise.icon} size="sm" />
+                      <Glyph key={exercise.id} id={exercise.icon} size="sm" color={exercise.color} />
                     ))}
                   </div>
                   <p className="muted">{today.length} lifts today</p>

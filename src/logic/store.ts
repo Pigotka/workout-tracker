@@ -260,7 +260,13 @@ export function reduce(state: Store, action: Action): Store {
           ],
         },
       };
-      const after = restAfterLogging(program, exercise, nextLogs);
+      const after = restAfterLogging(
+        program,
+        exercise,
+        nextLogs,
+        state.active.schemes,
+        state.active.choices,
+      );
       const nextExercise = exerciseById(program, after.nextExerciseId) ?? exercise;
       const nextLog = nextLogs[nextExercise.id];
       const nextScheme = schemeOf(nextExercise, state.active.schemes);

@@ -142,7 +142,7 @@ function ExerciseRow({
   return (
     <div className={nested ? "nested-row" : undefined}>
       <button type="button" className={isActive ? "exercise-row current" : "exercise-row"} onClick={open}>
-        <Glyph id={exercise.icon} size="md" />
+        <Glyph id={exercise.icon} size="md" color={exercise.color} />
         <div className="exercise-copy">
           <p className="exercise-name">{exercise.name}</p>
           <p className="icon-caption">{ICON_LABELS[exercise.icon]}</p>
