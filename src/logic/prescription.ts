@@ -75,6 +75,65 @@ export function formatSetTarget(scheme: RepScheme, setIndex: number): string {
   return `${target.min}–${target.max} reps`;
 }
 
+export type SchemeKind = "fixed" | "range" | "pyramid" | "max";
+
+export function schemeKindOf(scheme: RepScheme): SchemeKind {
+  if (scheme.isMax) return "max";
+  if (scheme.pyramid && scheme.pyramid.length > 0) return "pyramid";
+  if (scheme.repsMin !== scheme.repsMax) return "range";
+  return "fixed";
+}
+
+export function parsePyramid(text: string): number[] {
+  return text
+    .split(/[,;\s]+/)
+    .map((part) => Number(part))
+    .filter((n) => Number.isInteger(n) && n > 0 && n <= 99);
+}
+
+export function buildScheme(input: {
+  kind: SchemeKind;
+  sets: number;
+  reps: number;
+  repsMin: number;
+  repsMax: number;
+  pyramid: number[];
+}): RepScheme {
+  const sets = Math.max(1, Math.min(12, Math.round(input.sets) || 1));
+  const reps = Math.max(1, Math.min(50, Math.round(input.reps) || 1));
+  const repsMin = Math.max(1, Math.min(50, Math.round(input.repsMin) || 1));
+  const repsMax = Math.max(1, Math.min(50, Math.round(input.repsMax) || 1));
+  if (input.kind === "max") {
+    return { id: "default", label: `${sets} × MAX`, sets, repsMin: 0, repsMax: 0, isMax: true };
+  }
+  if (input.kind === "pyramid") {
+    const pyramid = input.pyramid.length > 0 ? input.pyramid.slice(0, 12) : [reps];
+    return {
+      id: "default",
+      label: pyramid.join(" "),
+      sets: pyramid.length,
+      repsMin: pyramid[0] ?? reps,
+      repsMax: pyramid[0] ?? reps,
+      pyramid,
+    };
+  }
+  if (input.kind === "range") {
+    const min = Math.min(repsMin, repsMax);
+    const max = Math.max(repsMin, repsMax);
+    return { id: "default", label: `${sets} × ${min}–${max}`, sets, repsMin: min, repsMax: max };
+  }
+  return { id: "default", label: `${sets} × ${reps}`, sets, repsMin: reps, repsMax: reps };
+}
+
+export function withScheme(exercise: Exercise, scheme: RepScheme): Exercise {
+  return {
+    ...exercise,
+    targetSets: setCount(scheme),
+    targetReps: scheme.isMax ? Math.max(1, exercise.targetReps) : scheme.repsMax || scheme.repsMin || 1,
+    schemes: [scheme],
+  };
+}
+
 export function lastOfProgram(
   sessions: CompletedSession[],
   programId: string,
@@ -118,31 +177,11 @@ export function pickChoices(
   return choices;
 }
 
-export function pickSchemes(
-  program: Program,
-  last: CompletedSession | undefined,
-): Record<string, string> {
+export function pickSchemes(program: Program): Record<string, string> {
   const schemes: Record<string, string> = {};
-  const seen = new Set<string>();
   for (const exercise of program.exercises) {
-    const list = schemesOf(exercise);
-    const key = schemeKey(exercise);
-    if (seen.has(key)) continue;
-    seen.add(key);
-    if (list.length <= 1) {
-      const only = list[0];
-      if (only) schemes[key] = only.id;
-      continue;
-    }
-    const previous = last?.schemes?.[key];
-    if (!previous) {
-      const firstScheme = list[0];
-      if (firstScheme) schemes[key] = firstScheme.id;
-      continue;
-    }
-    const idx = list.findIndex((item) => item.id === previous);
-    const next = list[(idx + 1) % list.length] ?? list[0];
-    if (next) schemes[key] = next.id;
+    const first = schemesOf(exercise)[0];
+    if (first) schemes[schemeKey(exercise)] = first.id;
   }
   return schemes;
 }
@@ -208,8 +247,11 @@ export function pendingForExercise(
   if (exercise.mode === "timed") return exercise.targetSeconds;
   const scheme = schemeOf(exercise, schemes);
   const target = targetForSet(scheme, setIndex);
+  if (target.isMax) return lastLogged ?? 8;
+  if (scheme.pyramid && scheme.pyramid.length > 0) {
+    return target.max > 0 ? target.max : (lastLogged ?? 8);
+  }
   if (lastLogged != null && lastLogged > 0) return lastLogged;
-  if (target.isMax) return 8;
   return target.max;
 }
 
@@ -269,9 +311,7 @@ export function slotsFor(
 }
 
 export function needsSetup(program: Program): boolean {
-  return program.exercises.some(
-    (exercise) => exercise.alternateGroup || (exercise.schemes?.length ?? 0) > 1,
-  );
+  return program.exercises.some((exercise) => Boolean(exercise.alternateGroup));
 }
 
 export function alternateGroups(program: Program): { group: string; members: Exercise[] }[] {
@@ -306,7 +346,7 @@ export function pairWithNext(
       schemeGroup: undefined,
     };
     if (kind === "alternate") {
-      return { ...cleared, alternateGroup: groupId, schemeGroup: groupId };
+      return { ...cleared, alternateGroup: groupId };
     }
     return {
       ...cleared,

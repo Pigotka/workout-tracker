@@ -2,11 +2,20 @@ import { useEffect, useState } from "react";
 import { Confirm } from "../components/Confirm";
 import { Glyph, ICON_LABELS } from "../components/Glyph";
 import { formatRest } from "../logic/format";
-import { pairLabel } from "../logic/prescription";
+import {
+  buildScheme,
+  formatScheme,
+  pairLabel,
+  parsePyramid,
+  schemeKindOf,
+  schemesOf,
+  withScheme,
+} from "../logic/prescription";
+import type { SchemeKind } from "../logic/prescription";
 import { go } from "../logic/routes";
 import { ICON_IDS } from "../types";
 import { useStore } from "../store-context";
-import type { Exercise, Program } from "../types";
+import type { Exercise, Program, RepScheme } from "../types";
 
 const RESTS = [0, 30, 45, 60, 75, 90, 120, 150, 180, 240];
 const ACCENTS = ["#d6ff3e", "#ff7a3d", "#5ad0ff", "#ff8fab", "#e8d36a", "#c9a6ff"];
@@ -97,7 +106,9 @@ export function ProgramEditScreen({ id }: { id: string }) {
                   {pairing ? <span className="pair-badge">{pairing}</span> : null}
                 </span>
                 <span className="muted">
-                  {exercise.targetSets}×{exercise.mode === "timed" ? `${exercise.targetSeconds}s` : exercise.targetReps}
+                  {exercise.mode === "timed"
+                    ? `${exercise.targetSets}×${exercise.targetSeconds}s`
+                    : formatScheme(schemesOf(exercise)[0] ?? fallbackScheme(exercise))}
                 </span>
               </button>
               {openId === exercise.id ? (
@@ -202,41 +213,32 @@ function ExerciseEditor({
         ))}
       </div>
       <div className="edit-grid">
-        <label>
-          Sets
-          <input
-            type="number"
-            min={1}
-            max={12}
-            value={exercise.targetSets}
-            onChange={(event) => onChange({ ...exercise, targetSets: Number(event.target.value) || 1 })}
-          />
-        </label>
         {exercise.mode === "timed" ? (
-          <label>
-            Seconds
-            <input
-              type="number"
-              min={5}
-              max={600}
-              value={exercise.targetSeconds}
-              onChange={(event) =>
-                onChange({ ...exercise, targetSeconds: Number(event.target.value) || 5 })
-              }
-            />
-          </label>
-        ) : (
-          <label>
-            Reps
-            <input
-              type="number"
-              min={1}
-              max={50}
-              value={exercise.targetReps}
-              onChange={(event) => onChange({ ...exercise, targetReps: Number(event.target.value) || 1 })}
-            />
-          </label>
-        )}
+          <>
+            <label>
+              Sets
+              <input
+                type="number"
+                min={1}
+                max={12}
+                value={exercise.targetSets}
+                onChange={(event) => onChange({ ...exercise, targetSets: Number(event.target.value) || 1 })}
+              />
+            </label>
+            <label>
+              Seconds
+              <input
+                type="number"
+                min={5}
+                max={600}
+                value={exercise.targetSeconds}
+                onChange={(event) =>
+                  onChange({ ...exercise, targetSeconds: Number(event.target.value) || 5 })
+                }
+              />
+            </label>
+          </>
+        ) : null}
         <label>
           Weight
           <input
@@ -262,6 +264,7 @@ function ExerciseEditor({
           <option value="timed">Timed hold</option>
         </select>
       </label>
+      {exercise.mode === "reps" ? <SchemeEditor exercise={exercise} onChange={onChange} /> : null}
       <p className="eyebrow">Rest {formatRest(exercise.restSeconds)}</p>
       <div className="chip-row">
         {RESTS.map((rest) => (
@@ -314,6 +317,157 @@ function ExerciseEditor({
           Remove
         </button>
       </div>
+    </div>
+  );
+}
+
+const SCHEME_KINDS: { id: SchemeKind; label: string }[] = [
+  { id: "fixed", label: "Fixed" },
+  { id: "range", label: "Range" },
+  { id: "pyramid", label: "Pyramid" },
+  { id: "max", label: "MAX" },
+];
+
+function fallbackScheme(exercise: Exercise): RepScheme {
+  return schemesOf(exercise)[0] ?? buildScheme({
+    kind: "fixed",
+    sets: exercise.targetSets,
+    reps: exercise.targetReps,
+    repsMin: exercise.targetReps,
+    repsMax: exercise.targetReps,
+    pyramid: [],
+  });
+}
+
+function patchScheme(
+  exercise: Exercise,
+  patch: Partial<{
+    kind: SchemeKind;
+    sets: number;
+    reps: number;
+    repsMin: number;
+    repsMax: number;
+    pyramid: number[];
+  }>,
+): Exercise {
+  const current = fallbackScheme(exercise);
+  const kind = patch.kind ?? schemeKindOf(current);
+  return withScheme(
+    exercise,
+    buildScheme({
+      kind,
+      sets: patch.sets ?? current.sets,
+      reps: patch.reps ?? (current.repsMax || current.repsMin || exercise.targetReps),
+      repsMin: patch.repsMin ?? current.repsMin,
+      repsMax: patch.repsMax ?? current.repsMax,
+      pyramid: patch.pyramid ?? current.pyramid ?? [],
+    }),
+  );
+}
+
+function SchemeEditor({
+  exercise,
+  onChange,
+}: {
+  exercise: Exercise;
+  onChange: (exercise: Exercise) => void;
+}) {
+  const current = fallbackScheme(exercise);
+  const kind = schemeKindOf(current);
+  const [pyramidText, setPyramidText] = useState((current.pyramid ?? []).join(" "));
+
+  return (
+    <div className="scheme-editor">
+      <p className="eyebrow">Rozpis {formatScheme(current)}</p>
+      <div className="chip-row">
+        {SCHEME_KINDS.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            className={kind === item.id ? "chip on" : "chip"}
+            onClick={() => {
+              const next = patchScheme(exercise, { kind: item.id });
+              setPyramidText((schemesOf(next)[0]?.pyramid ?? []).join(" "));
+              onChange(next);
+            }}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      {kind === "pyramid" ? (
+        <label className="note-field">
+          <span>Pyramid reps</span>
+          <input
+            value={pyramidText}
+            placeholder="10 10 10 8 8 8 6 4"
+            onChange={(event) => {
+              const text = event.target.value;
+              setPyramidText(text);
+              const parsed = parsePyramid(text);
+              if (parsed.length > 0) onChange(patchScheme(exercise, { kind: "pyramid", pyramid: parsed }));
+            }}
+          />
+          <span className="muted">One number per set, spaces or commas. Example: 10 8 6 4</span>
+        </label>
+      ) : (
+        <div className="edit-grid">
+          <label>
+            Sets
+            <input
+              type="number"
+              min={1}
+              max={12}
+              value={current.sets}
+              onChange={(event) =>
+                onChange(patchScheme(exercise, { sets: Number(event.target.value) || 1 }))
+              }
+            />
+          </label>
+          {kind === "fixed" ? (
+            <label>
+              Reps
+              <input
+                type="number"
+                min={1}
+                max={50}
+                value={current.repsMax}
+                onChange={(event) =>
+                  onChange(patchScheme(exercise, { reps: Number(event.target.value) || 1 }))
+                }
+              />
+            </label>
+          ) : null}
+          {kind === "range" ? (
+            <>
+              <label>
+                Min
+                <input
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={current.repsMin}
+                  onChange={(event) =>
+                    onChange(patchScheme(exercise, { repsMin: Number(event.target.value) || 1 }))
+                  }
+                />
+              </label>
+              <label>
+                Max
+                <input
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={current.repsMax}
+                  onChange={(event) =>
+                    onChange(patchScheme(exercise, { repsMax: Number(event.target.value) || 1 }))
+                  }
+                />
+              </label>
+            </>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }

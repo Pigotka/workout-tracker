@@ -9,7 +9,8 @@
     "preview": "vite preview --host",
     "test": "vitest run",
     "test:watch": "vitest",
-    "icons": "node scripts/generate-icons.mjs"
+    "icons": "node scripts/generate-icons.mjs",
+    "icons:exercises": "node scripts/download-exercise-icons.mjs"
   },
   "dependencies": {
     "react": "^19.1.1",
