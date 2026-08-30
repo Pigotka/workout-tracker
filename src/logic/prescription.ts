@@ -259,6 +259,8 @@ export function restAfterLogging(
   program: Program,
   exercise: Exercise,
   logs: Record<string, ExerciseLog>,
+  schemes: Record<string, string> = {},
+  choices: Record<string, string> = {},
 ): { restSeconds: number; nextExerciseId: string } {
   const partner = supersetPartner(program, exercise);
   const mine = logs[exercise.id]?.sets.length ?? 0;
@@ -267,11 +269,49 @@ export function restAfterLogging(
     if (mine > theirs) {
       return { restSeconds: 0, nextExerciseId: partner.id };
     }
+    if (isComplete(exercise, logs[exercise.id], schemes) && isComplete(partner, logs[partner.id], schemes)) {
+      const next = nextAfterCurrent(program, exercise, choices, logs, schemes);
+      return {
+        restSeconds: exercise.restSeconds,
+        nextExerciseId: next?.id ?? exercise.id,
+      };
+    }
     const first =
       program.exercises.find((item) => item.supersetGroup === exercise.supersetGroup) ?? exercise;
     return { restSeconds: exercise.restSeconds, nextExerciseId: first.id };
   }
+  if (isComplete(exercise, logs[exercise.id], schemes)) {
+    const next = nextAfterCurrent(program, exercise, choices, logs, schemes);
+    if (next) {
+      return { restSeconds: exercise.restSeconds, nextExerciseId: next.id };
+    }
+  }
   return { restSeconds: exercise.restSeconds, nextExerciseId: exercise.id };
+}
+
+export function isComplete(
+  exercise: Exercise,
+  log: ExerciseLog | undefined,
+  schemes: Record<string, string>,
+): boolean {
+  return (log?.sets.length ?? 0) >= setCount(schemeOf(exercise, schemes));
+}
+
+export function nextAfterCurrent(
+  program: Program,
+  current: Exercise,
+  choices: Record<string, string>,
+  logs: Record<string, ExerciseLog>,
+  schemes: Record<string, string>,
+): Exercise | undefined {
+  const visible = visibleExercises(program, choices);
+  const idx = visible.findIndex((item) => item.id === current.id);
+  const start = idx >= 0 ? idx + 1 : 0;
+  for (let i = start; i < visible.length; i += 1) {
+    const item = visible[i];
+    if (item && !isComplete(item, logs[item.id], schemes)) return item;
+  }
+  return undefined;
 }
 
 export type Slot =

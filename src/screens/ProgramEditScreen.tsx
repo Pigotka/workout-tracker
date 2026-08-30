@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Confirm } from "../components/Confirm";
-import { Glyph, ICON_LABELS } from "../components/Glyph";
+import { Glyph, ICON_LABELS, iconColor } from "../components/Glyph";
+import { PickerSheet } from "../components/PickerSheet";
 import { formatRest } from "../logic/format";
 import {
   buildScheme,
@@ -18,7 +19,6 @@ import { useStore } from "../store-context";
 import type { Exercise, Program, RepScheme } from "../types";
 
 const RESTS = [0, 30, 45, 60, 75, 90, 120, 150, 180, 240];
-const ACCENTS = ["#d6ff3e", "#ff7a3d", "#5ad0ff", "#ff8fab", "#e8d36a", "#c9a6ff"];
 
 export function ProgramEditScreen({ id }: { id: string }) {
   const { store, dispatch } = useStore();
@@ -72,23 +72,16 @@ export function ProgramEditScreen({ id }: { id: string }) {
         <input value={program.name} onChange={(event) => save({ name: event.target.value })} />
       </label>
 
-      <div className="accent-row">
-        {ACCENTS.map((color) => (
-          <button
-            key={color}
-            type="button"
-            className={program.accent === color ? "swatch on" : "swatch"}
-            style={{ background: color }}
-            onClick={() => save({ accent: color })}
-            aria-label={`Color ${color}`}
-          />
-        ))}
-      </div>
-
-      <p className="lede">
-        Open an exercise and pair it with the next one: <strong>superset</strong> (back-to-back, rest after
-        both) or <strong>alternate</strong> (pick one at the start of each session).
-      </p>
+      <label className="picker-btn accent-pick">
+        <span className="swatch" style={{ background: program.accent }} />
+        <span>Color</span>
+        <input
+          type="color"
+          value={program.accent}
+          aria-label="Training color"
+          onChange={(event) => save({ accent: event.target.value })}
+        />
+      </label>
 
       <ul className="edit-ex-list">
         {program.exercises.map((exercise, index) => {
@@ -100,7 +93,7 @@ export function ProgramEditScreen({ id }: { id: string }) {
                 className="edit-ex-head"
                 onClick={() => setOpenId(openId === exercise.id ? null : exercise.id)}
               >
-                <Glyph id={exercise.icon} size="sm" />
+                <Glyph id={exercise.icon} size="sm" color={exercise.color} />
                 <span>
                   {exercise.name}
                   {pairing ? <span className="pair-badge">{pairing}</span> : null}
@@ -190,6 +183,8 @@ function ExerciseEditor({
 }) {
   const next = program.exercises[index + 1];
   const pairing = pairLabel(exercise, program);
+  const [iconOpen, setIconOpen] = useState(false);
+  const tint = iconColor(exercise.icon, exercise.color);
 
   return (
     <div className="ex-editor">
@@ -197,21 +192,43 @@ function ExerciseEditor({
         <span>Name</span>
         <input value={exercise.name} onChange={(event) => onChange({ ...exercise, name: event.target.value })} />
       </label>
-      <p className="eyebrow">Icon</p>
-      <div className="icon-grid">
-        {ICON_IDS.map((icon) => (
-          <button
-            key={icon}
-            type="button"
-            className={exercise.icon === icon ? "icon-pick on" : "icon-pick"}
-            onClick={() => onChange({ ...exercise, icon })}
-            aria-label={ICON_LABELS[icon]}
-          >
-            <Glyph id={icon} size="sm" />
-            <span className="icon-caption">{ICON_LABELS[icon]}</span>
-          </button>
-        ))}
+      <div className="picker-row">
+        <button type="button" className="picker-btn" onClick={() => setIconOpen(true)} aria-label="Choose icon">
+          <Glyph id={exercise.icon} size="sm" color={exercise.color} />
+          <span>Icon</span>
+        </button>
+        <label className="picker-btn">
+          <span className="swatch" style={{ background: tint }} />
+          <span>Color</span>
+          <input
+            type="color"
+            value={tint}
+            aria-label="Exercise color"
+            onChange={(event) => onChange({ ...exercise, color: event.target.value })}
+          />
+        </label>
       </div>
+      {iconOpen ? (
+        <PickerSheet title="Choose icon" onClose={() => setIconOpen(false)}>
+          <div className="icon-grid">
+            {ICON_IDS.map((icon) => (
+              <button
+                key={icon}
+                type="button"
+                className={exercise.icon === icon ? "icon-pick on" : "icon-pick"}
+                onClick={() => {
+                  onChange({ ...exercise, icon });
+                  setIconOpen(false);
+                }}
+                aria-label={ICON_LABELS[icon]}
+              >
+                <Glyph id={icon} size="sm" color={exercise.color} />
+                <span className="icon-caption">{ICON_LABELS[icon]}</span>
+              </button>
+            ))}
+          </div>
+        </PickerSheet>
+      ) : null}
       <div className="edit-grid">
         {exercise.mode === "timed" ? (
           <>
@@ -299,10 +316,10 @@ function ExerciseEditor({
         <p className="muted">Add another exercise below, then pair them here.</p>
       )}
       <label className="note-field">
-        <span>Cue</span>
+        <span>Note</span>
         <input
           value={exercise.note}
-          placeholder="This week…"
+          placeholder="Pause, tempo, band…"
           onChange={(event) => onChange({ ...exercise, note: event.target.value })}
         />
       </label>
@@ -378,7 +395,7 @@ function SchemeEditor({
 
   return (
     <div className="scheme-editor">
-      <p className="eyebrow">Rozpis {formatScheme(current)}</p>
+      <p className="eyebrow">Reps {formatScheme(current)}</p>
       <div className="chip-row">
         {SCHEME_KINDS.map((item) => (
           <button

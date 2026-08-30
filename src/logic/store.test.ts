@@ -103,6 +103,24 @@ describe("reduce", () => {
     expect(s.active?.pendingReps).toBe(12);
   });
 
+  it("moves to the next lift after the last set, not an earlier unfinished one", () => {
+    let s = reduce(store(), {
+      type: "start-workout",
+      programId: "t1",
+      now: t0,
+      sessionId: "s1",
+    });
+    for (let i = 0; i < 6; i += 1) {
+      s = reduce(s, { type: "log-set", now: t0 + (i + 1) * 1000 });
+      if (s.active?.restStartedAt) {
+        s = reduce(s, { type: "end-rest", now: t0 + (i + 1) * 1000 + 500 });
+      }
+    }
+    expect(s.active?.logs["t1-drep"]?.sets).toHaveLength(6);
+    expect(s.active?.activeExerciseId).toBe("t1-predkop");
+    expect(s.active?.pendingReps).toBe(10);
+  });
+
   it("follows pyramid reps set by set", () => {
     let s = reduce(store(), {
       type: "start-workout",

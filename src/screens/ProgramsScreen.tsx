@@ -47,10 +47,7 @@ export function ProgramsScreen() {
       <header className="page-head">
         <p className="eyebrow">Plans</p>
         <h1>Your trainings</h1>
-        <p className="lede">
-          Seeded with your Trénink 1. In a plan, set each lift’s rozpis (fixed, range, pyramid, or MAX),
-          then pair neighbors as a superset or alternate.
-        </p>
+        <p className="lede">Edit lifts, reps, notes, and pairing here.</p>
       </header>
 
       <ul className="plan-list">

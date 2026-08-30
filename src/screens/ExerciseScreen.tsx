@@ -1,13 +1,13 @@
 import { useEffect } from "react";
-import { Glyph, ICON_LABELS } from "../components/Glyph";
+import { Glyph } from "../components/Glyph";
 import { RestOverlay } from "../components/RestOverlay";
 import { formatElapsed, formatRest, formatWeight } from "../logic/format";
 import {
   formatSetTarget,
+  nextAfterCurrent,
   schemeOf,
   setCount,
   supersetPartner,
-  visibleExercises,
 } from "../logic/prescription";
 import { go } from "../logic/routes";
 import { activeExercise, activeProgram, weightStep } from "../logic/store";
@@ -53,12 +53,14 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
   const setIndex = log.sets.length;
   const workMs = store.active.workStartedAt != null ? now - store.active.workStartedAt : 0;
   const partner = supersetPartner(program, exercise);
-  const visible = visibleExercises(program, store.active.choices);
-  const nextExercise = visible.find((item) => {
-    const itemLog = store.active?.logs[item.id];
-    const itemScheme = schemeOf(item, store.active?.schemes ?? {});
-    return itemLog && itemLog.sets.length < setCount(itemScheme) && item.id !== exercise.id;
-  });
+  const complete = setIndex >= totalSets;
+  const nextExercise = nextAfterCurrent(
+    program,
+    exercise,
+    store.active.choices,
+    store.active.logs,
+    store.active.schemes,
+  );
 
   const logSet = () => dispatch({ type: "log-set", now: Date.now() });
 
@@ -78,22 +80,11 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
       </header>
 
       <div className="hero-block">
-        <Glyph id={exercise.icon} size="lg" />
-        <p className="icon-caption">{ICON_LABELS[exercise.icon]}</p>
+        <Glyph id={exercise.icon} size="lg" color={exercise.color} />
         <h1>{exercise.name}</h1>
         {partner ? <p className="slot-kicker">Supersérie → {partner.name}</p> : null}
+        {exercise.note ? <p className="session-note">{exercise.note}</p> : null}
       </div>
-
-      <label className="note-field">
-        <span>Cue</span>
-        <input
-          value={exercise.note}
-          placeholder="This week: pause, tempo, band…"
-          onChange={(event) =>
-            dispatch({ type: "set-note", exerciseId: exercise.id, note: event.target.value })
-          }
-        />
-      </label>
 
       <div className="weight-grid single">
         <WeightRow
@@ -120,7 +111,24 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
         ))}
       </div>
 
-      {exercise.mode === "timed" ? (
+      {complete ? (
+        nextExercise ? (
+          <button
+            type="button"
+            className="btn-primary"
+            onClick={() => {
+              dispatch({ type: "select-exercise", exerciseId: nextExercise.id, now: Date.now() });
+              go({ name: "exercise", id: nextExercise.id });
+            }}
+          >
+            Next: {nextExercise.name}
+          </button>
+        ) : (
+          <button type="button" className="btn-primary" onClick={() => go({ name: "workout" })}>
+            All sets done — back to list
+          </button>
+        )
+      ) : exercise.mode === "timed" ? (
         <div className="timed-block">
           <p className="pending-num">{formatElapsed(workMs || exercise.targetSeconds * 1000)}</p>
           {store.active.workStartedAt == null ? (
@@ -168,25 +176,6 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
       {log.sets.length > 0 ? (
         <button type="button" className="text-link center" onClick={() => dispatch({ type: "undo-set", now: Date.now() })}>
           Undo last set
-        </button>
-      ) : null}
-
-      {log.sets.length >= totalSets && nextExercise ? (
-        <button
-          type="button"
-          className="btn-ghost wide"
-          onClick={() => {
-            dispatch({ type: "select-exercise", exerciseId: nextExercise.id, now: Date.now() });
-            go({ name: "exercise", id: nextExercise.id });
-          }}
-        >
-          Next: {nextExercise.name}
-        </button>
-      ) : null}
-
-      {log.sets.length >= totalSets && !nextExercise ? (
-        <button type="button" className="btn-ghost wide" onClick={() => go({ name: "workout" })}>
-          All sets done — back to list
         </button>
       ) : null}
 

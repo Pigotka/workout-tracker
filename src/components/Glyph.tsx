@@ -1,6 +1,6 @@
 import type { IconId } from "../types";
 
-const COLORS: Record<IconId, string> = {
+export const ICON_COLORS: Record<IconId, string> = {
   bench: "#ff7a3d",
   incline: "#ff9466",
   ohp: "#ffb020",
@@ -66,14 +66,31 @@ const SIZES: Record<Size, string> = {
   lg: "glyph glyph-lg",
 };
 
-export function Glyph({ id, size = "md" }: { id: IconId; size?: Size }) {
-  return (
-    <span className={SIZES[size]} style={{ background: COLORS[id] }} title={ICON_LABELS[id]}>
-      <img className="glyph-img" src={`/exercise-icons/${id}.jpg`} alt={ICON_LABELS[id]} />
-    </span>
-  );
+export function iconColor(id: IconId, override?: string): string {
+  if (override && /^#[0-9a-fA-F]{6}$/.test(override)) return override;
+  return ICON_COLORS[id];
 }
 
-export function iconColor(id: IconId): string {
-  return COLORS[id];
+export function Glyph({
+  id,
+  size = "md",
+  color,
+}: {
+  id: IconId;
+  size?: Size;
+  color?: string;
+}) {
+  const bg = iconColor(id, color);
+  return (
+    <span className={SIZES[size]} style={{ background: bg, color: "#14180c" }} title={ICON_LABELS[id]}>
+      <img
+        className="glyph-img vector"
+        src={`/exercise-icons/${id}.svg`}
+        alt=""
+        width={48}
+        height={48}
+        aria-hidden="true"
+      />
+    </span>
+  );
 }

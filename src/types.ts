@@ -52,6 +52,7 @@ export type Exercise = {
   restSeconds: number;
   workingWeight: number;
   note: string;
+  color?: string;
   alternateGroup?: string;
   supersetGroup?: string;
   schemeGroup?: string;
