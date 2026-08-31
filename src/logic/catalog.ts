@@ -53,6 +53,12 @@ const BODY_COLORS: Record<BodyPart, string> = {
 
 const LIME = "#d6ff3e";
 
+export const BODY_SWATCHES = BODY_PARTS.map((part) => ({
+  part,
+  label: BODY_LABELS[part],
+  color: BODY_COLORS[part],
+}));
+
 function isBodyPart(value: string): value is BodyPart {
   return (BODY_PARTS as readonly string[]).includes(value);
 }

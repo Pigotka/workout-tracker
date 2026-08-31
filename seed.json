@@ -1,0 +1,439 @@
+{
+  "version": 1,
+  "weightUnit": "kg",
+  "programs": [
+    {
+      "id": "t1",
+      "name": "Trénink 1",
+      "accent": "#d6ff3e",
+      "exercises": [
+        {
+          "id": "t1-drep",
+          "name": "Dřep",
+          "catalogId": "squat",
+          "targetSets": 6,
+          "targetReps": 6,
+          "restSeconds": 180,
+          "workingWeight": 0,
+          "alternateGroup": "t1-quads",
+          "schemeGroup": "t1-quads",
+          "schemes": [
+            { "id": "A", "label": "Rozpis A · 4–6", "sets": 6, "repsMin": 4, "repsMax": 6 },
+            { "id": "B", "label": "Rozpis B · 8–12", "sets": 6, "repsMin": 8, "repsMax": 12 }
+          ],
+          "note": "Střídat s legpressem ob trénink. Dnes platí rozpis A nebo B nahoře."
+        },
+        {
+          "id": "t1-legpress",
+          "name": "Legpress",
+          "catalogId": "leg-press",
+          "targetSets": 6,
+          "targetReps": 6,
+          "restSeconds": 180,
+          "workingWeight": 0,
+          "alternateGroup": "t1-quads",
+          "schemeGroup": "t1-quads",
+          "schemes": [
+            { "id": "A", "label": "Rozpis A · 4–6", "sets": 6, "repsMin": 4, "repsMax": 6 },
+            { "id": "B", "label": "Rozpis B · 8–12", "sets": 6, "repsMin": 8, "repsMax": 12 }
+          ],
+          "note": "Střídat s dřepem ob trénink."
+        },
+        {
+          "id": "t1-predkop",
+          "name": "Předkopávání",
+          "catalogId": "leg-extension",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 0,
+          "workingWeight": 0,
+          "supersetGroup": "t1-legiso",
+          "note": "Supersérie se zakopáváním. 1 s kontrakce v horní poloze."
+        },
+        {
+          "id": "t1-zakop",
+          "name": "Zakopávání",
+          "catalogId": "leg-curl",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 45,
+          "workingWeight": 0,
+          "supersetGroup": "t1-legiso",
+          "note": "Supersérie s předkopáváním."
+        },
+        {
+          "id": "t1-shyby",
+          "name": "Shyby",
+          "catalogId": "pull-up",
+          "targetSets": 6,
+          "targetReps": 8,
+          "restSeconds": 90,
+          "workingWeight": 0,
+          "alternateGroup": "t1-pull",
+          "schemes": [
+            { "id": "max", "label": "6 × MAX", "sets": 6, "repsMin": 0, "repsMax": 0, "isMax": true }
+          ],
+          "note": "Odlehčení spodních zad po dřepu. Střídat s přítahy s oporou."
+        },
+        {
+          "id": "t1-pritahy",
+          "name": "Přítahy činky s oporou",
+          "catalogId": "chest-supported-db-row",
+          "targetSets": 8,
+          "targetReps": 10,
+          "restSeconds": 90,
+          "workingWeight": 0,
+          "alternateGroup": "t1-pull",
+          "schemes": [
+            {
+              "id": "pyramid",
+              "label": "3×10, 3×8, 6, 4",
+              "sets": 8,
+              "repsMin": 10,
+              "repsMax": 10,
+              "pyramid": [10, 10, 10, 8, 8, 8, 6, 4]
+            }
+          ],
+          "note": "Odlehčení spodních zad po dřepu. Střídat se shyby."
+        },
+        {
+          "id": "t1-incline",
+          "name": "Tlaky hlavou nahoru",
+          "catalogId": "incline-db-press",
+          "targetSets": 3,
+          "targetReps": 15,
+          "restSeconds": 30,
+          "workingWeight": 0,
+          "note": "Krátká pauza mezi sériemi. V horní poloze kontrakce 1 s."
+        },
+        {
+          "id": "t1-military",
+          "name": "Military press",
+          "catalogId": "ohp",
+          "targetSets": 5,
+          "targetReps": 10,
+          "restSeconds": 90,
+          "workingWeight": 0,
+          "note": ""
+        },
+        {
+          "id": "t1-extenze",
+          "name": "Extenze činky za hlavou",
+          "catalogId": "ez-bar-overhead-extension",
+          "targetSets": 5,
+          "targetReps": 10,
+          "restSeconds": 0,
+          "workingWeight": 0,
+          "supersetGroup": "t1-arms",
+          "note": "Lze jet v supersérii s bicepsem."
+        },
+        {
+          "id": "t1-biceps",
+          "name": "Bicepsový zdvih tyče",
+          "catalogId": "barbell-curl",
+          "targetSets": 5,
+          "targetReps": 10,
+          "restSeconds": 60,
+          "workingWeight": 0,
+          "supersetGroup": "t1-arms",
+          "note": "Lze jet v supersérii s extenzí."
+        },
+        {
+          "id": "t1-bricho-kladka",
+          "name": "Břicho — stahování kladky",
+          "catalogId": "cable-crunch",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 30,
+          "workingWeight": 0,
+          "note": ""
+        },
+        {
+          "id": "t1-bricho-nohy",
+          "name": "Břicho — zvedání nohou na šikmé lavici",
+          "catalogId": "lying-leg-raise",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 30,
+          "workingWeight": 0,
+          "note": "Série nebyly v zadání — 4×10 jako výchozí."
+        },
+        {
+          "id": "t1-bricho-sikme",
+          "name": "Břicho — šikmé břišní svaly",
+          "catalogId": "russian-twist",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 30,
+          "workingWeight": 0,
+          "note": "Série nebyly v zadání — 4×10 jako výchozí."
+        }
+      ]
+    },
+    {
+      "id": "t2",
+      "name": "Trénink 2",
+      "accent": "#ff922b",
+      "exercises": [
+        {
+          "id": "t2-bench",
+          "name": "Bench-press rovný (těžce)",
+          "catalogId": "bench-press",
+          "targetSets": 6,
+          "targetReps": 15,
+          "restSeconds": 180,
+          "workingWeight": 0,
+          "schemes": [
+            {
+              "id": "pyramid",
+              "label": "15 12 10 8 6 4",
+              "sets": 6,
+              "repsMin": 15,
+              "repsMax": 15,
+              "pyramid": [15, 12, 10, 8, 6, 4]
+            }
+          ],
+          "note": "S každou sérií přidat váhu, dodržet počet opakování."
+        },
+        {
+          "id": "t2-fly",
+          "name": "Izolovaný cvik (rozpažky)",
+          "catalogId": "db-fly",
+          "targetSets": 3,
+          "targetReps": 15,
+          "restSeconds": 45,
+          "workingWeight": 0,
+          "note": "Nejlépe rozpažky, min. peck-deck nebo kladky. Důraz na protažení v dolní fázi."
+        },
+        {
+          "id": "t2-row",
+          "name": "Přítahy tyče v předklonu",
+          "catalogId": "barbell-row",
+          "targetSets": 5,
+          "targetReps": 10,
+          "restSeconds": 90,
+          "workingWeight": 0,
+          "schemes": [
+            { "id": "range", "label": "5 × 8–10", "sets": 5, "repsMin": 8, "repsMax": 10 }
+          ],
+          "note": "Střídat podhmat, nadhmat a šířku úchopu."
+        },
+        {
+          "id": "t2-db-squat",
+          "name": "Dřep s jednoručkami",
+          "catalogId": "db-squat",
+          "targetSets": 2,
+          "targetReps": 20,
+          "restSeconds": 30,
+          "workingWeight": 0,
+          "note": "Krátké pauzy, lehká váha — aktivní zotavení."
+        },
+        {
+          "id": "t2-rear-delt",
+          "name": "Zadní delty",
+          "catalogId": "rear-delt-fly",
+          "targetSets": 5,
+          "targetReps": 10,
+          "restSeconds": 60,
+          "workingWeight": 0,
+          "schemes": [
+            { "id": "range", "label": "5 × 8–10", "sets": 5, "repsMin": 8, "repsMax": 10 }
+          ],
+          "note": "Obrácené rozpažky nebo kladky."
+        },
+        {
+          "id": "t2-dips",
+          "name": "Kliky na bradlech",
+          "catalogId": "dips",
+          "targetSets": 5,
+          "targetReps": 10,
+          "restSeconds": 90,
+          "workingWeight": 0,
+          "schemes": [
+            {
+              "id": "pyramid",
+              "label": "10 10 6 6 6",
+              "sets": 5,
+              "repsMin": 10,
+              "repsMax": 10,
+              "pyramid": [10, 10, 6, 6, 6]
+            }
+          ],
+          "note": "První dvě série 10, pak 3 těžké s přidanou vahou po 6."
+        },
+        {
+          "id": "t2-hammer",
+          "name": "Kladivové zdvihy",
+          "catalogId": "hammer-curl",
+          "targetSets": 5,
+          "targetReps": 10,
+          "restSeconds": 60,
+          "workingWeight": 0,
+          "note": "Silné mačkání činky."
+        }
+      ]
+    },
+    {
+      "id": "t3",
+      "name": "Trénink 3",
+      "accent": "#4dabf7",
+      "exercises": [
+        {
+          "id": "t3-deadlift",
+          "name": "Mrtvý tah",
+          "catalogId": "deadlift",
+          "targetSets": 6,
+          "targetReps": 6,
+          "restSeconds": 180,
+          "workingWeight": 0,
+          "alternateGroup": "t3-hinge",
+          "schemes": [
+            { "id": "range", "label": "6 × 4–6", "sets": 6, "repsMin": 4, "repsMax": 6 }
+          ],
+          "note": "Mezi opakováními položit tyč na zem — bez odrazu. Nemáš-li tah, zvol přítahy v předklonu."
+        },
+        {
+          "id": "t3-row",
+          "name": "Přítahy tyče v předklonu",
+          "catalogId": "barbell-row",
+          "targetSets": 5,
+          "targetReps": 10,
+          "restSeconds": 90,
+          "workingWeight": 0,
+          "alternateGroup": "t3-hinge",
+          "schemes": [
+            { "id": "range", "label": "5 × 8–10", "sets": 5, "repsMin": 8, "repsMax": 10 }
+          ],
+          "note": "Náhrada za mrtvý tah, když ho dnes neděláš."
+        },
+        {
+          "id": "t3-pulldown",
+          "name": "Horní kladka před hlavu",
+          "catalogId": "lat-pulldown",
+          "targetSets": 6,
+          "targetReps": 15,
+          "restSeconds": 90,
+          "workingWeight": 0,
+          "schemes": [
+            {
+              "id": "pyramid",
+              "label": "15 12 10 8 6 4",
+              "sets": 6,
+              "repsMin": 15,
+              "repsMax": 15,
+              "pyramid": [15, 12, 10, 8, 6, 4]
+            }
+          ],
+          "note": "Ne moc široký úchop. Před hlavu, ne za krk."
+        },
+        {
+          "id": "t3-legpress",
+          "name": "Legpress jednou nohou",
+          "catalogId": "single-leg-press",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 90,
+          "workingWeight": 0,
+          "schemes": [
+            { "id": "range", "label": "4 × 8–10", "sets": 4, "repsMin": 8, "repsMax": 10 }
+          ],
+          "note": ""
+        },
+        {
+          "id": "t3-pec-deck",
+          "name": "Peck-deck",
+          "catalogId": "pec-deck",
+          "targetSets": 3,
+          "targetReps": 15,
+          "restSeconds": 45,
+          "workingWeight": 0,
+          "note": "Lehce, pauzy 30–45 s."
+        },
+        {
+          "id": "t3-upright",
+          "name": "Přítahy tyče k bradě",
+          "catalogId": "upright-row",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 75,
+          "workingWeight": 0,
+          "schemes": [
+            { "id": "range", "label": "4 × 8–10", "sets": 4, "repsMin": 8, "repsMax": 10 }
+          ],
+          "note": ""
+        },
+        {
+          "id": "t3-lateral",
+          "name": "Rozpažky vestoje",
+          "catalogId": "lateral-raise",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 60,
+          "workingWeight": 0,
+          "schemes": [
+            { "id": "range", "label": "4 × 8–10", "sets": 4, "repsMin": 8, "repsMax": 10 }
+          ],
+          "note": ""
+        },
+        {
+          "id": "t3-french",
+          "name": "Francouzské tlaky",
+          "catalogId": "skull-crusher",
+          "targetSets": 5,
+          "targetReps": 10,
+          "restSeconds": 75,
+          "workingWeight": 0,
+          "schemes": [
+            { "id": "range", "label": "5 × 8–10", "sets": 5, "repsMin": 8, "repsMax": 10 }
+          ],
+          "note": ""
+        },
+        {
+          "id": "t3-scott",
+          "name": "Zdvihy na Scottově lavici",
+          "catalogId": "preacher-curl",
+          "targetSets": 5,
+          "targetReps": 10,
+          "restSeconds": 75,
+          "workingWeight": 0,
+          "schemes": [
+            { "id": "range", "label": "5 × 8–10", "sets": 5, "repsMin": 8, "repsMax": 10 }
+          ],
+          "note": "Horní fáze 1 s kontrakce, 2 s spouštět dolů."
+        },
+        {
+          "id": "t3-bricho-kladka",
+          "name": "Břicho — stahování kladky",
+          "catalogId": "cable-crunch",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 30,
+          "workingWeight": 0,
+          "note": ""
+        },
+        {
+          "id": "t3-bricho-nohy",
+          "name": "Břicho — zvedání nohou na šikmé lavici",
+          "catalogId": "lying-leg-raise",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 30,
+          "workingWeight": 0,
+          "note": "Série nebyly v zadání — 4×10 jako výchozí."
+        },
+        {
+          "id": "t3-bricho-sikme",
+          "name": "Břicho — šikmé břišní svaly",
+          "catalogId": "russian-twist",
+          "targetSets": 4,
+          "targetReps": 10,
+          "restSeconds": 30,
+          "workingWeight": 0,
+          "note": "Série nebyly v zadání — 4×10 jako výchozí."
+        }
+      ]
+    }
+  ],
+  "sessions": [],
+  "active": null
+}

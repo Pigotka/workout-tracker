@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Confirm } from "../components/Confirm";
 import { Glyph } from "../components/Glyph";
 import { PickerSheet } from "../components/PickerSheet";
-import { FALLBACK_ID, CATALOG, BODY_PARTS, bodyColor, bodyLabel, liftTint, searchCatalog, type CatalogEntry } from "../logic/catalog";
+import { FALLBACK_ID, CATALOG, BODY_PARTS, BODY_SWATCHES, bodyColor, bodyLabel, liftTint, searchCatalog, type CatalogEntry } from "../logic/catalog";
 import { formatRest } from "../logic/format";
 import {
   buildScheme,
@@ -19,6 +19,42 @@ import { useStore } from "../store-context";
 import type { Exercise, Program, RepScheme } from "../types";
 
 const RESTS = [0, 30, 45, 60, 75, 90, 120, 150, 180, 240];
+
+function hexEq(a: string, b: string) {
+  return a.toLowerCase() === b.toLowerCase();
+}
+
+function ColorPicker({ value, onChange }: { value: string; onChange: (color: string) => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button type="button" className="picker-btn" aria-label="Color" onClick={() => setOpen(true)}>
+        <span className="swatch" style={{ background: value }} />
+        <span>Color</span>
+      </button>
+      {open ? (
+        <PickerSheet title="Color" onClose={() => setOpen(false)}>
+          <div className="accent-row">
+            {BODY_SWATCHES.map((item) => (
+              <button
+                key={item.part}
+                type="button"
+                className={hexEq(value, item.color) ? "swatch on" : "swatch"}
+                style={{ background: item.color }}
+                aria-label={item.label}
+                aria-pressed={hexEq(value, item.color)}
+                onClick={() => {
+                  onChange(item.color);
+                  setOpen(false);
+                }}
+              />
+            ))}
+          </div>
+        </PickerSheet>
+      ) : null}
+    </>
+  );
+}
 
 export function ProgramEditScreen({ id }: { id: string }) {
   const { store, dispatch } = useStore();
@@ -70,16 +106,7 @@ export function ProgramEditScreen({ id }: { id: string }) {
         <input value={program.name} onChange={(event) => save({ name: event.target.value })} />
       </label>
 
-      <label className="picker-btn accent-pick">
-        <span className="swatch" style={{ background: program.accent }} />
-        <span>Color</span>
-        <input
-          type="color"
-          value={program.accent}
-          aria-label="Training color"
-          onChange={(event) => save({ accent: event.target.value })}
-        />
-      </label>
+      <ColorPicker value={program.accent} onChange={(color) => save({ accent: color })} />
 
       <ul className="edit-ex-list">
         {program.exercises.map((exercise, index) => {
@@ -220,16 +247,7 @@ function ExerciseEditor({
           <Glyph catalogId={exercise.catalogId} size="sm" color={tint} />
           <span>Picture</span>
         </button>
-        <label className="picker-btn">
-          <span className="swatch" style={{ background: tint }} />
-          <span>Color</span>
-          <input
-            type="color"
-            value={tint}
-            aria-label="Exercise color"
-            onChange={(event) => onChange({ ...exercise, color: event.target.value })}
-          />
-        </label>
+        <ColorPicker value={tint} onChange={(color) => onChange({ ...exercise, color })} />
       </div>
       {pickerOpen ? (
         <PickerSheet title="Choose picture" onClose={() => setPickerOpen(false)}>
