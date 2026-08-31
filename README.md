@@ -21,13 +21,13 @@ npm install
 npm run dev
 ```
 
-Phone install needs HTTPS or localhost:
+Phone: open [https://pigotka.github.io/workout-tracker/](https://pigotka.github.io/workout-tracker/) in Chrome → **Install on this phone**.
+
+Local HTTPS/localhost preview:
 
 ```bash
 npm run build
 npm run preview
 ```
-
-Then Chrome → **Add to Home screen**. Offline after that.
 
 Storage key: `train:v1` in `localStorage`. Refresh catalog pictures with `npm run catalog`.

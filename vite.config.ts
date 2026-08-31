@@ -3,7 +3,12 @@ import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 
+const githubPages = (globalThis as { process?: { env?: Record<string, string> } }).process?.env
+  ?.GITHUB_PAGES;
+const base = githubPages === "true" ? "/workout-tracker/" : "/";
+
 export default defineConfig({
+  base,
   plugins: [
     react(),
     VitePWA({
@@ -17,8 +22,6 @@ export default defineConfig({
         background_color: "#11140c",
         display: "standalone",
         orientation: "portrait",
-        start_url: "/",
-        scope: "/",
         icons: [
           {
             src: "icons/icon-192.png",
