@@ -11,6 +11,7 @@ import {
   restAfterLogging,
 } from "./prescription";
 import { hashFor, parseHash } from "./routes";
+import { catalogSrc } from "./catalog";
 import { currentStreak, thisWeekCount } from "./stats";
 import { liftPointsFor, liftWeightSeries } from "./progress";
 import { loadStore, memoryStorage, saveStore } from "./storage";
@@ -216,6 +217,13 @@ describe("reduce", () => {
     s = reduce(s, { type: "undo-set", now: t0 + 2000 });
     expect(s.active?.logs["test-squat"]?.sets).toHaveLength(0);
     expect(s.active?.restStartedAt).toBeNull();
+  });
+});
+
+describe("catalog", () => {
+  it("puts pictures under Vite BASE_URL", () => {
+    expect(catalogSrc("squat")).toBe(`${import.meta.env.BASE_URL}catalog/squat.webp`);
+    expect(catalogSrc("")).toBe(`${import.meta.env.BASE_URL}catalog/squat.webp`);
   });
 });
 

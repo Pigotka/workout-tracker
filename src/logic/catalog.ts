@@ -62,7 +62,7 @@ export function bodyLabel(part: string): string {
 }
 
 export function catalogSrc(id: string): string {
-  return `/catalog/${id || FALLBACK_ID}.webp`;
+  return `${import.meta.env.BASE_URL}catalog/${id || FALLBACK_ID}.webp`;
 }
 
 export function catalogEntry(id: string): CatalogEntry | undefined {
