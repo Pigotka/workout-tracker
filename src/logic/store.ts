@@ -263,7 +263,8 @@ export function reduce(state: Store, action: Action): Store {
       const nextExercise = exerciseById(program, after.nextExerciseId) ?? exercise;
       const nextLog = nextLogs[nextExercise.id];
       const nextScheme = schemeOf(nextExercise, state.active.schemes);
-      const restStartedAt = after.restSeconds > 0 ? action.now : null;
+      const restStartedAt =
+        state.restScreen !== false && after.restSeconds > 0 ? action.now : null;
       let nextState = patchActive(state, {
         logs: nextLogs,
         activeExerciseId: nextExercise.id,
@@ -471,8 +472,10 @@ export function reduce(state: Store, action: Action): Store {
       };
     case "set-unit":
       return { ...state, weightUnit: action.unit };
+    case "set-rest-screen":
+      return { ...state, restScreen: action.on };
     case "replace-store":
-      return action.store;
+      return { ...action.store, restScreen: action.store.restScreen !== false };
     default:
       return assertNever(action);
   }

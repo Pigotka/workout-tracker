@@ -11,7 +11,7 @@ export function loadStore(storage: StorageLike): Store {
     if (!raw) return createSeedStore();
     const parsed: unknown = JSON.parse(raw);
     if (!isStore(parsed)) return createSeedStore();
-    return parsed;
+    return { ...parsed, restScreen: parsed.restScreen !== false };
   } catch {
     return createSeedStore();
   }

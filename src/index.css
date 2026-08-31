@@ -704,6 +704,33 @@ button {
   color: var(--muted);
 }
 
+.rest-next {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 8px;
+}
+
+.rest-next-name {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.rest-reps {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.rest-then {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
 .bottom-nav {
   position: fixed;
   left: 50%;
@@ -868,6 +895,8 @@ button {
 
 .rest-overlay.over .rest-kicker,
 .rest-overlay.over .rest-time,
+.rest-overlay.over .rest-next-name,
+.rest-overlay.over .rest-reps,
 .rest-time.over {
   color: #ff4d3a;
 }

@@ -70,6 +70,19 @@ describe("reduce", () => {
     expect(s.active?.restTargetSeconds).toBe(90);
   });
 
+  it("skips rest when the rest screen is off", () => {
+    let s = reduce(store(), { type: "set-rest-screen", on: false });
+    s = reduce(s, {
+      type: "start-workout",
+      programId: "test",
+      now: t0,
+      sessionId: "s1",
+    });
+    s = reduce(s, { type: "log-set", now: t0 + 40_000 });
+    expect(s.active?.logs["test-squat"]?.sets).toHaveLength(1);
+    expect(s.active?.restStartedAt).toBeNull();
+  });
+
   it("stays on the lift after the last planned set so extra sets can be logged", () => {
     let s = reduce(store(), {
       type: "start-workout",

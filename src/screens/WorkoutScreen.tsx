@@ -5,12 +5,13 @@ import { liftTint } from "../logic/catalog";
 import { formatElapsed, formatWeight } from "../logic/format";
 import {
   formatScheme,
+  nextAfterCurrent,
   schemeOf,
   setCount,
   slotsFor,
 } from "../logic/prescription";
 import { go } from "../logic/routes";
-import { activeProgram } from "../logic/store";
+import { activeExercise, activeProgram } from "../logic/store";
 import { useNow, useWakeLock } from "../hooks";
 import { useStore } from "../store-context";
 import type { Exercise } from "../types";
@@ -34,6 +35,16 @@ export function WorkoutScreen() {
   const restElapsed =
     store.active.restStartedAt != null ? now - store.active.restStartedAt : 0;
   const slots = slotsFor(program, store.active.choices);
+  const current = activeExercise(store);
+  const thenLift = current
+    ? nextAfterCurrent(
+        program,
+        current,
+        store.active.choices,
+        store.active.logs,
+        store.active.schemes,
+      )
+    : undefined;
 
   return (
     <div className="screen workout-screen">
@@ -80,10 +91,16 @@ export function WorkoutScreen() {
         })}
       </ul>
 
-      {store.active.restStartedAt != null ? (
+      {store.restScreen !== false && store.active.restStartedAt != null && current ? (
         <RestOverlay
           elapsedMs={restElapsed}
           targetSeconds={store.active.restTargetSeconds}
+          nextName={current.name}
+          nextCatalogId={current.catalogId}
+          nextColor={current.color}
+          thenName={thenLift && thenLift.id !== current.id ? thenLift.name : undefined}
+          setDone={store.active.logs[current.id]?.sets.length ?? 0}
+          setTotal={setCount(schemeOf(current, store.active.schemes))}
           onStop={() => dispatch({ type: "end-rest", now: Date.now() })}
         />
       ) : null}

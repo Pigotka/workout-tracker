@@ -82,6 +82,7 @@ export type CompletedSession = {
 export type Store = {
   version: 1;
   weightUnit: "kg" | "lb";
+  restScreen?: boolean;
   programs: Program[];
   sessions: CompletedSession[];
   active: ActiveSession | null;
@@ -127,4 +128,5 @@ export type Action =
   | { type: "pair-with-next"; programId: string; exerciseId: string; kind: "superset" | "alternate"; groupId: string }
   | { type: "unpair"; programId: string; exerciseId: string }
   | { type: "set-unit"; unit: "kg" | "lb" }
+  | { type: "set-rest-screen"; on: boolean }
   | { type: "replace-store"; store: Store };

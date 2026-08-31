@@ -95,6 +95,13 @@ export function ProgramsScreen() {
         >
           Unit: {store.weightUnit}
         </button>
+        <button
+          type="button"
+          className="btn-ghost"
+          onClick={() => dispatch({ type: "set-rest-screen", on: store.restScreen === false })}
+        >
+          Rest: {store.restScreen === false ? "off" : "on"}
+        </button>
         <button type="button" className="text-link" onClick={() => setConfirmReset(true)}>
           Reset plans
         </button>

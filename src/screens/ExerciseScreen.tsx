@@ -89,6 +89,9 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
         <Glyph catalogId={exercise.catalogId} size="lg" color={liftTint(exercise.catalogId, exercise.color)} />
         <h1>{exercise.name}</h1>
         {partner ? <p className="slot-kicker">Supersérie → {partner.name}</p> : null}
+        {nextExercise && nextExercise.id !== partner?.id ? (
+          <p className="slot-kicker">Next: {nextExercise.name}</p>
+        ) : null}
         {exercise.note ? <p className="session-note">{exercise.note}</p> : null}
       </div>
 
@@ -192,10 +195,16 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
         </section>
       ) : null}
 
-      {store.active.restStartedAt != null ? (
+      {store.restScreen !== false && store.active.restStartedAt != null ? (
         <RestOverlay
           elapsedMs={restElapsed}
           targetSeconds={store.active.restTargetSeconds}
+          nextName={exercise.name}
+          nextCatalogId={exercise.catalogId}
+          nextColor={exercise.color}
+          thenName={nextExercise && nextExercise.id !== exercise.id ? nextExercise.name : undefined}
+          setDone={log.sets.length}
+          setTotal={totalSets}
           onStop={() => dispatch({ type: "end-rest", now: Date.now() })}
         />
       ) : null}

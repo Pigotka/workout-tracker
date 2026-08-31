@@ -43,6 +43,7 @@ export function createSeedStore(): Store {
   return {
     version: 1,
     weightUnit: "kg",
+    restScreen: true,
     programs: structuredClone(SEED_PROGRAMS),
     sessions: [],
     active: null,
