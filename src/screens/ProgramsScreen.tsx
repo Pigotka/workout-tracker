@@ -96,15 +96,13 @@ export function ProgramsScreen() {
           Unit: {store.weightUnit}
         </button>
         <button type="button" className="text-link" onClick={() => setConfirmReset(true)}>
-          Reset to seed
+          Reset plans
         </button>
-      </div>
-
-      <p className="muted">Exercise data by RepDB (repdb.co)</p>
+      </div>      
 
       {confirmReset ? (
         <Confirm
-          title="Reset programs?"
+          title="Reset plans?"
           body="This replaces trainings with the Test template. History is kept."
           confirmLabel="Reset"
           danger

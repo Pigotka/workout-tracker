@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Glyph } from "../components/Glyph";
 import { RestOverlay } from "../components/RestOverlay";
+import { liftTint } from "../logic/catalog";
 import { formatElapsed, formatWeight } from "../logic/format";
 import {
   formatScheme,
@@ -140,15 +141,13 @@ function ExerciseRow({
   return (
     <div className={nested ? "nested-row" : undefined}>
       <button type="button" className={isActive ? "exercise-row current" : "exercise-row"} onClick={open}>
-        <Glyph catalogId={exercise.catalogId} size="md" />
+        <Glyph catalogId={exercise.catalogId} size="md" color={liftTint(exercise.catalogId, exercise.color)} />
         <div className="exercise-copy">
           <p className="exercise-name">{exercise.name}</p>
           <p className="muted">
             {formatWeight(current, store.weightUnit)}
             {" × "}
-            {exercise.mode === "timed"
-              ? `${exercise.targetSets} × ${exercise.targetSeconds}s`
-              : formatScheme(scheme)}
+            {formatScheme(scheme)}
           </p>
         </div>
         <Dots total={setCount(scheme)} done={done} />

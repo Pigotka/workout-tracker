@@ -10,8 +10,6 @@ function exercise(
     rest: number;
     weight?: number;
     note?: string;
-    mode?: Exercise["mode"];
-    targetSeconds?: number;
   },
 ): Exercise {
   const reps = opts.reps ?? 8;
@@ -19,10 +17,8 @@ function exercise(
     id,
     name,
     catalogId,
-    mode: opts.mode ?? "reps",
     targetSets: opts.sets,
     targetReps: reps,
-    targetSeconds: opts.targetSeconds ?? 45,
     restSeconds: opts.rest,
     workingWeight: opts.weight ?? 0,
     note: opts.note ?? "",
@@ -38,19 +34,14 @@ export const SEED_PROGRAMS: Program[] = [
       exercise("test-squat", "Squat", "squat", { sets: 3, reps: 5, rest: 90 }),
       exercise("test-bench", "Bench Press", "bench-press", { sets: 3, reps: 5, rest: 90 }),
       exercise("test-pullup", "Pull-Up", "pull-up", { sets: 3, reps: 8, rest: 90 }),
-      exercise("test-plank", "Plank", "plank", {
-        sets: 3,
-        rest: 45,
-        mode: "timed",
-        targetSeconds: 45,
-      }),
+      exercise("test-plank", "Plank", "plank", { sets: 3, reps: 8, rest: 45 }),
     ],
   },
 ];
 
 export function createSeedStore(): Store {
   return {
-    version: 3,
+    version: 1,
     weightUnit: "kg",
     programs: structuredClone(SEED_PROGRAMS),
     sessions: [],

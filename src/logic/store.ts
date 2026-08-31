@@ -82,7 +82,6 @@ function startSession(
     restStartedAt: null,
     restTargetSeconds: 0,
     setStartedAt: now,
-    workStartedAt: null,
     pendingReps: pendingForExercise(
       first,
       schemes,
@@ -154,7 +153,7 @@ export function reduce(state: Store, action: Action): Store {
       const exercise = program ? exerciseById(program, action.exerciseId) : undefined;
       if (!exercise) return state;
       if (state.active.activeExerciseId === exercise.id) {
-        return patchActive(state, { setStartedAt: action.now, workStartedAt: null });
+        return patchActive(state, { setStartedAt: action.now });
       }
       const log = state.active.logs[exercise.id];
       const scheme = schemeOf(exercise, state.active.schemes);
@@ -167,7 +166,6 @@ export function reduce(state: Store, action: Action): Store {
           lastLoggedReps(log, state.sessions, exercise.id, scheme.id),
         ),
         setStartedAt: action.now,
-        workStartedAt: null,
       });
     }
     case "swap-alternate": {
@@ -192,7 +190,6 @@ export function reduce(state: Store, action: Action): Store {
           lastLoggedReps(log, state.sessions, other.id, scheme.id),
         ),
         setStartedAt: action.now,
-        workStartedAt: null,
       });
     }
     case "flip-scheme": {
@@ -241,10 +238,7 @@ export function reduce(state: Store, action: Action): Store {
         : undefined;
       const log = state.active.logs[state.active.activeExerciseId];
       if (!program || !exercise || !log) return state;
-      const durationMs =
-        state.active.workStartedAt != null
-          ? Math.max(0, action.now - state.active.workStartedAt)
-          : Math.max(0, action.now - state.active.setStartedAt);
+      const durationMs = Math.max(0, action.now - state.active.setStartedAt);
       const nextLogs = {
         ...state.active.logs,
         [exercise.id]: {
@@ -252,7 +246,7 @@ export function reduce(state: Store, action: Action): Store {
           sets: [
             ...log.sets,
             {
-              reps: exercise.mode === "timed" ? 0 : state.active.pendingReps,
+              reps: state.active.pendingReps,
               weight: log.currentWeight,
               durationMs,
               completedAt: action.now,
@@ -265,7 +259,6 @@ export function reduce(state: Store, action: Action): Store {
         exercise,
         nextLogs,
         state.active.schemes,
-        state.active.choices,
       );
       const nextExercise = exerciseById(program, after.nextExerciseId) ?? exercise;
       const nextLog = nextLogs[nextExercise.id];
@@ -277,7 +270,6 @@ export function reduce(state: Store, action: Action): Store {
         restStartedAt,
         restTargetSeconds: after.restSeconds,
         setStartedAt: restStartedAt ?? action.now,
-        workStartedAt: null,
         pendingReps: pendingForExercise(
           nextExercise,
           state.active.schemes,
@@ -299,7 +291,6 @@ export function reduce(state: Store, action: Action): Store {
         restStartedAt: null,
         restTargetSeconds: 0,
         setStartedAt: action.now,
-        workStartedAt: null,
       });
     }
     case "end-rest": {
@@ -354,14 +345,6 @@ export function reduce(state: Store, action: Action): Store {
       return patchProgramExercise(state, targetProgramId, action.exerciseId, {
         note: action.note,
       });
-    }
-    case "start-work": {
-      if (!state.active) return state;
-      return patchActive(state, { workStartedAt: action.now });
-    }
-    case "stop-work": {
-      if (!state.active) return state;
-      return patchActive(state, { workStartedAt: null });
     }
     case "finish-workout": {
       if (!state.active) return state;

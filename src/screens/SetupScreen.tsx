@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Glyph } from "../components/Glyph";
+import { liftTint } from "../logic/catalog";
 import { alternateGroups, lastOfProgram, pickChoices } from "../logic/prescription";
 import { go } from "../logic/routes";
 import { useStore } from "../store-context";
@@ -53,7 +54,7 @@ export function SetupScreen({ programId }: { programId: string }) {
                   className={selected ? "setup-pick on" : "setup-pick"}
                   onClick={() => setChoices({ ...choices, [group.group]: exercise.id })}
                 >
-                  <Glyph catalogId={exercise.catalogId} size="md" />
+                  <Glyph catalogId={exercise.catalogId} size="md" color={liftTint(exercise.catalogId, exercise.color)} />
                   <span>{exercise.name}</span>
                 </button>
               );

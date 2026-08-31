@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { Glyph } from "../components/Glyph";
 import { RestOverlay } from "../components/RestOverlay";
+import { WeightChart } from "../components/WeightChart";
+import { liftTint } from "../logic/catalog";
 import { formatElapsed, formatRest, formatWeight } from "../logic/format";
+import { liftPointsFor } from "../logic/progress";
 import {
   formatSetTarget,
   nextAfterCurrent,
@@ -51,7 +54,6 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
   const scheme = schemeOf(exercise, store.active.schemes);
   const totalSets = setCount(scheme);
   const setIndex = log.sets.length;
-  const workMs = store.active.workStartedAt != null ? now - store.active.workStartedAt : 0;
   const partner = supersetPartner(program, exercise);
   const complete = setIndex >= totalSets;
   const nextExercise = nextAfterCurrent(
@@ -63,6 +65,10 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
   );
 
   const logSet = () => dispatch({ type: "log-set", now: Date.now() });
+  const weightPoints = liftPointsFor(store.sessions, exercise.catalogId, {
+    at: Date.now(),
+    sets: log.sets,
+  });
 
   return (
     <div className="screen exercise-screen">
@@ -75,12 +81,12 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
           <p className="session-timer">{formatElapsed(now - store.active.startedAt)}</p>
         </div>
         <span className="set-chip">
-          Set {Math.min(setIndex + 1, totalSets)}/{totalSets}
+          {complete ? `Extra set` : `Set ${setIndex + 1}/${totalSets}`}
         </span>
       </header>
 
       <div className="hero-block">
-        <Glyph catalogId={exercise.catalogId} size="lg" />
+        <Glyph catalogId={exercise.catalogId} size="lg" color={liftTint(exercise.catalogId, exercise.color)} />
         <h1>{exercise.name}</h1>
         {partner ? <p className="slot-kicker">Supersérie → {partner.name}</p> : null}
         {exercise.note ? <p className="session-note">{exercise.note}</p> : null}
@@ -97,7 +103,7 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
       </div>
 
       <div className="set-meta">
-        <span>{exercise.mode === "timed" ? `${exercise.targetSeconds}s hold` : formatSetTarget(scheme, setIndex)}</span>
+        <span>{complete ? "extra set" : formatSetTarget(scheme, setIndex)}</span>
         <span>
           {partner && (store.active.logs[partner.id]?.sets.length ?? 0) < log.sets.length + 1
             ? "then partner"
@@ -111,67 +117,50 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
         ))}
       </div>
 
-      {complete ? (
-        nextExercise ? (
+      <>
+        <div className="rep-row">
           <button
             type="button"
-            className="btn-primary"
-            onClick={() => {
-              dispatch({ type: "select-exercise", exerciseId: nextExercise.id, now: Date.now() });
-              go({ name: "exercise", id: nextExercise.id });
-            }}
+            className="step-btn"
+            onClick={() => dispatch({ type: "adjust-pending-reps", delta: -1 })}
           >
-            Next: {nextExercise.name}
+            −
           </button>
-        ) : (
-          <button type="button" className="btn-primary" onClick={() => go({ name: "workout" })}>
-            All sets done — back to list
+          <p className="pending-num">{store.active.pendingReps}</p>
+          <button
+            type="button"
+            className="step-btn"
+            onClick={() => dispatch({ type: "adjust-pending-reps", delta: 1 })}
+          >
+            +
           </button>
-        )
-      ) : exercise.mode === "timed" ? (
-        <div className="timed-block">
-          <p className="pending-num">{formatElapsed(workMs || exercise.targetSeconds * 1000)}</p>
-          {store.active.workStartedAt == null ? (
+        </div>
+        <button type="button" className="btn-primary" onClick={logSet}>
+          {complete
+            ? `Log extra ${store.active.pendingReps} reps`
+            : scheme.isMax
+              ? `Log ${store.active.pendingReps} MAX`
+              : `Log ${store.active.pendingReps} reps`}
+        </button>
+        {complete ? (
+          nextExercise ? (
             <button
               type="button"
               className="btn-ghost wide"
-              onClick={() => dispatch({ type: "start-work", now: Date.now() })}
+              onClick={() => {
+                dispatch({ type: "select-exercise", exerciseId: nextExercise.id, now: Date.now() });
+                go({ name: "exercise", id: nextExercise.id });
+              }}
             >
-              Start timer
+              Next: {nextExercise.name}
             </button>
           ) : (
-            <button type="button" className="btn-ghost wide" onClick={() => dispatch({ type: "stop-work" })}>
-              Stop
+            <button type="button" className="btn-ghost wide" onClick={() => go({ name: "workout" })}>
+              Done — back to list
             </button>
-          )}
-          <button type="button" className="btn-primary" onClick={logSet}>
-            Log {formatElapsed(workMs || exercise.targetSeconds * 1000)}
-          </button>
-        </div>
-      ) : (
-        <>
-          <div className="rep-row">
-            <button
-              type="button"
-              className="step-btn"
-              onClick={() => dispatch({ type: "adjust-pending-reps", delta: -1 })}
-            >
-              −
-            </button>
-            <p className="pending-num">{store.active.pendingReps}</p>
-            <button
-              type="button"
-              className="step-btn"
-              onClick={() => dispatch({ type: "adjust-pending-reps", delta: 1 })}
-            >
-              +
-            </button>
-          </div>
-          <button type="button" className="btn-primary" onClick={logSet}>
-            {scheme.isMax ? `Log ${store.active.pendingReps} MAX` : `Log ${store.active.pendingReps} reps`}
-          </button>
-        </>
-      )}
+          )
+        ) : null}
+      </>
 
       {log.sets.length > 0 ? (
         <button type="button" className="text-link center" onClick={() => dispatch({ type: "undo-set", now: Date.now() })}>
@@ -184,9 +173,7 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
           <li key={`${set.completedAt}-${index}`}>
             <span>Set {index + 1}</span>
             <span>
-              {exercise.mode === "timed"
-                ? formatElapsed(set.durationMs)
-                : `${set.reps} × ${formatWeight(set.weight, store.weightUnit)}`}
+              {`${set.reps} × ${formatWeight(set.weight, store.weightUnit)}`}
             </span>
             <span className="muted">
               {set.restAfterMs != null ? `rest ${formatElapsed(set.restAfterMs)}` : formatElapsed(set.durationMs)}
@@ -194,6 +181,16 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
           </li>
         ))}
       </ol>
+
+      {weightPoints.length > 0 ? (
+        <section className="weight-progress in-session">
+          <p className="eyebrow">Weight</p>
+          <p className="muted">
+            {formatWeight(weightPoints.at(-1)?.weight ?? 0, store.weightUnit)} top set
+          </p>
+          <WeightChart points={weightPoints} color={liftTint(exercise.catalogId, exercise.color)} />
+        </section>
+      ) : null}
 
       {store.active.restStartedAt != null ? (
         <RestOverlay

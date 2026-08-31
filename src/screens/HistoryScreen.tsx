@@ -1,6 +1,9 @@
 import { Glyph } from "../components/Glyph";
 import { Heatmap } from "../components/Heatmap";
+import { WeightChart } from "../components/WeightChart";
+import { liftTint } from "../logic/catalog";
 import { formatElapsed, formatWeight, relativeDay } from "../logic/format";
+import { liftWeightSeries } from "../logic/progress";
 import { currentStreak, thisWeekCount } from "../logic/stats";
 import { useStore } from "../store-context";
 import type { CompletedSession } from "../types";
@@ -12,6 +15,7 @@ export function HistoryScreen() {
   const [openId, setOpenId] = useState<string | null>(null);
   const week = thisWeekCount(store.sessions, now);
   const streak = currentStreak(store.sessions, now);
+  const series = liftWeightSeries(store.sessions);
 
   return (
     <div className="screen">
@@ -34,6 +38,28 @@ export function HistoryScreen() {
           </div>
         </div>
       </header>
+
+      {series.length > 0 ? (
+        <section className="weight-progress">
+          <p className="eyebrow">Weight</p>
+          <ul className="progress-list">
+            {series.map((lift) => {
+              const last = lift.points.at(-1);
+              if (!last) return null;
+              return (
+                <li key={lift.catalogId} className="progress-row">
+                  <Glyph catalogId={lift.catalogId} size="sm" color={liftTint(lift.catalogId)} />
+                  <div className="progress-copy">
+                    <p className="exercise-name">{lift.name}</p>
+                    <p className="muted">{formatWeight(last.weight, store.weightUnit)} top set</p>
+                    <WeightChart points={lift.points} color={liftTint(lift.catalogId)} />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      ) : null}
 
       {store.sessions.length === 0 ? (
         <p className="empty">Finish a workout and it will land here.</p>
@@ -68,7 +94,7 @@ function SessionDetail({ session, unit }: { session: CompletedSession; unit: "kg
     <div className="session-detail">
       {session.exercises.map((exercise) => (
         <div key={exercise.exerciseId} className="detail-ex">
-          <Glyph catalogId={exercise.catalogId} size="sm" />
+          <Glyph catalogId={exercise.catalogId} size="sm" color={liftTint(exercise.catalogId)} />
           <div>
             <p>{exercise.name}</p>
             <p className="muted">

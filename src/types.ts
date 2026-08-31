@@ -1,5 +1,3 @@
-export type ExerciseMode = "reps" | "timed";
-
 export type RepScheme = {
   id: string;
   label: string;
@@ -14,10 +12,8 @@ export type Exercise = {
   id: string;
   name: string;
   catalogId: string;
-  mode: ExerciseMode;
   targetSets: number;
   targetReps: number;
-  targetSeconds: number;
   restSeconds: number;
   workingWeight: number;
   note: string;
@@ -57,7 +53,6 @@ export type ActiveSession = {
   restStartedAt: number | null;
   restTargetSeconds: number;
   setStartedAt: number;
-  workStartedAt: number | null;
   pendingReps: number;
   logs: Record<string, ExerciseLog>;
   choices: Record<string, string>;
@@ -85,7 +80,7 @@ export type CompletedSession = {
 };
 
 export type Store = {
-  version: 3;
+  version: 1;
   weightUnit: "kg" | "lb";
   programs: Program[];
   sessions: CompletedSession[];
@@ -121,8 +116,6 @@ export type Action =
   | { type: "adjust-weight"; delta: number }
   | { type: "set-weight"; weight: number }
   | { type: "set-note"; exerciseId: string; note: string }
-  | { type: "start-work"; now: number }
-  | { type: "stop-work" }
   | { type: "finish-workout"; now: number }
   | { type: "discard-workout" }
   | { type: "upsert-program"; program: Program }

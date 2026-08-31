@@ -11,12 +11,17 @@ const SIZES: Record<Size, string> = {
 export function Glyph({
   catalogId,
   size = "md",
+  color,
 }: {
   catalogId: string;
   size?: Size;
+  color?: string;
 }) {
   return (
-    <span className={SIZES[size]}>
+    <span
+      className={SIZES[size]}
+      style={color ? { outline: `2px solid ${color}`, outlineOffset: "-2px" } : undefined}
+    >
       <img
         className="glyph-img"
         src={catalogSrc(catalogId)}

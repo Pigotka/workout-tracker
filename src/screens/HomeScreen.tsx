@@ -4,6 +4,7 @@ import { Confirm } from "../components/Confirm";
 import { formatElapsed, relativeDay } from "../logic/format";
 import { go } from "../logic/routes";
 import { pickChoices, visibleExercises, needsSetup } from "../logic/prescription";
+import { liftTint } from "../logic/catalog";
 import { useNow } from "../hooks";
 import { useStore } from "../store-context";
 
@@ -73,7 +74,7 @@ export function HomeScreen() {
                   </div>
                   <div className="glyph-row">
                     {today.slice(0, 6).map((exercise) => (
-                      <Glyph key={exercise.id} catalogId={exercise.catalogId} size="sm" />
+                      <Glyph key={exercise.id} catalogId={exercise.catalogId} size="sm" color={liftTint(exercise.catalogId, exercise.color)} />
                     ))}
                   </div>
                 </div>

@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -35,17 +35,23 @@ const catalog = await mapPool(exercises, 10, async (ex) => {
   const src = ex.images?.flat?.peak ?? ex.images?.flat?.main;
   if (!src) throw new Error(`no image for ${ex.id}`);
 
-  const buf = await download(`${ASSET_BASE}${src}`);
-  writeFileSync(join(OUT, `${ex.id}.webp`), buf);
+  const dest = join(OUT, `${ex.id}.webp`);
+  if (!existsSync(dest)) {
+    const buf = await download(`${ASSET_BASE}${src}`);
+    writeFileSync(dest, buf);
+  }
 
   return {
     id: ex.id,
     name: ex.name_en,
     equipment: ex.equipment ?? "",
+    bodyPart: typeof ex.body_part === "string" ? ex.body_part : "",
   };
 });
 
-writeFileSync(join(OUT, "exercises.json"), JSON.stringify(catalog, null, 2));
+const json = JSON.stringify(catalog);
+writeFileSync(join(OUT, "exercises.json"), json);
+writeFileSync(join(ROOT, "src", "logic", "catalog-data.json"), json);
 console.log(
   `catalog: ${catalog.length} exercises, ${catalog.length} webp, exercises.json written`,
 );

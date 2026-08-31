@@ -244,7 +244,6 @@ export function pendingForExercise(
   setIndex: number,
   lastLogged?: number,
 ): number {
-  if (exercise.mode === "timed") return exercise.targetSeconds;
   const scheme = schemeOf(exercise, schemes);
   const target = targetForSet(scheme, setIndex);
   if (target.isMax) return lastLogged ?? 8;
@@ -260,7 +259,6 @@ export function restAfterLogging(
   exercise: Exercise,
   logs: Record<string, ExerciseLog>,
   schemes: Record<string, string> = {},
-  choices: Record<string, string> = {},
 ): { restSeconds: number; nextExerciseId: string } {
   const partner = supersetPartner(program, exercise);
   const mine = logs[exercise.id]?.sets.length ?? 0;
@@ -270,21 +268,11 @@ export function restAfterLogging(
       return { restSeconds: 0, nextExerciseId: partner.id };
     }
     if (isComplete(exercise, logs[exercise.id], schemes) && isComplete(partner, logs[partner.id], schemes)) {
-      const next = nextAfterCurrent(program, exercise, choices, logs, schemes);
-      return {
-        restSeconds: exercise.restSeconds,
-        nextExerciseId: next?.id ?? exercise.id,
-      };
+      return { restSeconds: exercise.restSeconds, nextExerciseId: exercise.id };
     }
     const first =
       program.exercises.find((item) => item.supersetGroup === exercise.supersetGroup) ?? exercise;
     return { restSeconds: exercise.restSeconds, nextExerciseId: first.id };
-  }
-  if (isComplete(exercise, logs[exercise.id], schemes)) {
-    const next = nextAfterCurrent(program, exercise, choices, logs, schemes);
-    if (next) {
-      return { restSeconds: exercise.restSeconds, nextExerciseId: next.id };
-    }
   }
   return { restSeconds: exercise.restSeconds, nextExerciseId: exercise.id };
 }

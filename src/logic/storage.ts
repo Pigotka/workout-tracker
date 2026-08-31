@@ -1,7 +1,7 @@
 import { createSeedStore } from "../seed";
 import type { Store } from "../types";
 
-export const STORAGE_KEY = "train:v3";
+export const STORAGE_KEY = "train:v1";
 
 export type StorageLike = Pick<Storage, "getItem" | "setItem">;
 
@@ -45,7 +45,7 @@ export function isStore(value: unknown): value is Store {
   if (typeof value !== "object" || value === null) return false;
   const record = value as Partial<Store>;
   return (
-    record.version === 3 &&
+    record.version === 1 &&
     (record.weightUnit === "kg" || record.weightUnit === "lb") &&
     Array.isArray(record.programs) &&
     record.programs.every(isProgram) &&

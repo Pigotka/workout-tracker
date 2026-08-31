@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Confirm } from "../components/Confirm";
 import { Glyph } from "../components/Glyph";
 import { PickerSheet } from "../components/PickerSheet";
-import { FALLBACK_ID, loadCatalog, searchCatalog, type CatalogEntry } from "../logic/catalog";
+import { FALLBACK_ID, CATALOG, BODY_PARTS, bodyColor, bodyLabel, liftTint, searchCatalog, type CatalogEntry } from "../logic/catalog";
 import { formatRest } from "../logic/format";
 import {
   buildScheme,
@@ -43,10 +43,8 @@ export function ProgramEditScreen({ id }: { id: string }) {
       id: crypto.randomUUID(),
       name: "New exercise",
       catalogId: FALLBACK_ID,
-      mode: "reps",
       targetSets: 3,
       targetReps: 8,
-      targetSeconds: 45,
       restSeconds: 90,
       workingWeight: 0,
       note: "",
@@ -93,15 +91,13 @@ export function ProgramEditScreen({ id }: { id: string }) {
                 className="edit-ex-head"
                 onClick={() => setOpenId(openId === exercise.id ? null : exercise.id)}
               >
-                <Glyph catalogId={exercise.catalogId} size="sm" />
+                <Glyph catalogId={exercise.catalogId} size="sm" color={liftTint(exercise.catalogId, exercise.color)} />
                 <span>
                   {exercise.name}
                   {pairing ? <span className="pair-badge">{pairing}</span> : null}
                 </span>
                 <span className="muted">
-                  {exercise.mode === "timed"
-                    ? `${exercise.targetSets}×${exercise.targetSeconds}s`
-                    : formatScheme(schemesOf(exercise)[0] ?? fallbackScheme(exercise))}
+                  {formatScheme(schemesOf(exercise)[0] ?? fallbackScheme(exercise))}
                 </span>
               </button>
               {openId === exercise.id ? (
@@ -185,20 +181,9 @@ function ExerciseEditor({
   const pairing = pairLabel(exercise, program);
   const nameRef = useRef<HTMLInputElement>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [catalog, setCatalog] = useState<CatalogEntry[]>([]);
   const [query, setQuery] = useState("");
-  const tint = exercise.color && /^#[0-9a-fA-F]{6}$/.test(exercise.color) ? exercise.color : "#d6ff3e";
-
-  useEffect(() => {
-    if (!pickerOpen || catalog.length > 0) return;
-    let cancelled = false;
-    void loadCatalog().then((entries) => {
-      if (!cancelled) setCatalog(entries);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [pickerOpen, catalog.length]);
+  const [part, setPart] = useState("");
+  const tint = liftTint(exercise.catalogId, exercise.color);
 
   const pickEntry = (entry: CatalogEntry) => {
     const untitled = exercise.name === "" || exercise.name === "New exercise";
@@ -206,6 +191,7 @@ function ExerciseEditor({
       ...exercise,
       catalogId: entry.id,
       name: untitled ? entry.name : exercise.name,
+      color: undefined,
     });
     setPickerOpen(false);
   };
@@ -226,11 +212,12 @@ function ExerciseEditor({
           className="picker-btn"
           onClick={() => {
             setQuery("");
+            setPart("");
             setPickerOpen(true);
           }}
           aria-label="Choose picture"
         >
-          <Glyph catalogId={exercise.catalogId} size="sm" />
+          <Glyph catalogId={exercise.catalogId} size="sm" color={tint} />
           <span>Picture</span>
         </button>
         <label className="picker-btn">
@@ -254,9 +241,29 @@ function ExerciseEditor({
               queueMicrotask(() => nameRef.current?.focus());
             }}
           >
-            <Glyph catalogId={exercise.catalogId} size="sm" />
+            <Glyph catalogId={exercise.catalogId} size="sm" color={tint} />
             <span>Custom</span>
           </button>
+          <div className="chip-row">
+            <button
+              type="button"
+              className={part === "" ? "chip on" : "chip"}
+              onClick={() => setPart("")}
+            >
+              All
+            </button>
+            {BODY_PARTS.map((id) => (
+              <button
+                key={id}
+                type="button"
+                className={part === id ? "chip on" : "chip"}
+                style={{ boxShadow: `inset 0 0 0 2px ${bodyColor(id)}` }}
+                onClick={() => setPart(id)}
+              >
+                {bodyLabel(id)}
+              </button>
+            ))}
+          </div>
           <label className="note-field catalog-search">
             <span>Search</span>
             <input
@@ -267,8 +274,8 @@ function ExerciseEditor({
             />
           </label>
           <ul className="catalog-list">
-            {searchCatalog(query, catalog)
-              .slice(0, query.trim() ? 80 : 40)
+            {searchCatalog(query, CATALOG, part)
+              .slice(0, query.trim() || part ? 80 : 40)
               .map((entry) => (
                 <li key={entry.id}>
                   <button
@@ -276,7 +283,7 @@ function ExerciseEditor({
                     className={exercise.catalogId === entry.id ? "catalog-row on" : "catalog-row"}
                     onClick={() => pickEntry(entry)}
                   >
-                    <Glyph catalogId={entry.id} size="sm" />
+                    <Glyph catalogId={entry.id} size="sm" color={liftTint(entry.id)} />
                     <span>{entry.name}</span>
                   </button>
                 </li>
@@ -285,32 +292,6 @@ function ExerciseEditor({
         </PickerSheet>
       ) : null}
       <div className="edit-grid">
-        {exercise.mode === "timed" ? (
-          <>
-            <label>
-              Sets
-              <input
-                type="number"
-                min={1}
-                max={12}
-                value={exercise.targetSets}
-                onChange={(event) => onChange({ ...exercise, targetSets: Number(event.target.value) || 1 })}
-              />
-            </label>
-            <label>
-              Seconds
-              <input
-                type="number"
-                min={5}
-                max={600}
-                value={exercise.targetSeconds}
-                onChange={(event) =>
-                  onChange({ ...exercise, targetSeconds: Number(event.target.value) || 5 })
-                }
-              />
-            </label>
-          </>
-        ) : null}
         <label>
           Weight
           <input
@@ -324,19 +305,7 @@ function ExerciseEditor({
           />
         </label>
       </div>
-      <label className="note-field">
-        <span>Mode</span>
-        <select
-          value={exercise.mode}
-          onChange={(event) =>
-            onChange({ ...exercise, mode: event.target.value === "timed" ? "timed" : "reps" })
-          }
-        >
-          <option value="reps">Reps</option>
-          <option value="timed">Timed hold</option>
-        </select>
-      </label>
-      {exercise.mode === "reps" ? <SchemeEditor exercise={exercise} onChange={onChange} /> : null}
+      <SchemeEditor exercise={exercise} onChange={onChange} />
       <p className="eyebrow">Rest {formatRest(exercise.restSeconds)}</p>
       <div className="chip-row">
         {RESTS.map((rest) => (

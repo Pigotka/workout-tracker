@@ -12,6 +12,7 @@ import {
 } from "./prescription";
 import { hashFor, parseHash } from "./routes";
 import { currentStreak, thisWeekCount } from "./stats";
+import { liftPointsFor, liftWeightSeries } from "./progress";
 import { loadStore, memoryStorage, saveStore } from "./storage";
 import { reduce } from "./store";
 
@@ -26,10 +27,8 @@ function lift(id: string, extra: Partial<Exercise> = {}): Exercise {
     id,
     name: id,
     catalogId: "squat",
-    mode: "reps",
     targetSets: 3,
     targetReps: 5,
-    targetSeconds: 45,
     restSeconds: 90,
     workingWeight: 0,
     note: "",
@@ -70,7 +69,7 @@ describe("reduce", () => {
     expect(s.active?.restTargetSeconds).toBe(90);
   });
 
-  it("moves to the next lift after the last set, not an earlier unfinished one", () => {
+  it("stays on the lift after the last planned set so extra sets can be logged", () => {
     let s = reduce(store(), {
       type: "start-workout",
       programId: "test",
@@ -84,8 +83,9 @@ describe("reduce", () => {
       }
     }
     expect(s.active?.logs["test-squat"]?.sets).toHaveLength(3);
-    expect(s.active?.activeExerciseId).toBe("test-bench");
-    expect(s.active?.pendingReps).toBe(5);
+    expect(s.active?.activeExerciseId).toBe("test-squat");
+    s = reduce(s, { type: "log-set", now: t0 + 8000 });
+    expect(s.active?.logs["test-squat"]?.sets).toHaveLength(4);
   });
 
   it("keeps last logged reps for the next set", () => {
@@ -378,5 +378,78 @@ describe("stats", () => {
     ];
     expect(thisWeekCount(sessions, t0)).toBe(2);
     expect(currentStreak(sessions, t0)).toBe(2);
+  });
+});
+
+describe("progress", () => {
+  it("keeps each session's max loaded weight per catalog lift", () => {
+    const series = liftWeightSeries([
+      {
+        id: "a",
+        programId: "test",
+        programName: "Test",
+        startedAt: t0,
+        completedAt: t0 + 3_600_000,
+        exercises: [
+          {
+            exerciseId: "test-squat",
+            name: "Squat",
+            catalogId: "squat",
+            note: "",
+            sets: [
+              { reps: 5, weight: 60, durationMs: 1, completedAt: t0 },
+              { reps: 5, weight: 62.5, durationMs: 1, completedAt: t0 + 1 },
+              { reps: 5, weight: 0, durationMs: 1, completedAt: t0 + 2 },
+            ],
+          },
+        ],
+      },
+      {
+        id: "b",
+        programId: "test",
+        programName: "Test",
+        startedAt: t0 + 86_400_000,
+        completedAt: t0 + 86_400_000 + 3_600_000,
+        exercises: [
+          {
+            exerciseId: "test-squat",
+            name: "Dřep",
+            catalogId: "squat",
+            note: "",
+            sets: [{ reps: 5, weight: 65, durationMs: 1, completedAt: t0 + 86_400_000 }],
+          },
+        ],
+      },
+    ]);
+    expect(series).toHaveLength(1);
+    expect(series[0]?.catalogId).toBe("squat");
+    expect(series[0]?.name).toBe("Dřep");
+    expect(series[0]?.points.map((point) => point.weight)).toEqual([62.5, 65]);
+  });
+
+  it("appends today's max for the open lift", () => {
+    const sessions = [
+      {
+        id: "a",
+        programId: "test",
+        programName: "Test",
+        startedAt: t0,
+        completedAt: t0 + 1,
+        exercises: [
+          {
+            exerciseId: "test-squat",
+            name: "Squat",
+            catalogId: "squat",
+            note: "",
+            sets: [{ reps: 5, weight: 60, durationMs: 1, completedAt: t0 }],
+          },
+        ],
+      },
+    ];
+    const points = liftPointsFor(sessions, "squat", {
+      at: t0 + 86_400_000,
+      sets: [{ weight: 62.5 }, { weight: 40 }],
+    });
+    expect(points.map((point) => point.weight)).toEqual([60, 62.5]);
   });
 });
