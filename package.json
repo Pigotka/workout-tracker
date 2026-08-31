@@ -10,8 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "icons": "node scripts/generate-icons.mjs",
-    "icons:exercises": "node scripts/download-exercise-icons.mjs",
-    "icons:vectors": "node scripts/download-vector-icons.mjs"
+    "catalog": "node scripts/vendor-repdb.mjs"
   },
   "dependencies": {
     "react": "^19.1.1",

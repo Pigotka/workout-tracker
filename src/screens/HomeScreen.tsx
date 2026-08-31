@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Glyph } from "../components/Glyph";
-import { Heatmap } from "../components/Heatmap";
 import { Confirm } from "../components/Confirm";
 import { formatElapsed, relativeDay } from "../logic/format";
 import { go } from "../logic/routes";
-import { thisWeekCount } from "../logic/stats";
 import { pickChoices, visibleExercises, needsSetup } from "../logic/prescription";
 import { useNow } from "../hooks";
 import { useStore } from "../store-context";
@@ -13,7 +11,6 @@ export function HomeScreen() {
   const { store, dispatch } = useStore();
   const now = useNow(Boolean(store.active), 500);
   const [pendingProgramId, setPendingProgramId] = useState<string | null>(null);
-  const weekCount = thisWeekCount(store.sessions, Date.now());
 
   const start = (programId: string) => {
     const program = store.programs.find((item) => item.id === programId);
@@ -45,21 +42,12 @@ export function HomeScreen() {
   return (
     <div className="screen">
       <header className="page-head">
-        <p className="eyebrow">Train</p>
         <h1>What are you lifting?</h1>
-        <div className="week-row">
-          <Heatmap sessions={store.sessions} now={Date.now()} />
-          <p className="week-count">
-            <strong>{weekCount}</strong>
-            <span>this week</span>
-          </p>
-        </div>
       </header>
 
       {store.active ? (
         <button type="button" className="resume-card" onClick={() => go({ name: "workout" })}>
           <div>
-            <p className="eyebrow">In progress</p>
             <p className="resume-title">
               {store.programs.find((p) => p.id === store.active?.programId)?.name ?? "Workout"}
             </p>
@@ -85,10 +73,9 @@ export function HomeScreen() {
                   </div>
                   <div className="glyph-row">
                     {today.slice(0, 6).map((exercise) => (
-                      <Glyph key={exercise.id} id={exercise.icon} size="sm" color={exercise.color} />
+                      <Glyph key={exercise.id} catalogId={exercise.catalogId} size="sm" />
                     ))}
                   </div>
-                  <p className="muted">{today.length} lifts today</p>
                 </div>
               </button>
             </li>

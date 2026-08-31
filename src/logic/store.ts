@@ -382,7 +382,7 @@ export function reduce(state: Store, action: Action): Store {
             return {
               exerciseId: exercise.id,
               name: exercise.name,
-              icon: exercise.icon,
+              catalogId: exercise.catalogId,
               note: exercise.note,
               schemeId: state.active?.schemes[exercise.schemeGroup ?? exercise.id],
               sets: log.sets,
@@ -488,8 +488,6 @@ export function reduce(state: Store, action: Action): Store {
       };
     case "set-unit":
       return { ...state, weightUnit: action.unit };
-    case "set-icon-style":
-      return { ...state, iconStyle: action.style };
     case "replace-store":
       return action.store;
     default:

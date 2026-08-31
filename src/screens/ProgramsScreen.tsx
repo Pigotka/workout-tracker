@@ -1,11 +1,9 @@
 import { Confirm } from "../components/Confirm";
-import { Glyph } from "../components/Glyph";
 import { go } from "../logic/routes";
 import { isStore } from "../logic/storage";
 import { createSeedStore } from "../seed";
 import { useStore } from "../store-context";
 import { useState } from "react";
-import { ICON_STYLES } from "../types";
 import type { Program } from "../types";
 
 export function ProgramsScreen() {
@@ -51,29 +49,6 @@ export function ProgramsScreen() {
         <h1>Your trainings</h1>
         <p className="lede">Edit lifts, reps, notes, and pairing here.</p>
       </header>
-
-      <section className="style-block">
-        <p className="eyebrow">Icons</p>
-        <p className="muted">Pick the look that makes the movement obvious.</p>
-        <div className="style-grid">
-          {ICON_STYLES.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={store.iconStyle === item.id ? "style-card on" : "style-card"}
-              onClick={() => dispatch({ type: "set-icon-style", style: item.id })}
-            >
-              <div className="style-preview">
-                <Glyph id="squat" size="sm" style={item.id} />
-                <Glyph id="bench" size="sm" style={item.id} />
-                <Glyph id="pullup" size="sm" style={item.id} />
-              </div>
-              <strong>{item.name}</strong>
-              <span className="muted">{item.hint}</span>
-            </button>
-          ))}
-        </div>
-      </section>
 
       <ul className="plan-list">
         {store.programs.map((program) => (
@@ -125,10 +100,12 @@ export function ProgramsScreen() {
         </button>
       </div>
 
+      <p className="muted">Exercise data by RepDB (repdb.co)</p>
+
       {confirmReset ? (
         <Confirm
           title="Reset programs?"
-          body="This replaces trainings with the starter Trénink 1 template. History is kept."
+          body="This replaces trainings with the Test template. History is kept."
           confirmLabel="Reset"
           danger
           onCancel={() => setConfirmReset(false)}

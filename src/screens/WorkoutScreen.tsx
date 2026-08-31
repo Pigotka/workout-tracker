@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Glyph, ICON_LABELS } from "../components/Glyph";
+import { Glyph } from "../components/Glyph";
 import { RestOverlay } from "../components/RestOverlay";
-import { formatElapsed, formatWeight, relativeDay } from "../logic/format";
+import { formatElapsed, formatWeight } from "../logic/format";
 import {
   formatScheme,
   schemeOf,
@@ -12,7 +12,7 @@ import { go } from "../logic/routes";
 import { activeProgram } from "../logic/store";
 import { useNow, useWakeLock } from "../hooks";
 import { useStore } from "../store-context";
-import type { Exercise, SetLog } from "../types";
+import type { Exercise } from "../types";
 import { assertNever } from "../logic/util";
 
 export function WorkoutScreen() {
@@ -23,7 +23,7 @@ export function WorkoutScreen() {
   useWakeLock(true);
 
   useEffect(() => {
-    if (!store.active) go({ name: "home" });
+    if (!store.active && window.location.hash.includes("workout")) go({ name: "home" });
   }, [store.active]);
 
   if (!store.active || !program) {
@@ -61,7 +61,6 @@ export function WorkoutScreen() {
             case "alternate":
               return (
                 <li key={slot.group}>
-                  <p className="slot-kicker">Today · locked</p>
                   <ExerciseRow exercise={slot.today} />
                 </li>
               );
@@ -131,7 +130,6 @@ function ExerciseRow({
   const log = store.active.logs[exercise.id];
   const scheme = schemeOf(exercise, store.active.schemes);
   const done = log?.sets.length ?? 0;
-  const last = lastSets(store.sessions, exercise.id);
   const current = log?.currentWeight ?? exercise.workingWeight;
   const isActive = store.active.activeExerciseId === exercise.id;
   const open = () => {
@@ -142,23 +140,16 @@ function ExerciseRow({
   return (
     <div className={nested ? "nested-row" : undefined}>
       <button type="button" className={isActive ? "exercise-row current" : "exercise-row"} onClick={open}>
-        <Glyph id={exercise.icon} size="md" color={exercise.color} />
+        <Glyph catalogId={exercise.catalogId} size="md" />
         <div className="exercise-copy">
           <p className="exercise-name">{exercise.name}</p>
-          <p className="icon-caption">{ICON_LABELS[exercise.icon]}</p>
           <p className="muted">
             {formatWeight(current, store.weightUnit)}
-            {" · "}
+            {" × "}
             {exercise.mode === "timed"
               ? `${exercise.targetSets} × ${exercise.targetSeconds}s`
               : formatScheme(scheme)}
           </p>
-          {last && last.length > 0 ? (
-            <p className="last-line">
-              last {relativeDay(last[0] ? lastCompletedAt(last) : 0, Date.now())}:{" "}
-              {summarize(last, store.weightUnit)}
-            </p>
-          ) : null}
         </div>
         <Dots total={setCount(scheme)} done={done} />
       </button>
@@ -176,24 +167,3 @@ function Dots({ total, done }: { total: number; done: number }) {
   );
 }
 
-function lastSets(
-  sessions: { exercises: { exerciseId: string; sets: SetLog[] }[] }[],
-  exerciseId: string,
-): SetLog[] | undefined {
-  for (const session of sessions) {
-    const found = session.exercises.find((item) => item.exerciseId === exerciseId);
-    if (found && found.sets.length > 0) return found.sets;
-  }
-  return undefined;
-}
-
-function lastCompletedAt(sets: SetLog[]): number {
-  return sets[sets.length - 1]?.completedAt ?? 0;
-}
-
-function summarize(sets: SetLog[], unit: "kg" | "lb"): string {
-  const first = sets[0];
-  if (!first) return "";
-  const reps = sets.map((set) => (set.reps > 0 ? String(set.reps) : formatElapsed(set.durationMs))).join(" ");
-  return `${formatWeight(first.weight, unit)} × ${reps}`;
-}

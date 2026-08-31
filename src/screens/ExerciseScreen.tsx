@@ -80,7 +80,7 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
       </header>
 
       <div className="hero-block">
-        <Glyph id={exercise.icon} size="lg" color={exercise.color} />
+        <Glyph catalogId={exercise.catalogId} size="lg" />
         <h1>{exercise.name}</h1>
         {partner ? <p className="slot-kicker">Supersérie → {partner.name}</p> : null}
         {exercise.note ? <p className="session-note">{exercise.note}</p> : null}
@@ -223,11 +223,11 @@ function WeightRow({
     <div className="weight-row">
       <p className="eyebrow">{label}</p>
       <div className="weight-ctrl">
-        <button type="button" className="step-btn sm" onClick={() => onAdjust(-step)}>
+        <button type="button" className="step-btn" onClick={() => onAdjust(-step)}>
           −
         </button>
         <p>{formatWeight(value, unit)}</p>
-        <button type="button" className="step-btn sm" onClick={() => onAdjust(step)}>
+        <button type="button" className="step-btn" onClick={() => onAdjust(step)}>
           +
         </button>
       </div>

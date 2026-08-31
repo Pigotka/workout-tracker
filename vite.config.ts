@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png"],
+      includeAssets: ["icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "catalog/**"],
       manifest: {
         name: "Train",
         short_name: "Train",

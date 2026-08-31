@@ -68,7 +68,7 @@ function SessionDetail({ session, unit }: { session: CompletedSession; unit: "kg
     <div className="session-detail">
       {session.exercises.map((exercise) => (
         <div key={exercise.exerciseId} className="detail-ex">
-          <Glyph id={exercise.icon} size="sm" />
+          <Glyph catalogId={exercise.catalogId} size="sm" />
           <div>
             <p>{exercise.name}</p>
             <p className="muted">

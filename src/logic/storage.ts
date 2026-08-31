@@ -1,11 +1,9 @@
 import { createSeedStore } from "../seed";
 import type { Store } from "../types";
 
-export const STORAGE_KEY = "train:v1";
+export const STORAGE_KEY = "train:v3";
 
 export type StorageLike = Pick<Storage, "getItem" | "setItem">;
-
-const DEFAULT_PPL = new Set(["push", "pull", "legs"]);
 
 export function loadStore(storage: StorageLike): Store {
   try {
@@ -13,7 +11,7 @@ export function loadStore(storage: StorageLike): Store {
     if (!raw) return createSeedStore();
     const parsed: unknown = JSON.parse(raw);
     if (!isStore(parsed)) return createSeedStore();
-    return migrate(parsed);
+    return parsed;
   } catch {
     return createSeedStore();
   }
@@ -23,57 +21,38 @@ export function saveStore(storage: StorageLike, store: Store): void {
   storage.setItem(STORAGE_KEY, JSON.stringify(store));
 }
 
+function isExercise(value: unknown): boolean {
+  if (typeof value !== "object" || value === null) return false;
+  const record = value as Record<string, unknown>;
+  return (
+    typeof record.id === "string" &&
+    typeof record.name === "string" &&
+    typeof record.catalogId === "string"
+  );
+}
+
+function isProgram(value: unknown): boolean {
+  if (typeof value !== "object" || value === null) return false;
+  const record = value as Record<string, unknown>;
+  return (
+    typeof record.id === "string" &&
+    Array.isArray(record.exercises) &&
+    record.exercises.every(isExercise)
+  );
+}
+
 export function isStore(value: unknown): value is Store {
   if (typeof value !== "object" || value === null) return false;
   const record = value as Partial<Store>;
   return (
-    (record.version === 1 || record.version === 2) &&
+    record.version === 3 &&
     (record.weightUnit === "kg" || record.weightUnit === "lb") &&
     Array.isArray(record.programs) &&
-    Array.isArray(record.sessions)
+    record.programs.every(isProgram) &&
+    Array.isArray(record.sessions) &&
+    (record.active === null ||
+      (typeof record.active === "object" && record.active !== null))
   );
-}
-
-function migrate(store: Store): Store {
-  let next = store;
-  if (store.version !== 2) {
-    const ids = store.programs.map((program) => program.id);
-    const onlySeedPpl = ids.length === 3 && ids.every((id) => DEFAULT_PPL.has(id));
-    if (onlySeedPpl) {
-      const seed = createSeedStore();
-      next = {
-        ...seed,
-        weightUnit: store.weightUnit,
-        sessions: store.sessions,
-      };
-    } else {
-      const seed = createSeedStore();
-      const hasT1 = store.programs.some((program) => program.id === "t1");
-      next = {
-        ...store,
-        version: 2,
-        programs: hasT1 ? store.programs : [...seed.programs, ...store.programs],
-      };
-    }
-  }
-  return { ...next, iconStyle: readIconStyle(next), active: normalizeActive(next.active) };
-}
-
-function readIconStyle(store: Store): Store["iconStyle"] {
-  const style = (store as { iconStyle?: string }).iconStyle;
-  if (style === "photo" || style === "effort" || style === "symbol") return style;
-  return "photo";
-}
-
-function normalizeActive(active: Store["active"]): Store["active"] {
-  if (!active) return null;
-  return {
-    ...active,
-    restStartedAt: active.restStartedAt ?? null,
-    restTargetSeconds: active.restTargetSeconds ?? 0,
-    choices: active.choices ?? {},
-    schemes: active.schemes ?? {},
-  };
 }
 
 export function memoryStorage(initial?: string): StorageLike {

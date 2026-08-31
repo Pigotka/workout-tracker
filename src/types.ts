@@ -1,42 +1,3 @@
-export const ICON_IDS = [
-  "bench",
-  "incline",
-  "ohp",
-  "squat",
-  "deadlift",
-  "rdls",
-  "row",
-  "pulldown",
-  "pullup",
-  "fly",
-  "lateral",
-  "facepull",
-  "curl",
-  "pushdown",
-  "skullcrusher",
-  "dip",
-  "lunge",
-  "legpress",
-  "legext",
-  "legcurl",
-  "calf",
-  "hipthrust",
-  "plank",
-  "shrug",
-  "cable",
-  "default",
-] as const;
-
-export type IconId = (typeof ICON_IDS)[number];
-
-export type IconStyle = "photo" | "effort" | "symbol";
-
-export const ICON_STYLES: { id: IconStyle; name: string; hint: string }[] = [
-  { id: "photo", name: "Photos", hint: "Start of the lift — easiest to recognize" },
-  { id: "effort", name: "Effort", hint: "The hard part of the rep" },
-  { id: "symbol", name: "Symbols", hint: "Simple line icons" },
-];
-
 export type ExerciseMode = "reps" | "timed";
 
 export type RepScheme = {
@@ -52,7 +13,7 @@ export type RepScheme = {
 export type Exercise = {
   id: string;
   name: string;
-  icon: IconId;
+  catalogId: string;
   mode: ExerciseMode;
   targetSets: number;
   targetReps: number;
@@ -106,7 +67,7 @@ export type ActiveSession = {
 export type CompletedExercise = {
   exerciseId: string;
   name: string;
-  icon: IconId;
+  catalogId: string;
   note: string;
   schemeId?: string;
   sets: SetLog[];
@@ -124,9 +85,8 @@ export type CompletedSession = {
 };
 
 export type Store = {
-  version: 1 | 2;
+  version: 3;
   weightUnit: "kg" | "lb";
-  iconStyle: IconStyle;
   programs: Program[];
   sessions: CompletedSession[];
   active: ActiveSession | null;
@@ -174,5 +134,4 @@ export type Action =
   | { type: "pair-with-next"; programId: string; exerciseId: string; kind: "superset" | "alternate"; groupId: string }
   | { type: "unpair"; programId: string; exerciseId: string }
   | { type: "set-unit"; unit: "kg" | "lb" }
-  | { type: "set-icon-style"; style: IconStyle }
   | { type: "replace-store"; store: Store };

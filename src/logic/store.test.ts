@@ -1,22 +1,19 @@
 import { describe, expect, it } from "vitest";
 import { createSeedStore } from "../seed";
+import type { Exercise, ExerciseLog, Program, Store } from "../types";
 import { formatElapsed, formatWeight } from "./format";
 import {
   buildScheme,
   needsSetup,
+  pairWithNext,
   parsePyramid,
   pendingForExercise,
-  pickChoices,
-  pickSchemes,
-  pairWithNext,
   restAfterLogging,
-  slotsFor,
 } from "./prescription";
-import { parseHash, hashFor } from "./routes";
+import { hashFor, parseHash } from "./routes";
 import { currentStreak, thisWeekCount } from "./stats";
 import { loadStore, memoryStorage, saveStore } from "./storage";
 import { reduce } from "./store";
-import type { ExerciseLog, Store } from "../types";
 
 const t0 = Date.parse("2026-08-30T10:00:00");
 
@@ -24,179 +21,129 @@ function store(): Store {
   return createSeedStore();
 }
 
+function lift(id: string, extra: Partial<Exercise> = {}): Exercise {
+  return {
+    id,
+    name: id,
+    catalogId: "squat",
+    mode: "reps",
+    targetSets: 3,
+    targetReps: 5,
+    targetSeconds: 45,
+    restSeconds: 90,
+    workingWeight: 0,
+    note: "",
+    ...extra,
+  };
+}
+
+function programOf(exercises: Exercise[]): Program {
+  return { id: "p", name: "P", accent: "#d6ff3e", exercises };
+}
+
 describe("reduce", () => {
-  it("starts Trénink 1 on dřep using that lift's own reps", () => {
+  it("starts Test on squat using that lift's own reps", () => {
     const next = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s1",
     });
-    expect(next.active?.programId).toBe("t1");
-    expect(next.active?.activeExerciseId).toBe("t1-drep");
-    expect(next.active?.choices["t1-quads"]).toBe("t1-drep");
-    expect(next.active?.schemes["t1-drep"]).toBe("default");
-    expect(next.active?.pendingReps).toBe(6);
+    expect(next.active?.programId).toBe("test");
+    expect(next.active?.activeExerciseId).toBe("test-squat");
+    expect(next.active?.schemes["test-squat"]).toBe("default");
+    expect(next.active?.pendingReps).toBe(5);
   });
 
   it("logs a set and starts rest that counts up", () => {
     let s = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s1",
     });
     s = reduce(s, { type: "log-set", now: t0 + 40_000 });
-    const log = s.active?.logs["t1-drep"];
+    const log = s.active?.logs["test-squat"];
     expect(log?.sets).toHaveLength(1);
-    expect(log?.sets[0]?.reps).toBe(6);
+    expect(log?.sets[0]?.reps).toBe(5);
     expect(s.active?.restStartedAt).toBe(t0 + 40_000);
-    expect(s.active?.restTargetSeconds).toBe(180);
-  });
-
-  it("does not rest between superset halves", () => {
-    let s = reduce(store(), {
-      type: "start-workout",
-      programId: "t1",
-      now: t0,
-      sessionId: "s1",
-    });
-    s = reduce(s, { type: "select-exercise", exerciseId: "t1-predkop", now: t0 });
-    s = reduce(s, { type: "log-set", now: t0 + 20_000 });
-    expect(s.active?.restStartedAt).toBeNull();
-    expect(s.active?.activeExerciseId).toBe("t1-zakop");
-    s = reduce(s, { type: "log-set", now: t0 + 40_000 });
-    expect(s.active?.restStartedAt).toBe(t0 + 40_000);
-    expect(s.active?.restTargetSeconds).toBe(45);
-    expect(s.active?.activeExerciseId).toBe("t1-predkop");
-  });
-
-  it("swaps dřep for legpress", () => {
-    let s = reduce(store(), {
-      type: "start-workout",
-      programId: "t1",
-      now: t0,
-      sessionId: "s1",
-    });
-    s = reduce(s, { type: "swap-alternate", group: "t1-quads", now: t0 + 1 });
-    expect(s.active?.choices["t1-quads"]).toBe("t1-legpress");
-    expect(s.active?.activeExerciseId).toBe("t1-legpress");
-  });
-
-  it("rotates the alternate movement but keeps each lift's own reps", () => {
-    let s = reduce(store(), {
-      type: "start-workout",
-      programId: "t1",
-      now: t0,
-      sessionId: "s1",
-    });
-    s = reduce(s, { type: "log-set", now: t0 + 1000 });
-    s = reduce(s, { type: "finish-workout", now: t0 + 30 * 60 * 1000 });
-    s = reduce(s, {
-      type: "start-workout",
-      programId: "t1",
-      now: t0 + 2 * 86_400_000,
-      sessionId: "s2",
-    });
-    expect(s.active?.choices["t1-quads"]).toBe("t1-legpress");
-    expect(s.active?.schemes["t1-legpress"]).toBe("default");
-    expect(s.active?.pendingReps).toBe(12);
+    expect(s.active?.restTargetSeconds).toBe(90);
   });
 
   it("moves to the next lift after the last set, not an earlier unfinished one", () => {
     let s = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s1",
     });
-    for (let i = 0; i < 6; i += 1) {
+    for (let i = 0; i < 3; i += 1) {
       s = reduce(s, { type: "log-set", now: t0 + (i + 1) * 1000 });
       if (s.active?.restStartedAt) {
         s = reduce(s, { type: "end-rest", now: t0 + (i + 1) * 1000 + 500 });
       }
     }
-    expect(s.active?.logs["t1-drep"]?.sets).toHaveLength(6);
-    expect(s.active?.activeExerciseId).toBe("t1-predkop");
-    expect(s.active?.pendingReps).toBe(10);
-  });
-
-  it("follows pyramid reps set by set", () => {
-    let s = reduce(store(), {
-      type: "start-workout",
-      programId: "t1",
-      now: t0,
-      sessionId: "s1",
-      choices: { "t1-quads": "t1-drep", "t1-pull": "t1-pritahy" },
-    });
-    s = reduce(s, { type: "select-exercise", exerciseId: "t1-pritahy", now: t0 });
-    expect(s.active?.pendingReps).toBe(10);
-    s = reduce(s, { type: "log-set", now: t0 + 1 });
-    s = reduce(s, { type: "end-rest", now: t0 + 2 });
-    s = reduce(s, { type: "log-set", now: t0 + 3 });
-    s = reduce(s, { type: "end-rest", now: t0 + 4 });
-    s = reduce(s, { type: "log-set", now: t0 + 5 });
-    s = reduce(s, { type: "end-rest", now: t0 + 6 });
-    expect(s.active?.logs["t1-pritahy"]?.sets).toHaveLength(3);
-    expect(s.active?.pendingReps).toBe(8);
+    expect(s.active?.logs["test-squat"]?.sets).toHaveLength(3);
+    expect(s.active?.activeExerciseId).toBe("test-bench");
+    expect(s.active?.pendingReps).toBe(5);
   });
 
   it("keeps last logged reps for the next set", () => {
     let s = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s1",
     });
     s = reduce(s, { type: "set-pending-reps", reps: 4 });
     s = reduce(s, { type: "log-set", now: t0 + 1000 });
-    expect(s.active?.logs["t1-drep"]?.sets[0]?.reps).toBe(4);
+    expect(s.active?.logs["test-squat"]?.sets[0]?.reps).toBe(4);
     expect(s.active?.pendingReps).toBe(4);
     s = reduce(s, { type: "end-rest", now: t0 + 20_000 });
-    s = reduce(s, { type: "select-exercise", exerciseId: "t1-drep", now: t0 + 21_000 });
+    s = reduce(s, { type: "select-exercise", exerciseId: "test-squat", now: t0 + 21_000 });
     expect(s.active?.pendingReps).toBe(4);
   });
 
-  it("writes logged weight onto the plan for next time", () => {
+  it("adjusts weight and writes logged weight onto the plan for next time", () => {
     let s = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s1",
     });
+    s = reduce(s, { type: "adjust-weight", delta: 2.5 });
+    expect(s.active?.logs["test-squat"]?.currentWeight).toBe(2.5);
     s = reduce(s, { type: "set-weight", weight: 80 });
     s = reduce(s, { type: "log-set", now: t0 + 1000 });
-    expect(s.active?.logs["t1-drep"]?.currentWeight).toBe(80);
+    expect(s.active?.logs["test-squat"]?.currentWeight).toBe(80);
     expect(s.programs[0]?.exercises[0]?.workingWeight).toBe(80);
     s = reduce(s, { type: "finish-workout", now: t0 + 30 * 60 * 1000 });
     s = reduce(s, {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0 + 2 * 86_400_000,
       sessionId: "s2",
-      choices: { "t1-quads": "t1-drep", "t1-pull": "t1-shyby" },
-      schemes: { "t1-quads": "A" },
     });
-    expect(s.active?.logs["t1-drep"]?.currentWeight).toBe(80);
+    expect(s.active?.logs["test-squat"]?.currentWeight).toBe(80);
   });
 
   it("records rest duration when rest is stopped", () => {
     let s = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s1",
     });
     s = reduce(s, { type: "log-set", now: t0 + 1000 });
     s = reduce(s, { type: "end-rest", now: t0 + 91_000 });
     expect(s.active?.restStartedAt).toBeNull();
-    expect(s.active?.logs["t1-drep"]?.sets[0]?.restAfterMs).toBe(90_000);
+    expect(s.active?.logs["test-squat"]?.sets[0]?.restAfterMs).toBe(90_000);
   });
 
   it("discards an in-progress workout", () => {
     let s = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s1",
     });
@@ -209,48 +156,43 @@ describe("reduce", () => {
   it("pairs neighboring exercises as a superset or alternate", () => {
     let s = reduce(store(), {
       type: "pair-with-next",
-      programId: "t1",
-      exerciseId: "t1-incline",
+      programId: "test",
+      exerciseId: "test-squat",
       kind: "alternate",
       groupId: "g-alt",
     });
-    const incline = s.programs[0]?.exercises.find((item) => item.id === "t1-incline");
-    const military = s.programs[0]?.exercises.find((item) => item.id === "t1-military");
-    expect(incline?.alternateGroup).toBe("g-alt");
-    expect(military?.alternateGroup).toBe("g-alt");
-    s = reduce(s, { type: "unpair", programId: "t1", exerciseId: "t1-incline" });
-    expect(s.programs[0]?.exercises.find((item) => item.id === "t1-incline")?.alternateGroup).toBeUndefined();
+    const squat = s.programs[0]?.exercises.find((item) => item.id === "test-squat");
+    const bench = s.programs[0]?.exercises.find((item) => item.id === "test-bench");
+    expect(squat?.alternateGroup).toBe("g-alt");
+    expect(bench?.alternateGroup).toBe("g-alt");
+    s = reduce(s, { type: "unpair", programId: "test", exerciseId: "test-squat" });
+    expect(s.programs[0]?.exercises.find((item) => item.id === "test-squat")?.alternateGroup).toBeUndefined();
     s = reduce(s, {
       type: "pair-with-next",
-      programId: "t1",
-      exerciseId: "t1-incline",
+      programId: "test",
+      exerciseId: "test-squat",
       kind: "superset",
       groupId: "g-ss",
     });
-    expect(s.programs[0]?.exercises.find((item) => item.id === "t1-incline")?.supersetGroup).toBe("g-ss");
-    expect(s.programs[0]?.exercises.find((item) => item.id === "t1-military")?.supersetGroup).toBe("g-ss");
+    expect(s.programs[0]?.exercises.find((item) => item.id === "test-squat")?.supersetGroup).toBe("g-ss");
+    expect(s.programs[0]?.exercises.find((item) => item.id === "test-bench")?.supersetGroup).toBe("g-ss");
   });
 
   it("persists notes onto the program exercise", () => {
     let s = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s1",
     });
-    s = reduce(s, { type: "set-note", exerciseId: "t1-drep", note: "hlouběji" });
+    s = reduce(s, { type: "set-note", exerciseId: "test-squat", note: "hlouběji" });
     expect(s.programs[0]?.exercises[0]?.note).toBe("hlouběji");
-  });
-
-  it("switches the icon style", () => {
-    const next = reduce(store(), { type: "set-icon-style", style: "effort" });
-    expect(next.iconStyle).toBe("effort");
   });
 
   it("finishes a workout into history", () => {
     let s = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s1",
     });
@@ -258,69 +200,26 @@ describe("reduce", () => {
     s = reduce(s, { type: "finish-workout", now: t0 + 30 * 60 * 1000 });
     expect(s.active).toBeNull();
     expect(s.sessions).toHaveLength(1);
-    expect(s.sessions[0]?.programName).toBe("Trénink 1");
+    expect(s.sessions[0]?.programName).toBe("Test");
     expect(s.sessions[0]?.exercises[0]?.sets).toHaveLength(1);
-    expect(s.sessions[0]?.choices?.["t1-quads"]).toBe("t1-drep");
+    expect(s.sessions[0]?.exercises[0]?.catalogId).toBe("squat");
   });
 
   it("undoes the last set", () => {
     let s = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s1",
     });
     s = reduce(s, { type: "log-set", now: t0 + 1000 });
     s = reduce(s, { type: "undo-set", now: t0 + 2000 });
-    expect(s.active?.logs["t1-drep"]?.sets).toHaveLength(0);
+    expect(s.active?.logs["test-squat"]?.sets).toHaveLength(0);
     expect(s.active?.restStartedAt).toBeNull();
   });
 });
 
 describe("prescription", () => {
-  it("builds slots for the day without duplicating alternates", () => {
-    const program = createSeedStore().programs[0];
-    if (!program) throw new Error("missing program");
-    const slots = slotsFor(program, { "t1-quads": "t1-drep", "t1-pull": "t1-shyby" });
-    expect(slots.map((slot) => slot.kind)).toEqual([
-      "alternate",
-      "superset",
-      "alternate",
-      "single",
-      "single",
-      "superset",
-      "single",
-    ]);
-  });
-
-  it("rotates alternate choices but not a shared rozpis", () => {
-    const program = createSeedStore().programs[0];
-    if (!program) throw new Error("missing program");
-    const last = {
-      id: "x",
-      programId: "t1",
-      programName: "Trénink 1",
-      startedAt: t0,
-      completedAt: t0,
-      choices: { "t1-quads": "t1-drep", "t1-pull": "t1-shyby" },
-      schemes: { "t1-drep": "default" },
-      exercises: [],
-    };
-    expect(pickChoices(program, last)["t1-quads"]).toBe("t1-legpress");
-    expect(pickSchemes(program)["t1-drep"]).toBe("default");
-    expect(pickSchemes(program)["t1-legpress"]).toBe("default");
-    expect(pickChoices(program, undefined)["t1-quads"]).toBe("t1-drep");
-  });
-
-  it("only needs a Today screen when the plan has alternates", () => {
-    const program = createSeedStore().programs[0];
-    if (!program) throw new Error("missing program");
-    expect(needsSetup(program)).toBe(true);
-    expect(needsSetup({ ...program, exercises: program.exercises.filter((item) => !item.alternateGroup) })).toBe(
-      false,
-    );
-  });
-
   it("parses pyramid reps and builds a scheme from them", () => {
     expect(parsePyramid("10, 10, 10, 8, 8, 8, 6, 4")).toEqual([10, 10, 10, 8, 8, 8, 6, 4]);
     expect(parsePyramid("10 8 6 4")).toEqual([10, 8, 6, 4]);
@@ -337,49 +236,64 @@ describe("prescription", () => {
   });
 
   it("uses the planned pyramid number when last logged would otherwise stick", () => {
-    const exercise = createSeedStore().programs[0]?.exercises.find((item) => item.id === "t1-pritahy");
-    if (!exercise) throw new Error("missing pyramid lift");
-    expect(pendingForExercise(exercise, {}, 3, 10)).toBe(8);
+    const exercise = lift("pyr", {
+      schemes: [
+        {
+          id: "default",
+          label: "10 8 6 4",
+          sets: 4,
+          repsMin: 10,
+          repsMax: 10,
+          pyramid: [10, 8, 6, 4],
+        },
+      ],
+    });
+    expect(pendingForExercise(exercise, {}, 1, 10)).toBe(8);
     expect(pendingForExercise(exercise, {}, 0)).toBe(10);
   });
 
+  it("only needs a Today screen when the plan has alternates", () => {
+    const withAlt = programOf([
+      lift("a", { alternateGroup: "g" }),
+      lift("b", { alternateGroup: "g" }),
+    ]);
+    expect(needsSetup(withAlt)).toBe(true);
+    expect(needsSetup(programOf([lift("a")]))).toBe(false);
+  });
+
   it("rests only after both superset lifts", () => {
-    const program = createSeedStore().programs[0];
-    if (!program) throw new Error("missing program");
-    const predkop = program.exercises.find((item) => item.id === "t1-predkop");
-    const zakop = program.exercises.find((item) => item.id === "t1-zakop");
-    if (!predkop || !zakop) throw new Error("missing superset");
-    const empty: ExerciseLog = { exerciseId: "t1-predkop", currentWeight: 0, sets: [] };
-    const afterFirst = restAfterLogging(program, predkop, {
-      "t1-predkop": {
+    const a = lift("a", { supersetGroup: "ss", restSeconds: 45 });
+    const b = lift("b", { supersetGroup: "ss", restSeconds: 45 });
+    const program = programOf([a, b]);
+    const empty: ExerciseLog = { exerciseId: "a", currentWeight: 0, sets: [] };
+    const afterFirst = restAfterLogging(program, a, {
+      a: {
         ...empty,
-        sets: [{ reps: 10, weight: 0, durationMs: 1, completedAt: t0 }],
+        sets: [{ reps: 5, weight: 0, durationMs: 1, completedAt: t0 }],
       },
-      "t1-zakop": { exerciseId: "t1-zakop", currentWeight: 0, sets: [] },
+      b: { exerciseId: "b", currentWeight: 0, sets: [] },
     });
-    expect(afterFirst.nextExerciseId).toBe("t1-zakop");
+    expect(afterFirst.nextExerciseId).toBe("b");
     expect(afterFirst.restSeconds).toBe(0);
-    const afterPair = restAfterLogging(program, zakop, {
-      "t1-predkop": {
+    const afterPair = restAfterLogging(program, b, {
+      a: {
         ...empty,
-        sets: [{ reps: 10, weight: 0, durationMs: 1, completedAt: t0 }],
+        sets: [{ reps: 5, weight: 0, durationMs: 1, completedAt: t0 }],
       },
-      "t1-zakop": {
-        exerciseId: "t1-zakop",
+      b: {
+        exerciseId: "b",
         currentWeight: 0,
-        sets: [{ reps: 10, weight: 0, durationMs: 1, completedAt: t0 }],
+        sets: [{ reps: 5, weight: 0, durationMs: 1, completedAt: t0 }],
       },
     });
     expect(afterPair.restSeconds).toBe(45);
-    expect(afterPair.nextExerciseId).toBe("t1-predkop");
+    expect(afterPair.nextExerciseId).toBe("a");
   });
 
   it("pairs the next lift as a superset", () => {
-    const program = createSeedStore().programs[0];
-    if (!program) throw new Error("missing program");
-    const next = pairWithNext(program.exercises, 6, "superset", "g1");
-    expect(next[6]?.supersetGroup).toBe("g1");
-    expect(next[7]?.supersetGroup).toBe("g1");
+    const next = pairWithNext([lift("a"), lift("b")], 0, "superset", "g1");
+    expect(next[0]?.supersetGroup).toBe("g1");
+    expect(next[1]?.supersetGroup).toBe("g1");
   });
 });
 
@@ -388,7 +302,7 @@ describe("storage", () => {
     const mem = memoryStorage();
     let s = reduce(store(), {
       type: "start-workout",
-      programId: "t1",
+      programId: "test",
       now: t0,
       sessionId: "s9",
     });
@@ -396,29 +310,13 @@ describe("storage", () => {
     saveStore(mem, s);
     const loaded = loadStore(mem);
     expect(loaded.active?.id).toBe("s9");
-    expect(loaded.active?.logs["t1-drep"]?.sets).toHaveLength(1);
+    expect(loaded.active?.logs["test-squat"]?.sets).toHaveLength(1);
   });
 
   it("falls back to seed when empty or corrupt", () => {
     expect(loadStore(memoryStorage()).programs).toHaveLength(1);
-    expect(loadStore(memoryStorage("{not json")).programs[0]?.id).toBe("t1");
-  });
-
-  it("replaces the old Push/Pull/Legs seed", () => {
-    const mem = memoryStorage(
-      JSON.stringify({
-        version: 1,
-        weightUnit: "kg",
-        programs: [
-          { id: "push", name: "Push", accent: "#fff", exercises: [] },
-          { id: "pull", name: "Pull", accent: "#fff", exercises: [] },
-          { id: "legs", name: "Legs", accent: "#fff", exercises: [] },
-        ],
-        sessions: [],
-        active: null,
-      }),
-    );
-    expect(loadStore(mem).programs[0]?.id).toBe("t1");
+    expect(loadStore(memoryStorage()).programs[0]?.id).toBe("test");
+    expect(loadStore(memoryStorage("{not json")).programs[0]?.id).toBe("test");
   });
 });
 
@@ -432,12 +330,12 @@ describe("format", () => {
 
 describe("routes", () => {
   it("parses and serializes hashes", () => {
-    expect(parseHash("#/workout/exercise/t1-drep")).toEqual({
+    expect(parseHash("#/workout/exercise/test-squat")).toEqual({
       name: "exercise",
-      id: "t1-drep",
+      id: "test-squat",
     });
-    expect(parseHash("#/setup/t1")).toEqual({ name: "setup", id: "t1" });
-    expect(hashFor({ name: "setup", id: "t1" })).toBe("#/setup/t1");
+    expect(parseHash("#/setup/test")).toEqual({ name: "setup", id: "test" });
+    expect(hashFor({ name: "setup", id: "test" })).toBe("#/setup/test");
     expect(hashFor({ name: "programs" })).toBe("#/programs");
   });
 });
@@ -447,19 +345,35 @@ describe("stats", () => {
     const sessions = [
       {
         id: "a",
-        programId: "t1",
-        programName: "Trénink 1",
+        programId: "test",
+        programName: "Test",
         startedAt: Date.parse("2026-08-30T09:00:00"),
         completedAt: Date.parse("2026-08-30T10:00:00"),
-        exercises: [],
+        exercises: [
+          {
+            exerciseId: "test-squat",
+            name: "Squat",
+            catalogId: "squat",
+            note: "",
+            sets: [],
+          },
+        ],
       },
       {
         id: "b",
-        programId: "t1",
-        programName: "Trénink 1",
+        programId: "test",
+        programName: "Test",
         startedAt: Date.parse("2026-08-29T09:00:00"),
         completedAt: Date.parse("2026-08-29T10:00:00"),
-        exercises: [],
+        exercises: [
+          {
+            exerciseId: "test-bench",
+            name: "Bench Press",
+            catalogId: "bench-press",
+            note: "",
+            sets: [],
+          },
+        ],
       },
     ];
     expect(thisWeekCount(sessions, t0)).toBe(2);

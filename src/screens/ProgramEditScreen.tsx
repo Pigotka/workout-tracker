@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Confirm } from "../components/Confirm";
-import { Glyph, ICON_LABELS, iconColor } from "../components/Glyph";
+import { Glyph } from "../components/Glyph";
 import { PickerSheet } from "../components/PickerSheet";
+import { FALLBACK_ID, loadCatalog, searchCatalog, type CatalogEntry } from "../logic/catalog";
 import { formatRest } from "../logic/format";
 import {
   buildScheme,
@@ -14,7 +15,6 @@ import {
 } from "../logic/prescription";
 import type { SchemeKind } from "../logic/prescription";
 import { go } from "../logic/routes";
-import { ICON_IDS } from "../types";
 import { useStore } from "../store-context";
 import type { Exercise, Program, RepScheme } from "../types";
 
@@ -42,7 +42,7 @@ export function ProgramEditScreen({ id }: { id: string }) {
     const exercise: Exercise = {
       id: crypto.randomUUID(),
       name: "New exercise",
-      icon: "default",
+      catalogId: FALLBACK_ID,
       mode: "reps",
       targetSets: 3,
       targetReps: 8,
@@ -93,7 +93,7 @@ export function ProgramEditScreen({ id }: { id: string }) {
                 className="edit-ex-head"
                 onClick={() => setOpenId(openId === exercise.id ? null : exercise.id)}
               >
-                <Glyph id={exercise.icon} size="sm" color={exercise.color} />
+                <Glyph catalogId={exercise.catalogId} size="sm" />
                 <span>
                   {exercise.name}
                   {pairing ? <span className="pair-badge">{pairing}</span> : null}
@@ -183,19 +183,55 @@ function ExerciseEditor({
 }) {
   const next = program.exercises[index + 1];
   const pairing = pairLabel(exercise, program);
-  const [iconOpen, setIconOpen] = useState(false);
-  const tint = iconColor(exercise.icon, exercise.color);
+  const nameRef = useRef<HTMLInputElement>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [catalog, setCatalog] = useState<CatalogEntry[]>([]);
+  const [query, setQuery] = useState("");
+  const tint = exercise.color && /^#[0-9a-fA-F]{6}$/.test(exercise.color) ? exercise.color : "#d6ff3e";
+
+  useEffect(() => {
+    if (!pickerOpen || catalog.length > 0) return;
+    let cancelled = false;
+    void loadCatalog().then((entries) => {
+      if (!cancelled) setCatalog(entries);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [pickerOpen, catalog.length]);
+
+  const pickEntry = (entry: CatalogEntry) => {
+    const untitled = exercise.name === "" || exercise.name === "New exercise";
+    onChange({
+      ...exercise,
+      catalogId: entry.id,
+      name: untitled ? entry.name : exercise.name,
+    });
+    setPickerOpen(false);
+  };
 
   return (
     <div className="ex-editor">
       <label className="note-field">
         <span>Name</span>
-        <input value={exercise.name} onChange={(event) => onChange({ ...exercise, name: event.target.value })} />
+        <input
+          ref={nameRef}
+          value={exercise.name}
+          onChange={(event) => onChange({ ...exercise, name: event.target.value })}
+        />
       </label>
       <div className="picker-row">
-        <button type="button" className="picker-btn" onClick={() => setIconOpen(true)} aria-label="Choose icon">
-          <Glyph id={exercise.icon} size="sm" color={exercise.color} />
-          <span>Icon</span>
+        <button
+          type="button"
+          className="picker-btn"
+          onClick={() => {
+            setQuery("");
+            setPickerOpen(true);
+          }}
+          aria-label="Choose picture"
+        >
+          <Glyph catalogId={exercise.catalogId} size="sm" />
+          <span>Picture</span>
         </button>
         <label className="picker-btn">
           <span className="swatch" style={{ background: tint }} />
@@ -208,25 +244,44 @@ function ExerciseEditor({
           />
         </label>
       </div>
-      {iconOpen ? (
-        <PickerSheet title="Choose icon" onClose={() => setIconOpen(false)}>
-          <div className="icon-grid">
-            {ICON_IDS.map((icon) => (
-              <button
-                key={icon}
-                type="button"
-                className={exercise.icon === icon ? "icon-pick on" : "icon-pick"}
-                onClick={() => {
-                  onChange({ ...exercise, icon });
-                  setIconOpen(false);
-                }}
-                aria-label={ICON_LABELS[icon]}
-              >
-                <Glyph id={icon} size="sm" color={exercise.color} />
-                <span className="icon-caption">{ICON_LABELS[icon]}</span>
-              </button>
-            ))}
-          </div>
+      {pickerOpen ? (
+        <PickerSheet title="Choose picture" onClose={() => setPickerOpen(false)}>
+          <button
+            type="button"
+            className="catalog-row"
+            onClick={() => {
+              setPickerOpen(false);
+              queueMicrotask(() => nameRef.current?.focus());
+            }}
+          >
+            <Glyph catalogId={exercise.catalogId} size="sm" />
+            <span>Custom</span>
+          </button>
+          <label className="note-field catalog-search">
+            <span>Search</span>
+            <input
+              type="search"
+              value={query}
+              placeholder="English name"
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </label>
+          <ul className="catalog-list">
+            {searchCatalog(query, catalog)
+              .slice(0, query.trim() ? 80 : 40)
+              .map((entry) => (
+                <li key={entry.id}>
+                  <button
+                    type="button"
+                    className={exercise.catalogId === entry.id ? "catalog-row on" : "catalog-row"}
+                    onClick={() => pickEntry(entry)}
+                  >
+                    <Glyph catalogId={entry.id} size="sm" />
+                    <span>{entry.name}</span>
+                  </button>
+                </li>
+              ))}
+          </ul>
         </PickerSheet>
       ) : null}
       <div className="edit-grid">

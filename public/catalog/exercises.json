@@ -1,0 +1,3007 @@
+[
+  {
+    "id": "ab-wheel-rollout",
+    "name": "Ab Wheel Rollout",
+    "equipment": "ab_wheel"
+  },
+  {
+    "id": "air-bike",
+    "name": "Air Bike",
+    "equipment": "air_bike"
+  },
+  {
+    "id": "archer-pull-ups",
+    "name": "Archer Pull Ups",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "archer-push-ups",
+    "name": "Archer Push Ups",
+    "equipment": ""
+  },
+  {
+    "id": "arnold-press",
+    "name": "Arnold Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "assisted-dips",
+    "name": "Machine Assisted Dips",
+    "equipment": "dip_machine"
+  },
+  {
+    "id": "assisted-pull-ups",
+    "name": "Assisted Pull Ups",
+    "equipment": "assisted_pullup_machine"
+  },
+  {
+    "id": "back-extension",
+    "name": "Back Extension",
+    "equipment": ""
+  },
+  {
+    "id": "back-lever",
+    "name": "Back Lever",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "ball-leg-curl",
+    "name": "Stability Ball Leg Curl",
+    "equipment": "stability_ball"
+  },
+  {
+    "id": "ball-pike",
+    "name": "Ball Pike",
+    "equipment": "stability_ball"
+  },
+  {
+    "id": "band-assisted-pull-ups",
+    "name": "Band Assisted Pull Ups",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "band-pull-apart",
+    "name": "Band Pull Apart",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-adductor-stretch",
+    "name": "Banded Adductor Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-ankle-stretch",
+    "name": "Banded Ankle Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-calf-stretch",
+    "name": "Banded Calf Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-chest-stretch",
+    "name": "Banded Chest Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-clamshell",
+    "name": "Banded Clamshell",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-figure-4-stretch",
+    "name": "Banded Figure-4 Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-fire-hydrant",
+    "name": "Banded Fire Hydrant",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-glute-bridge",
+    "name": "Banded Glute Bridge",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-good-morning",
+    "name": "Banded Good Morning",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-hamstring-stretch",
+    "name": "Banded Hamstring Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-hip-thrust",
+    "name": "Banded Hip Thrust",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-it-band-stretch",
+    "name": "Banded IT-Band Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-kneeling-hip-thrust",
+    "name": "Banded Kneeling Hip Thrust",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-lat-stretch",
+    "name": "Banded Lat Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-lateral-walk",
+    "name": "Banded Lateral Walk",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-rear-delt-stretch",
+    "name": "Banded Rear Delt Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-romanian-deadlift",
+    "name": "Banded Romanian Deadlift",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-seated-hip-abduction",
+    "name": "Banded Seated Hip Abduction",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-shoulder-stretch",
+    "name": "Banded Shoulder Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "banded-squat",
+    "name": "Banded Squat",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-standing-curl",
+    "name": "Banded Standing Leg Curl",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-standing-hip-abduction",
+    "name": "Banded Standing Hip Abduction",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-standing-hip-adduction",
+    "name": "Banded Standing Hip Adduction",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-sumo-walk",
+    "name": "Banded Sumo Walk",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-terminal-knee-extension",
+    "name": "Banded Terminal Knee Extension",
+    "equipment": "loop_band"
+  },
+  {
+    "id": "banded-triceps-stretch",
+    "name": "Banded Triceps Stretch",
+    "equipment": "resistance_band"
+  },
+  {
+    "id": "barbell-ab-rollout",
+    "name": "Barbell Ab Rollout",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-calf-raise",
+    "name": "Barbell Calf Raise",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-curl",
+    "name": "Barbell Curl",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-front-raise",
+    "name": "Barbell Front Raise",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-glute-bridge",
+    "name": "Barbell Glute Bridge",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-lunge",
+    "name": "Barbell Lunge",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-overhead-extension",
+    "name": "Barbell Overhead Extension",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-preacher-curl",
+    "name": "Barbell Preacher Curl",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-pullover",
+    "name": "Barbell Pullover",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-rear-delt-row",
+    "name": "Barbell Rear Delt Row",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-reverse-lunge",
+    "name": "Barbell Reverse Lunge",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-row",
+    "name": "Bent-Over Barbell Row",
+    "equipment": "barbell"
+  },
+  {
+    "id": "barbell-wrist-curl",
+    "name": "Barbell Wrist Curl",
+    "equipment": "barbell"
+  },
+  {
+    "id": "battle-rope-double-slam",
+    "name": "Battle Rope Double Slam",
+    "equipment": "battle_rope"
+  },
+  {
+    "id": "battle-ropes",
+    "name": "Battle Ropes",
+    "equipment": "battle_rope"
+  },
+  {
+    "id": "bear-crawl",
+    "name": "Bear Crawl",
+    "equipment": ""
+  },
+  {
+    "id": "behind-the-back-barbell-shrug",
+    "name": "Behind the Back Barbell Shrug",
+    "equipment": "barbell"
+  },
+  {
+    "id": "behind-the-neck-lat-pulldown",
+    "name": "Behind-the-Neck Lat Pulldown",
+    "equipment": "lat_pulldown_machine"
+  },
+  {
+    "id": "behind-the-neck-press",
+    "name": "Behind the Neck Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "behind-the-neck-pull-ups",
+    "name": "Behind-the-Neck Pull-Up",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "bench-adductor-stretch",
+    "name": "Bench Adductor Stretch",
+    "equipment": "flat_bench"
+  },
+  {
+    "id": "bench-ankle-stretch",
+    "name": "Bench Ankle Stretch",
+    "equipment": "flat_bench"
+  },
+  {
+    "id": "bench-bulgarian-split-stretch",
+    "name": "Bench Bulgarian Split Stretch",
+    "equipment": "flat_bench"
+  },
+  {
+    "id": "bench-calf-stretch",
+    "name": "Bench Calf Stretch",
+    "equipment": "flat_bench"
+  },
+  {
+    "id": "bench-chest-stretch",
+    "name": "Bench Chest Stretch",
+    "equipment": "flat_bench"
+  },
+  {
+    "id": "bench-childs-pose",
+    "name": "Bench Child's Pose",
+    "equipment": "flat_bench"
+  },
+  {
+    "id": "bench-couch-stretch",
+    "name": "Bench Couch Stretch",
+    "equipment": "flat_bench"
+  },
+  {
+    "id": "bench-dips",
+    "name": "Bench Dips",
+    "equipment": ""
+  },
+  {
+    "id": "bench-figure-4-glute-stretch",
+    "name": "Bench Figure-4 Glute Stretch",
+    "equipment": "flat_bench"
+  },
+  {
+    "id": "bench-hamstring-stretch",
+    "name": "Bench Hamstring Stretch",
+    "equipment": "flat_bench"
+  },
+  {
+    "id": "bench-lat-stretch",
+    "name": "Bench Lat Stretch",
+    "equipment": "flat_bench"
+  },
+  {
+    "id": "bench-leg-pull-in",
+    "name": "Bench Leg Pull-In",
+    "equipment": ""
+  },
+  {
+    "id": "bench-press",
+    "name": "Barbell Bench Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "bench-pull",
+    "name": "Bench Pull",
+    "equipment": "barbell"
+  },
+  {
+    "id": "bent-arm-barbell-pullover",
+    "name": "Bent Arm Barbell Pullover",
+    "equipment": "barbell"
+  },
+  {
+    "id": "bent-arm-ez-bar-pullover",
+    "name": "Bent-Arm EZ-Bar Pullover",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "bent-over-db-row",
+    "name": "Bent-Over Dumbbell Row",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "bent-over-ez-bar-row",
+    "name": "Bent-Over EZ-Bar Row",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "bicep-curl",
+    "name": "Dumbbell Bicep Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "bicycle-crunch",
+    "name": "Bicycle Crunch",
+    "equipment": ""
+  },
+  {
+    "id": "bird-dog",
+    "name": "Bird-Dog",
+    "equipment": ""
+  },
+  {
+    "id": "bird-dog-hold",
+    "name": "Bird Dog Hold",
+    "equipment": ""
+  },
+  {
+    "id": "boat-pose",
+    "name": "Boat Pose",
+    "equipment": ""
+  },
+  {
+    "id": "bodyweight-calf-raise",
+    "name": "Bodyweight Calf Raise",
+    "equipment": ""
+  },
+  {
+    "id": "bodyweight-good-morning",
+    "name": "Bodyweight Good Morning",
+    "equipment": ""
+  },
+  {
+    "id": "bodyweight-lateral-raise",
+    "name": "Bodyweight Lateral Raise",
+    "equipment": ""
+  },
+  {
+    "id": "bodyweight-overhead-press",
+    "name": "Bodyweight Overhead Press",
+    "equipment": ""
+  },
+  {
+    "id": "bodyweight-reverse-lunge",
+    "name": "Bodyweight Reverse Lunge",
+    "equipment": ""
+  },
+  {
+    "id": "bodyweight-squat",
+    "name": "Bodyweight Squat",
+    "equipment": ""
+  },
+  {
+    "id": "bow-pose",
+    "name": "Bow Pose",
+    "equipment": ""
+  },
+  {
+    "id": "box-jump",
+    "name": "Box Jump",
+    "equipment": "plyo_box"
+  },
+  {
+    "id": "box-squat",
+    "name": "Box Squat",
+    "equipment": ""
+  },
+  {
+    "id": "bulgarian-split-squat",
+    "name": "Bulgarian Split Squat",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "burpees",
+    "name": "Burpees",
+    "equipment": ""
+  },
+  {
+    "id": "butterfly-stretch",
+    "name": "Butterfly Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "cable-bent-over-row",
+    "name": "Cable Bent-Over Row",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-chest-press",
+    "name": "Cable Chest Press",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-crunch",
+    "name": "Cable Crunch",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-curl",
+    "name": "Cable Curl",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-external-rotation",
+    "name": "Cable External Rotation",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-fly",
+    "name": "Cable Fly",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-front-raise",
+    "name": "Cable Front Raise",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-hammer-curl",
+    "name": "Cable Hammer Curl",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-kickback",
+    "name": "Cable Glute Kickback",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-lateral-raise",
+    "name": "Cable Lateral Raise",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-pallof-press",
+    "name": "Cable Pallof Press",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-tricep-kickback",
+    "name": "Cable Tricep Kickback",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-upright-row",
+    "name": "Cable Upright Row",
+    "equipment": "cable"
+  },
+  {
+    "id": "cable-wrist-curl",
+    "name": "Cable Wrist Curl",
+    "equipment": "cable"
+  },
+  {
+    "id": "camel-pose",
+    "name": "Camel Pose",
+    "equipment": ""
+  },
+  {
+    "id": "captains-chair-knee-raise",
+    "name": "Captain's Chair Knee Raise",
+    "equipment": ""
+  },
+  {
+    "id": "captains-chair-leg-raise",
+    "name": "Captain's Chair Leg Raise",
+    "equipment": ""
+  },
+  {
+    "id": "cat-cow",
+    "name": "Cat-Cow",
+    "equipment": ""
+  },
+  {
+    "id": "cat-stretch",
+    "name": "Cat Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "chair-pose",
+    "name": "Chair Pose",
+    "equipment": ""
+  },
+  {
+    "id": "cheat-curl",
+    "name": "Cheat Curl",
+    "equipment": "barbell"
+  },
+  {
+    "id": "chest-press-machine",
+    "name": "Machine Chest Press",
+    "equipment": "chest_press_machine"
+  },
+  {
+    "id": "chest-supported-db-row",
+    "name": "Chest-Supported Dumbbell Row",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "chest-supported-dumbbell-shrug",
+    "name": "Chest Supported Dumbbell Shrug",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "chest-supported-kettlebell-row",
+    "name": "Chest-Supported Kettlebell Row",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "chest-supported-smith-machine-row",
+    "name": "Chest-Supported Smith Machine Row",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "childs-pose",
+    "name": "Child's Pose",
+    "equipment": ""
+  },
+  {
+    "id": "chin-tuck-hold",
+    "name": "Chin Tuck Hold",
+    "equipment": ""
+  },
+  {
+    "id": "chin-ups",
+    "name": "Chin-Ups",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "clamshells",
+    "name": "Clamshells",
+    "equipment": ""
+  },
+  {
+    "id": "clamshells-hold",
+    "name": "Clamshell Hold",
+    "equipment": ""
+  },
+  {
+    "id": "clap-push-ups",
+    "name": "Clap Push-Ups",
+    "equipment": ""
+  },
+  {
+    "id": "clean",
+    "name": "Clean",
+    "equipment": "barbell"
+  },
+  {
+    "id": "clean-and-jerk",
+    "name": "Clean and Jerk",
+    "equipment": "barbell"
+  },
+  {
+    "id": "close-grip-barbell-curl",
+    "name": "Close-Grip Barbell Curl",
+    "equipment": "barbell"
+  },
+  {
+    "id": "close-grip-bench-press",
+    "name": "Close-Grip Bench Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "close-grip-db-bench-press",
+    "name": "Close-Grip Dumbbell Bench Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "close-grip-ez-bar-bench-press",
+    "name": "Close-Grip EZ-Bar Bench Press",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "close-grip-ez-bar-curl",
+    "name": "Close-Grip EZ-Bar Curl",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "close-grip-incline-bench",
+    "name": "Close-Grip Incline Bench Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "close-grip-lat-pulldown",
+    "name": "Close Grip Lat Pulldown",
+    "equipment": "cable"
+  },
+  {
+    "id": "close-grip-pull-ups",
+    "name": "Close-Grip Pull-Ups",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "close-grip-push-ups",
+    "name": "Close Grip Push Ups",
+    "equipment": ""
+  },
+  {
+    "id": "close-stance-leg-press",
+    "name": "Close-Stance Leg Press",
+    "equipment": "leg_press"
+  },
+  {
+    "id": "cobra-stretch",
+    "name": "Cobra Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "cocoons",
+    "name": "Cocoons",
+    "equipment": ""
+  },
+  {
+    "id": "concentration-curl",
+    "name": "Concentration Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "cossack-squat",
+    "name": "Cossack Squat",
+    "equipment": ""
+  },
+  {
+    "id": "cow-face-pose",
+    "name": "Cow Face Pose",
+    "equipment": ""
+  },
+  {
+    "id": "crab-dips",
+    "name": "Crab Dips",
+    "equipment": ""
+  },
+  {
+    "id": "crescent-lunge",
+    "name": "Crescent Lunge",
+    "equipment": ""
+  },
+  {
+    "id": "cross-body-crunch",
+    "name": "Cross-Body Crunch",
+    "equipment": ""
+  },
+  {
+    "id": "cross-body-hammer-curl",
+    "name": "Cross Body Hammer Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "cross-body-shoulder-stretch",
+    "name": "Cross-Body Shoulder Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "crow-pose",
+    "name": "Crow Pose",
+    "equipment": ""
+  },
+  {
+    "id": "crunches",
+    "name": "Crunches",
+    "equipment": ""
+  },
+  {
+    "id": "dancer-pose",
+    "name": "Dancer Pose",
+    "equipment": ""
+  },
+  {
+    "id": "db-bench-press",
+    "name": "Dumbbell Bench Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-fly",
+    "name": "Dumbbell Fly",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-kickstand-deadlift",
+    "name": "Dumbbell Kickstand Deadlift",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-lunge",
+    "name": "Dumbbell Lunge",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-overhead-carry",
+    "name": "Dumbbell Overhead Carry",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-pullover",
+    "name": "Dumbbell Pullover",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-reverse-curl",
+    "name": "Dumbbell Reverse Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-reverse-wrist-curl",
+    "name": "Dumbbell Reverse Wrist Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-shrug",
+    "name": "Dumbbell Shrug",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-skull-crusher",
+    "name": "Dumbbell Skull Crusher",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-somersault-squat",
+    "name": "Dumbbell Somersault Squat",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-squat",
+    "name": "Dumbbell Squat",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-sumo-squat",
+    "name": "Dumbbell Sumo Squat",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "db-svend-press",
+    "name": "Dumbbell Svend Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dead-bug",
+    "name": "Dead Bug",
+    "equipment": ""
+  },
+  {
+    "id": "dead-bug-hold",
+    "name": "Dead Bug Hold",
+    "equipment": ""
+  },
+  {
+    "id": "dead-hang",
+    "name": "Dead Hang",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "deadlift",
+    "name": "Barbell Deadlift",
+    "equipment": "barbell"
+  },
+  {
+    "id": "decline-bench-press",
+    "name": "Decline Bench Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "decline-bench-press-barbell",
+    "name": "Decline Barbell Bench Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "decline-bench-press-ez-bar",
+    "name": "Decline EZ-Bar Bench Press",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "decline-crunch",
+    "name": "Decline Crunch",
+    "equipment": ""
+  },
+  {
+    "id": "decline-db-fly",
+    "name": "Decline Dumbbell Fly",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "decline-push-up",
+    "name": "Decline Push-Up",
+    "equipment": ""
+  },
+  {
+    "id": "deficit-deadlift",
+    "name": "Deficit Deadlift",
+    "equipment": "barbell"
+  },
+  {
+    "id": "deficit-push-ups",
+    "name": "Deficit Push Ups",
+    "equipment": ""
+  },
+  {
+    "id": "diamond-push-ups",
+    "name": "Diamond Push Ups",
+    "equipment": ""
+  },
+  {
+    "id": "dips",
+    "name": "Chest Dips",
+    "equipment": "dip_station"
+  },
+  {
+    "id": "dolphin-pose",
+    "name": "Dolphin Pose",
+    "equipment": ""
+  },
+  {
+    "id": "donkey-calf-raise",
+    "name": "Donkey Calf Raise",
+    "equipment": ""
+  },
+  {
+    "id": "doorway-chest-stretch",
+    "name": "Doorway Chest Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "double-db-kickstand-deadlift",
+    "name": "Double Dumbbell Kickstand Deadlift",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "double-db-overhead-carry",
+    "name": "Double Dumbbell Overhead Carry",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "double-kettlebell-bicep-curl",
+    "name": "Double Kettlebell Bicep Curl",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-clean",
+    "name": "Double Kettlebell Clean",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-clean-and-press",
+    "name": "Double Kettlebell Clean and Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-dead-clean",
+    "name": "Double Kettlebell Dead Clean",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-dead-split-snatch",
+    "name": "Double Kettlebell Dead Split Snatch",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-jerk",
+    "name": "Double Kettlebell Jerk",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-overhead-carry",
+    "name": "Double Kettlebell Overhead Carry",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-overhead-press",
+    "name": "Double Kettlebell Overhead Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-push-press",
+    "name": "Double Kettlebell Push Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-rear-delt-row",
+    "name": "Double Kettlebell Rear Delt Row",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-row",
+    "name": "Double Kettlebell Row",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-split-jerk",
+    "name": "Double Kettlebell Split Jerk",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "double-kettlebell-swing-snatch",
+    "name": "Double Kettlebell Swing Snatch",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "downward-dog",
+    "name": "Downward-Facing Dog",
+    "equipment": ""
+  },
+  {
+    "id": "downward-dog-knee-tuck",
+    "name": "Downward Dog Knee Tuck",
+    "equipment": ""
+  },
+  {
+    "id": "downward-dog-pedal",
+    "name": "Downward Dog Pedal",
+    "equipment": ""
+  },
+  {
+    "id": "downward-dog-to-knee-drive",
+    "name": "Downward Dog to Knee Drive",
+    "equipment": ""
+  },
+  {
+    "id": "downward-dog-to-low-lunge",
+    "name": "Downward Dog to Low Lunge",
+    "equipment": ""
+  },
+  {
+    "id": "downward-dog-to-plank",
+    "name": "Downward Dog to Plank",
+    "equipment": ""
+  },
+  {
+    "id": "downward-dog-to-upward-dog",
+    "name": "Downward Dog to Upward Dog",
+    "equipment": ""
+  },
+  {
+    "id": "drag-curl",
+    "name": "Drag Curl",
+    "equipment": "barbell"
+  },
+  {
+    "id": "dragon-flag",
+    "name": "Dragon Flag",
+    "equipment": ""
+  },
+  {
+    "id": "dumbbell-bench-pull",
+    "name": "Dumbbell Bench Pull",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-calf-raise",
+    "name": "Dumbbell Calf Raise",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-deadlift",
+    "name": "Dumbbell Deadlift",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-face-pull",
+    "name": "Dumbbell Face Pull",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-farmers-walk",
+    "name": "Dumbbell Farmer's Walk",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-floor-press",
+    "name": "Dumbbell Floor Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-front-raise",
+    "name": "Dumbbell Front Raise",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-front-squat",
+    "name": "Dumbbell Front Squat",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-hip-thrust",
+    "name": "Dumbbell Hip Thrust",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-pistol-squat",
+    "name": "Dumbbell Pistol Squat",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-push-press",
+    "name": "Dumbbell Push Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-reverse-fly",
+    "name": "Dumbbell Reverse Fly",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-romanian-deadlift",
+    "name": "Dumbbell Romanian Deadlift",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-shoulder-press",
+    "name": "Dumbbell Shoulder Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-side-bend",
+    "name": "Dumbbell Side Bend",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-snatch",
+    "name": "Dumbbell Snatch",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-split-squat",
+    "name": "Dumbbell Split Squat",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-tricep-extension",
+    "name": "Dumbbell Tricep Extension",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-upright-row",
+    "name": "Dumbbell Upright Row",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-windmill",
+    "name": "Dumbbell Windmill",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "dumbbell-wrist-curl",
+    "name": "Dumbbell Wrist Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "eagle-pose",
+    "name": "Eagle Pose",
+    "equipment": ""
+  },
+  {
+    "id": "easy-pose",
+    "name": "Easy Pose",
+    "equipment": ""
+  },
+  {
+    "id": "elliptical-trainer",
+    "name": "Elliptical Trainer",
+    "equipment": "elliptical"
+  },
+  {
+    "id": "extended-side-angle",
+    "name": "Extended Side Angle Pose",
+    "equipment": ""
+  },
+  {
+    "id": "ez-bar-bench-press",
+    "name": "EZ-Bar Bench Press",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-curl",
+    "name": "EZ-Bar Curl",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-front-raise",
+    "name": "EZ-Bar Front Raise",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-lying-tricep-extension",
+    "name": "EZ-Bar Lying Triceps Extension",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-overhead-extension",
+    "name": "EZ-Bar Overhead Tricep Extension",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-pullover",
+    "name": "EZ Bar Pullover",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-reverse-curl",
+    "name": "EZ-Bar Reverse Curl",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-reverse-grip-row",
+    "name": "EZ Bar Reverse Grip Row",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-romanian-deadlift",
+    "name": "EZ-Bar Romanian Deadlift",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-shrug",
+    "name": "EZ-Bar Shrug",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-spider-curl",
+    "name": "EZ Bar Spider Curl",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-upright-row",
+    "name": "EZ-Bar Upright Row",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "ez-bar-wrist-curl",
+    "name": "EZ-Bar Wrist Curl",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "face-pull",
+    "name": "Cable Face Pull",
+    "equipment": "cable"
+  },
+  {
+    "id": "fish-pose",
+    "name": "Fish Pose",
+    "equipment": ""
+  },
+  {
+    "id": "floor-ez-bar-press",
+    "name": "Floor EZ-Bar Press",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "floor-kettlebell-pullover",
+    "name": "Floor Kettlebell Pullover",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "floor-press",
+    "name": "Floor Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "flutter-kicks",
+    "name": "Flutter Kicks",
+    "equipment": ""
+  },
+  {
+    "id": "front-lever",
+    "name": "Front Lever",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "front-squat",
+    "name": "Front Squat",
+    "equipment": "barbell"
+  },
+  {
+    "id": "garland-pose",
+    "name": "Garland Pose",
+    "equipment": ""
+  },
+  {
+    "id": "glute-bridge",
+    "name": "Glute Bridge",
+    "equipment": ""
+  },
+  {
+    "id": "glute-bridge-hold",
+    "name": "Glute Bridge Hold",
+    "equipment": ""
+  },
+  {
+    "id": "glute-kickback",
+    "name": "Glute Kickback",
+    "equipment": ""
+  },
+  {
+    "id": "glute-kickback-hold",
+    "name": "Glute Kickback Hold",
+    "equipment": ""
+  },
+  {
+    "id": "goblet-squat",
+    "name": "Goblet Squat",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "good-morning",
+    "name": "Good Morning",
+    "equipment": "barbell"
+  },
+  {
+    "id": "hack-squat",
+    "name": "Hack Squat",
+    "equipment": "hack_squat"
+  },
+  {
+    "id": "hack-squat-calf-raise",
+    "name": "Hack Squat Calf Raise",
+    "equipment": "hack_squat"
+  },
+  {
+    "id": "half-kneeling-hip-flexor-rock",
+    "name": "Half-Kneeling Hip Flexor Rock",
+    "equipment": ""
+  },
+  {
+    "id": "half-moon-pose",
+    "name": "Half Moon Pose",
+    "equipment": ""
+  },
+  {
+    "id": "hammer-curl",
+    "name": "Dumbbell Hammer Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "handstand-push-ups",
+    "name": "Handstand Push Ups",
+    "equipment": ""
+  },
+  {
+    "id": "hang-clean",
+    "name": "Hang Clean",
+    "equipment": "barbell"
+  },
+  {
+    "id": "hang-power-clean",
+    "name": "Hang Power Clean",
+    "equipment": "barbell"
+  },
+  {
+    "id": "hanging-knee-raise",
+    "name": "Hanging Knee Raise",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "hanging-leg-raise",
+    "name": "Hanging Leg Raise",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "hanging-pike",
+    "name": "Hanging Pike",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "happy-baby",
+    "name": "Happy Baby Pose",
+    "equipment": ""
+  },
+  {
+    "id": "head-to-knee-pose",
+    "name": "Head-to-Knee Pose",
+    "equipment": ""
+  },
+  {
+    "id": "heel-elevated-squat",
+    "name": "Heel-Elevated Squat",
+    "equipment": "barbell"
+  },
+  {
+    "id": "heel-to-toe-walk",
+    "name": "Heel-to-Toe Walk",
+    "equipment": ""
+  },
+  {
+    "id": "hero-pose",
+    "name": "Hero Pose",
+    "equipment": ""
+  },
+  {
+    "id": "hex-bar-deadlift",
+    "name": "Hex Bar Deadlift",
+    "equipment": "trap_bar"
+  },
+  {
+    "id": "high-foot-leg-press",
+    "name": "High-Foot Leg Press",
+    "equipment": "leg_press"
+  },
+  {
+    "id": "high-knees",
+    "name": "High Knees",
+    "equipment": ""
+  },
+  {
+    "id": "high-plank",
+    "name": "High Plank",
+    "equipment": ""
+  },
+  {
+    "id": "hip-abduction",
+    "name": "Machine Hip Abduction",
+    "equipment": "hip_abduction_machine"
+  },
+  {
+    "id": "hip-adduction",
+    "name": "Hip Adduction",
+    "equipment": "hip_adduction_machine"
+  },
+  {
+    "id": "hip-thrust",
+    "name": "Barbell Hip Thrust",
+    "equipment": "barbell"
+  },
+  {
+    "id": "hollow-body-hold",
+    "name": "Hollow Body Hold",
+    "equipment": ""
+  },
+  {
+    "id": "horizontal-leg-press",
+    "name": "Horizontal Leg Press",
+    "equipment": "leg_press"
+  },
+  {
+    "id": "human-flag",
+    "name": "Human Flag",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "incline-bench-ez-bar-press",
+    "name": "Incline EZ-Bar Bench Press",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "incline-bench-press",
+    "name": "Incline Barbell Bench Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "incline-db-curl",
+    "name": "Incline Dumbbell Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "incline-db-press",
+    "name": "Incline Dumbbell Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "incline-dumbbell-fly",
+    "name": "Incline Dumbbell Fly",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "incline-hammer-curl",
+    "name": "Incline Hammer Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "incline-push-ups",
+    "name": "Incline Push-Up",
+    "equipment": ""
+  },
+  {
+    "id": "incline-treadmill-walk",
+    "name": "Incline Treadmill Walk",
+    "equipment": "treadmill"
+  },
+  {
+    "id": "inverted-row",
+    "name": "Inverted Row",
+    "equipment": "barbell"
+  },
+  {
+    "id": "isometric-neck-side",
+    "name": "Isometric Neck Lateral Flexion",
+    "equipment": ""
+  },
+  {
+    "id": "jackknife-sit-up",
+    "name": "Jackknife Sit-Up",
+    "equipment": ""
+  },
+  {
+    "id": "jefferson-curl",
+    "name": "Jefferson Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "jump-rope",
+    "name": "Jump Rope",
+    "equipment": "jump_rope"
+  },
+  {
+    "id": "jump-squat",
+    "name": "Jump Squat",
+    "equipment": ""
+  },
+  {
+    "id": "jumping-jacks",
+    "name": "Jumping Jacks",
+    "equipment": ""
+  },
+  {
+    "id": "kettlebell-bulgarian-split-squat",
+    "name": "Kettlebell Bulgarian Split Squat",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-close-grip-floor-press",
+    "name": "Kettlebell Close-Grip Floor Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-concentration-curl",
+    "name": "Kettlebell Concentration Curl",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-deadlift",
+    "name": "Kettlebell Deadlift",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-farmers-walk",
+    "name": "Kettlebell Farmer's Walk",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-floor-press",
+    "name": "Kettlebell Floor Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-goblet-lunge",
+    "name": "Kettlebell Goblet Lunge",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-halo",
+    "name": "Kettlebell Halo",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-hammer-curl",
+    "name": "Kettlebell Hammer Curl",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-hip-thrust",
+    "name": "Kettlebell Hip Thrust",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-kickstand-deadlift",
+    "name": "Kettlebell Kickstand Deadlift",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-lunge-press",
+    "name": "Kettlebell Lunge Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-offset-reverse-lunge-and-press",
+    "name": "Kettlebell Offset Reverse Lunge and Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-overhead-carry",
+    "name": "Kettlebell Overhead Carry",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-overhead-tricep-extension",
+    "name": "Kettlebell Overhead Tricep Extension",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-pistol-squat",
+    "name": "Kettlebell Pistol Squat",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-pullover",
+    "name": "Kettlebell Pullover",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-reverse-lunge",
+    "name": "Kettlebell Reverse Lunge",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-reverse-wrist-curl",
+    "name": "Kettlebell Reverse Wrist Curl",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-rotational-lunge",
+    "name": "Kettlebell Rotational Lunge",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-russian-twist",
+    "name": "Kettlebell Russian Twist",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-shrug",
+    "name": "Kettlebell Shrug",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-single-leg-deadlift",
+    "name": "Kettlebell Single Leg Deadlift",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-skull-crusher",
+    "name": "Kettlebell Skull Crusher",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-squat",
+    "name": "Kettlebell Squat",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-sumo-deadlift",
+    "name": "Kettlebell Sumo Deadlift",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-sumo-high-pull",
+    "name": "Kettlebell Sumo High Pull",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-svend-press",
+    "name": "Kettlebell Svend Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-swing",
+    "name": "Kettlebell Swing",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-swing-clean",
+    "name": "Kettlebell Swing Clean",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-turkish-get-ups",
+    "name": "Kettlebell Turkish Get Ups",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-windmills",
+    "name": "Kettlebell Windmills",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "kettlebell-wrist-curl",
+    "name": "Kettlebell Wrist Curl",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "knee-push-ups",
+    "name": "Knee Push Ups",
+    "equipment": ""
+  },
+  {
+    "id": "knee-to-chest-stretch",
+    "name": "Knee-to-Chest Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "kneeling-cable-row",
+    "name": "Kneeling Cable Row",
+    "equipment": "cable"
+  },
+  {
+    "id": "kneeling-hip-flexor-stretch",
+    "name": "Kneeling Hip Flexor Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "kneeling-wrist-stretch",
+    "name": "Kneeling Wrist Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "l-sit",
+    "name": "L Sit",
+    "equipment": "dip_station"
+  },
+  {
+    "id": "landmine-press",
+    "name": "Landmine Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "lat-pulldown",
+    "name": "Lat Pulldown",
+    "equipment": "cable"
+  },
+  {
+    "id": "lateral-raise",
+    "name": "Dumbbell Lateral Raise",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "leg-curl",
+    "name": "Lying Leg Curl",
+    "equipment": "leg_curl"
+  },
+  {
+    "id": "leg-extension",
+    "name": "Leg Extension",
+    "equipment": "leg_extension"
+  },
+  {
+    "id": "leg-press",
+    "name": "Leg Press",
+    "equipment": "leg_press"
+  },
+  {
+    "id": "legs-up-the-wall",
+    "name": "Legs-Up-the-Wall Pose",
+    "equipment": ""
+  },
+  {
+    "id": "lizard-stretch",
+    "name": "Lizard Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "locust-pose",
+    "name": "Locust Pose",
+    "equipment": ""
+  },
+  {
+    "id": "low-lunge",
+    "name": "Low Lunge",
+    "equipment": ""
+  },
+  {
+    "id": "low-lunge-to-half-split",
+    "name": "Low Lunge to Half Split",
+    "equipment": ""
+  },
+  {
+    "id": "lunge",
+    "name": "Lunge",
+    "equipment": ""
+  },
+  {
+    "id": "lying-leg-raise",
+    "name": "Lying Leg Raise",
+    "equipment": ""
+  },
+  {
+    "id": "lying-tricep-extension",
+    "name": "Lying Tricep Extension",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "machine-back-extension",
+    "name": "Machine Back Extension",
+    "equipment": "back_extension_machine"
+  },
+  {
+    "id": "machine-bicep-curl",
+    "name": "Machine Bicep Curl",
+    "equipment": "bicep_curl_machine"
+  },
+  {
+    "id": "machine-calf-raise",
+    "name": "Machine Calf Raise",
+    "equipment": "standing_calf_raise_machine"
+  },
+  {
+    "id": "machine-chest-fly",
+    "name": "Machine Chest Fly",
+    "equipment": "chest_fly_machine"
+  },
+  {
+    "id": "machine-preacher-curl",
+    "name": "Machine Preacher Curl",
+    "equipment": "preacher_curl_machine"
+  },
+  {
+    "id": "machine-seated-crunch",
+    "name": "Machine Seated Crunch",
+    "equipment": "ab_crunch_machine"
+  },
+  {
+    "id": "machine-shoulder-press",
+    "name": "Machine Shoulder Press",
+    "equipment": "shoulder_press_machine"
+  },
+  {
+    "id": "machine-triceps-extension",
+    "name": "Machine Triceps Extension",
+    "equipment": "tricep_extension_machine"
+  },
+  {
+    "id": "medicine-ball-slam",
+    "name": "Medicine Ball Slam",
+    "equipment": "slam_ball"
+  },
+  {
+    "id": "mountain-climbers",
+    "name": "Mountain Climbers",
+    "equipment": ""
+  },
+  {
+    "id": "mountain-pose",
+    "name": "Mountain Pose",
+    "equipment": ""
+  },
+  {
+    "id": "muscle-snatch",
+    "name": "Muscle Snatch",
+    "equipment": "barbell"
+  },
+  {
+    "id": "muscle-ups",
+    "name": "Muscle Ups",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "neck-side-stretch",
+    "name": "Neck Side Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "negative-pull-ups",
+    "name": "Negative Pull Ups",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "neutral-grip-pull-ups",
+    "name": "Neutral Grip Pull Ups",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "nordic-hamstring-curl",
+    "name": "Nordic Hamstring Curl",
+    "equipment": "glute_ham_developer"
+  },
+  {
+    "id": "ohp",
+    "name": "Barbell Overhead Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "one-arm-dumbbell-push-press",
+    "name": "One-Arm Dumbbell Push Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "one-arm-dumbbell-swing",
+    "name": "One-Arm Dumbbell Swing",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "one-arm-kettlebell-bicep-curl",
+    "name": "One Arm Kettlebell Bicep Curl",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "one-arm-kettlebell-bottoms-up-press",
+    "name": "One-Arm Kettlebell Bottoms-Up Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "one-arm-kettlebell-floor-glute-bridge-press",
+    "name": "One Arm Kettlebell Floor Glute Bridge Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "one-arm-kettlebell-floor-press",
+    "name": "One Arm Kettlebell Floor Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "one-arm-kettlebell-front-squat",
+    "name": "One Arm Kettlebell Front Squat",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "one-arm-kettlebell-push-press",
+    "name": "One Arm Kettlebell Push Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "one-arm-kettlebell-row",
+    "name": "One Arm Kettlebell Row",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "one-arm-kettlebell-shoulder-press",
+    "name": "One Arm Kettlebell Shoulder Press",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "one-arm-kettlebell-swing",
+    "name": "One Arm Kettlebell Swing",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "one-arm-kettlebell-tricep-kickback",
+    "name": "One-Arm Kettlebell Tricep Kickback",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "one-arm-landmine-press",
+    "name": "One-Arm Landmine Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "one-arm-lat-pulldown",
+    "name": "One-Arm Lat Pulldown",
+    "equipment": "cable"
+  },
+  {
+    "id": "one-arm-single-leg-dumbbell-romanian-deadlift",
+    "name": "One-Arm Single-Leg Dumbbell Romanian Deadlift",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "one-arm-single-leg-kettlebell-romanian-deadlift",
+    "name": "One-Arm Single-Leg Kettlebell Romanian Deadlift",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "overhead-squat",
+    "name": "Overhead Squat",
+    "equipment": "barbell"
+  },
+  {
+    "id": "overhead-tricep-extension",
+    "name": "Overhead Tricep Extension",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "overhead-triceps-stretch",
+    "name": "Overhead Triceps Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "pause-deadlift",
+    "name": "Pause Deadlift",
+    "equipment": "barbell"
+  },
+  {
+    "id": "pause-pull-up",
+    "name": "Pause Pull-Up",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "pause-squat",
+    "name": "Pause Squat",
+    "equipment": "barbell"
+  },
+  {
+    "id": "paused-bench-press",
+    "name": "Paused Bench Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "paused-incline-bench-press",
+    "name": "Paused Incline Bench Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "paused-ohp",
+    "name": "Paused Overhead Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "pec-deck",
+    "name": "Pec Deck",
+    "equipment": "pec_deck"
+  },
+  {
+    "id": "pendlay-row",
+    "name": "Pendlay Row",
+    "equipment": "barbell"
+  },
+  {
+    "id": "pigeon-stretch",
+    "name": "Pigeon Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "pike-push-ups",
+    "name": "Pike Push Ups",
+    "equipment": ""
+  },
+  {
+    "id": "pilates-kneeling-side-kick",
+    "name": "Pilates Kneeling Side Kick",
+    "equipment": ""
+  },
+  {
+    "id": "pilates-leg-pull-back",
+    "name": "Pilates Leg Pull Back",
+    "equipment": ""
+  },
+  {
+    "id": "pilates-leg-pull-front",
+    "name": "Pilates Leg Pull Front",
+    "equipment": ""
+  },
+  {
+    "id": "pilates-roll-down",
+    "name": "Pilates Roll Down",
+    "equipment": ""
+  },
+  {
+    "id": "pilates-roll-over",
+    "name": "Pilates Roll Over",
+    "equipment": ""
+  },
+  {
+    "id": "pilates-saw",
+    "name": "Pilates Saw",
+    "equipment": ""
+  },
+  {
+    "id": "pilates-side-bend",
+    "name": "Pilates Side Bend",
+    "equipment": ""
+  },
+  {
+    "id": "pilates-spine-stretch-forward",
+    "name": "Pilates Spine Stretch Forward",
+    "equipment": ""
+  },
+  {
+    "id": "pilates-spine-twist",
+    "name": "Pilates Spine Twist",
+    "equipment": ""
+  },
+  {
+    "id": "pistol-squat",
+    "name": "Pistol Squat",
+    "equipment": ""
+  },
+  {
+    "id": "planche",
+    "name": "Planche",
+    "equipment": ""
+  },
+  {
+    "id": "plank",
+    "name": "Plank",
+    "equipment": ""
+  },
+  {
+    "id": "plate-loaded-donkey-calf-raise",
+    "name": "Plate-Loaded Donkey Calf Raise",
+    "equipment": "donkey_calf_raise_machine"
+  },
+  {
+    "id": "plate-loaded-glute-drive",
+    "name": "Plate-Loaded Glute Drive",
+    "equipment": "hip_thrust_machine"
+  },
+  {
+    "id": "plate-loaded-lateral-raise",
+    "name": "Plate-Loaded Lateral Raise",
+    "equipment": "plate_loaded_lateral_raise_machine"
+  },
+  {
+    "id": "plate-loaded-shrug",
+    "name": "Plate-Loaded Shrug",
+    "equipment": "shrug_machine"
+  },
+  {
+    "id": "plate-pinch",
+    "name": "Plate Pinch",
+    "equipment": "plates"
+  },
+  {
+    "id": "plate-pullover",
+    "name": "Plate Pullover",
+    "equipment": "plates"
+  },
+  {
+    "id": "plow-pose",
+    "name": "Plow Pose",
+    "equipment": ""
+  },
+  {
+    "id": "plyo-lunge",
+    "name": "Plyo Lunge",
+    "equipment": ""
+  },
+  {
+    "id": "plyo-push-up",
+    "name": "Plyo Push-Up",
+    "equipment": ""
+  },
+  {
+    "id": "preacher-curl",
+    "name": "Preacher Curl",
+    "equipment": "ez_bar"
+  },
+  {
+    "id": "preacher-hammer-curl",
+    "name": "Preacher Hammer Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "pseudo-planche-push-ups",
+    "name": "Pseudo Planche Push Ups",
+    "equipment": ""
+  },
+  {
+    "id": "pull-up",
+    "name": "Pull-Up",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "puppy-pose",
+    "name": "Puppy Pose",
+    "equipment": ""
+  },
+  {
+    "id": "push-jerk",
+    "name": "Push Jerk",
+    "equipment": "barbell"
+  },
+  {
+    "id": "push-press",
+    "name": "Push Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "push-up",
+    "name": "Push-Up",
+    "equipment": ""
+  },
+  {
+    "id": "pyramid-pose",
+    "name": "Pyramid Pose",
+    "equipment": ""
+  },
+  {
+    "id": "rack-pull",
+    "name": "Rack Pull",
+    "equipment": "barbell"
+  },
+  {
+    "id": "rear-delt-fly",
+    "name": "Rear Delt Fly",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "reverse-crunches",
+    "name": "Reverse Crunches",
+    "equipment": ""
+  },
+  {
+    "id": "reverse-curl",
+    "name": "Reverse Curl",
+    "equipment": "barbell"
+  },
+  {
+    "id": "reverse-grip-bent-over-row",
+    "name": "Reverse Grip Bent Over Row",
+    "equipment": "barbell"
+  },
+  {
+    "id": "reverse-grip-lat-pulldown",
+    "name": "Reverse Grip Lat Pulldown",
+    "equipment": "cable"
+  },
+  {
+    "id": "reverse-lunge",
+    "name": "Reverse Lunge",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "reverse-nordic-curl",
+    "name": "Reverse Nordic Curl",
+    "equipment": ""
+  },
+  {
+    "id": "reverse-plank",
+    "name": "Reverse Plank",
+    "equipment": ""
+  },
+  {
+    "id": "reverse-plank-dips",
+    "name": "Reverse Plank Dips",
+    "equipment": ""
+  },
+  {
+    "id": "reverse-tabletop-hip-pulses",
+    "name": "Reverse Tabletop Hip Pulses",
+    "equipment": ""
+  },
+  {
+    "id": "reverse-tabletop-hold",
+    "name": "Reverse Tabletop Hold",
+    "equipment": ""
+  },
+  {
+    "id": "revolved-chair-pose",
+    "name": "Revolved Chair Pose",
+    "equipment": ""
+  },
+  {
+    "id": "revolved-crescent-lunge",
+    "name": "Revolved Crescent Lunge",
+    "equipment": ""
+  },
+  {
+    "id": "ring-dead-hang",
+    "name": "Ring Dead Hang",
+    "equipment": "rings"
+  },
+  {
+    "id": "ring-dips",
+    "name": "Ring Dips",
+    "equipment": "rings"
+  },
+  {
+    "id": "ring-face-pull",
+    "name": "Ring Face Pull",
+    "equipment": "rings"
+  },
+  {
+    "id": "ring-muscle-up",
+    "name": "Ring Muscle-Up",
+    "equipment": "rings"
+  },
+  {
+    "id": "ring-push-up",
+    "name": "Ring Push-Up",
+    "equipment": "rings"
+  },
+  {
+    "id": "ring-row",
+    "name": "Ring Row",
+    "equipment": "rings"
+  },
+  {
+    "id": "rings-inverted-row",
+    "name": "Rings Inverted Row",
+    "equipment": "rings"
+  },
+  {
+    "id": "romanian-deadlift",
+    "name": "Romanian Deadlift",
+    "equipment": "barbell"
+  },
+  {
+    "id": "rope-climb",
+    "name": "Rope Climb",
+    "equipment": "climbing_rope"
+  },
+  {
+    "id": "rowing-machine",
+    "name": "Rowing Machine",
+    "equipment": "rower"
+  },
+  {
+    "id": "running",
+    "name": "Running",
+    "equipment": ""
+  },
+  {
+    "id": "russian-twist",
+    "name": "Russian Twist",
+    "equipment": ""
+  },
+  {
+    "id": "savasana",
+    "name": "Corpse Pose",
+    "equipment": ""
+  },
+  {
+    "id": "scapular-pull-ups",
+    "name": "Scapular Pull Ups",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "scissor-kicks",
+    "name": "Scissor Kicks",
+    "equipment": ""
+  },
+  {
+    "id": "seated-barbell-overhead-press",
+    "name": "Seated Barbell Overhead Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "seated-cable-row",
+    "name": "Seated Cable Row",
+    "equipment": "cable"
+  },
+  {
+    "id": "seated-calf-raise",
+    "name": "Seated Calf Raise",
+    "equipment": "seated_calf_raise_machine"
+  },
+  {
+    "id": "seated-db-press",
+    "name": "Seated Dumbbell Shoulder Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "seated-dumbbell-curl",
+    "name": "Seated Dumbbell Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "seated-dumbbell-lateral-raise",
+    "name": "Seated Dumbbell Lateral Raise",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "seated-dumbbell-tricep-extension",
+    "name": "Seated Dumbbell Tricep Extension",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "seated-forward-fold",
+    "name": "Seated Forward Fold",
+    "equipment": ""
+  },
+  {
+    "id": "seated-leg-curl",
+    "name": "Seated Leg Curl",
+    "equipment": "leg_curl"
+  },
+  {
+    "id": "seated-smith-machine-shoulder-press",
+    "name": "Seated Smith Machine Shoulder Press",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "seated-spinal-twist",
+    "name": "Seated Spinal Twist",
+    "equipment": ""
+  },
+  {
+    "id": "seated-straddle-stretch",
+    "name": "Seated Straddle Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "shrug",
+    "name": "Barbell Shrug",
+    "equipment": "barbell"
+  },
+  {
+    "id": "side-lunge",
+    "name": "Side Lunge",
+    "equipment": ""
+  },
+  {
+    "id": "side-lying-hip-abduction",
+    "name": "Side-Lying Hip Abduction",
+    "equipment": ""
+  },
+  {
+    "id": "side-lying-hip-abduction-hold",
+    "name": "Side-Lying Hip Abduction Hold",
+    "equipment": ""
+  },
+  {
+    "id": "side-lying-hip-adduction",
+    "name": "Side Lying Hip Adduction",
+    "equipment": ""
+  },
+  {
+    "id": "side-lying-hip-adduction-hold",
+    "name": "Side-Lying Hip Adduction Hold",
+    "equipment": ""
+  },
+  {
+    "id": "side-lying-lateral-raise",
+    "name": "Side-Lying Lateral Raise",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "side-plank",
+    "name": "Side Plank",
+    "equipment": ""
+  },
+  {
+    "id": "side-plank-leg-lift",
+    "name": "Side Plank with Leg Lift",
+    "equipment": ""
+  },
+  {
+    "id": "side-plank-leg-lift-hold",
+    "name": "Side Plank Leg Lift Hold",
+    "equipment": ""
+  },
+  {
+    "id": "single-arm-chest-supported-dumbbell-row",
+    "name": "Single-Arm Chest-Supported Dumbbell Row",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "single-arm-db-row",
+    "name": "Single-Arm Dumbbell Row",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "single-arm-dumbbell-overhead-tricep-extension",
+    "name": "Single-Arm Dumbbell Overhead Tricep Extension",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "single-arm-hammer-curl",
+    "name": "Single-Arm Hammer Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "single-arm-machine-shoulder-press",
+    "name": "Single-Arm Machine Shoulder Press",
+    "equipment": "shoulder_press_machine"
+  },
+  {
+    "id": "single-arm-plate-loaded-lateral-raise",
+    "name": "Single-Arm Plate-Loaded Lateral Raise",
+    "equipment": "plate_loaded_lateral_raise_machine"
+  },
+  {
+    "id": "single-arm-tricep-pushdown",
+    "name": "Single Arm Tricep Pushdown",
+    "equipment": "cable"
+  },
+  {
+    "id": "single-db-svend-press",
+    "name": "Single Dumbbell Svend Press",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "single-leg-calf-raise",
+    "name": "Single Leg Calf Raise",
+    "equipment": ""
+  },
+  {
+    "id": "single-leg-extension",
+    "name": "Single Leg Extension",
+    "equipment": "leg_extension"
+  },
+  {
+    "id": "single-leg-glute-bridge",
+    "name": "Single Leg Glute Bridge",
+    "equipment": ""
+  },
+  {
+    "id": "single-leg-glute-bridge-hold",
+    "name": "Single-Leg Glute Bridge Hold",
+    "equipment": ""
+  },
+  {
+    "id": "single-leg-lying-leg-curl",
+    "name": "Single Leg Lying Leg Curl",
+    "equipment": "leg_curl"
+  },
+  {
+    "id": "single-leg-press",
+    "name": "Single Leg Press",
+    "equipment": "leg_press"
+  },
+  {
+    "id": "single-leg-romanian-deadlift",
+    "name": "Single Leg Romanian Deadlift",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "sit-ups",
+    "name": "Sit-Ups",
+    "equipment": ""
+  },
+  {
+    "id": "skull-crusher",
+    "name": "Skull Crusher",
+    "equipment": "barbell"
+  },
+  {
+    "id": "sled-row",
+    "name": "Sled Row",
+    "equipment": "sled"
+  },
+  {
+    "id": "smith-machine-bench-press",
+    "name": "Smith Machine Bench Press",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-bent-over-row",
+    "name": "Smith Machine Bent Over Row",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-bulgarian-split",
+    "name": "Smith Machine Bulgarian Split Squat",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-calf-raise",
+    "name": "Smith Machine Calf Raise",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-decline-bench-press",
+    "name": "Smith Machine Decline Bench Press",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-front-squat",
+    "name": "Smith Machine Front Squat",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-good-morning",
+    "name": "Smith Machine Good Morning",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-hip-thrust",
+    "name": "Smith Machine Hip Thrust",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-incline-bench-press",
+    "name": "Smith Machine Incline Bench Press",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-rdl",
+    "name": "Smith Machine Romanian Deadlift",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-reverse-grip-bent-over-row",
+    "name": "Smith Machine Reverse Grip Bent Over Row",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-reverse-lunge",
+    "name": "Smith Machine Reverse Lunge",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-shoulder-press",
+    "name": "Smith Machine Shoulder Press",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-shrug",
+    "name": "Smith Machine Shrug",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-split-squat",
+    "name": "Smith Machine Split Squat",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-squat",
+    "name": "Smith Machine Squat",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "smith-machine-upright-row",
+    "name": "Smith Machine Upright Row",
+    "equipment": "smith_machine"
+  },
+  {
+    "id": "snatch",
+    "name": "Snatch",
+    "equipment": "barbell"
+  },
+  {
+    "id": "sphinx-pose",
+    "name": "Sphinx Pose",
+    "equipment": ""
+  },
+  {
+    "id": "spider-curl",
+    "name": "Spider Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "split-jerk",
+    "name": "Split Jerk",
+    "equipment": "barbell"
+  },
+  {
+    "id": "split-squat",
+    "name": "Split Squat",
+    "equipment": ""
+  },
+  {
+    "id": "spoto-press",
+    "name": "Spoto Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "squat",
+    "name": "Barbell Back Squat",
+    "equipment": "barbell"
+  },
+  {
+    "id": "stability-ball-hip-bridge",
+    "name": "Stability Ball Hip Bridge",
+    "equipment": "stability_ball"
+  },
+  {
+    "id": "stability-ball-knee-tuck",
+    "name": "Stability Ball Knee Tuck",
+    "equipment": "stability_ball"
+  },
+  {
+    "id": "stability-ball-push-up",
+    "name": "Stability Ball Push-Up",
+    "equipment": "stability_ball"
+  },
+  {
+    "id": "stability-ball-push-up-hands-on-ball",
+    "name": "Stability Ball Push-Up (Hands on Ball)",
+    "equipment": "stability_ball"
+  },
+  {
+    "id": "stability-ball-wall-squat",
+    "name": "Stability Ball Wall Squat",
+    "equipment": "stability_ball"
+  },
+  {
+    "id": "stair-climber",
+    "name": "Stair Climber",
+    "equipment": "stair_climber"
+  },
+  {
+    "id": "standing-calf-raise",
+    "name": "Standing Calf Raise",
+    "equipment": "standing_calf_raise_machine"
+  },
+  {
+    "id": "standing-calf-stretch",
+    "name": "Standing Calf Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "standing-forward-fold",
+    "name": "Standing Forward Fold",
+    "equipment": ""
+  },
+  {
+    "id": "standing-forward-fold-to-half-lift",
+    "name": "Standing Forward Fold to Half Lift",
+    "equipment": ""
+  },
+  {
+    "id": "standing-quad-stretch",
+    "name": "Standing Quad Stretch",
+    "equipment": ""
+  },
+  {
+    "id": "standing-side-bend",
+    "name": "Standing Side Bend",
+    "equipment": ""
+  },
+  {
+    "id": "standing-side-bend-flow",
+    "name": "Standing Side Bend Flow",
+    "equipment": ""
+  },
+  {
+    "id": "standing-split",
+    "name": "Standing Split",
+    "equipment": ""
+  },
+  {
+    "id": "stationary-bike",
+    "name": "Stationary Bike",
+    "equipment": "stationary_bike"
+  },
+  {
+    "id": "step-ups",
+    "name": "Step Ups",
+    "equipment": ""
+  },
+  {
+    "id": "stiff-leg-deadlift",
+    "name": "Stiff Leg Deadlift",
+    "equipment": "barbell"
+  },
+  {
+    "id": "straight-arm-pulldown",
+    "name": "Straight-Arm Pulldown",
+    "equipment": "cable"
+  },
+  {
+    "id": "straight-bar-cable-front-raise",
+    "name": "Straight-Bar Cable Front Raise",
+    "equipment": "cable"
+  },
+  {
+    "id": "straight-bar-dips",
+    "name": "Straight Bar Dips",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "strict-curl",
+    "name": "Strict Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "suitcase-carry",
+    "name": "Suitcase Carry",
+    "equipment": "kettlebell"
+  },
+  {
+    "id": "sumo-deadlift",
+    "name": "Sumo Deadlift",
+    "equipment": "barbell"
+  },
+  {
+    "id": "sumo-squat",
+    "name": "Sumo Squat",
+    "equipment": "barbell"
+  },
+  {
+    "id": "superman",
+    "name": "Superman",
+    "equipment": ""
+  },
+  {
+    "id": "supine-spinal-twist",
+    "name": "Supine Spinal Twist",
+    "equipment": ""
+  },
+  {
+    "id": "supine-windshield-wipers",
+    "name": "Supine Windshield Wipers",
+    "equipment": ""
+  },
+  {
+    "id": "supported-shoulderstand",
+    "name": "Supported Shoulderstand",
+    "equipment": ""
+  },
+  {
+    "id": "svend-press",
+    "name": "Svend Press",
+    "equipment": "plates"
+  },
+  {
+    "id": "t-bar-row",
+    "name": "T-Bar Row",
+    "equipment": "barbell"
+  },
+  {
+    "id": "thoracic-bridge",
+    "name": "Thoracic Bridge",
+    "equipment": ""
+  },
+  {
+    "id": "thread-the-needle",
+    "name": "Thread the Needle",
+    "equipment": ""
+  },
+  {
+    "id": "thread-the-needle-flow",
+    "name": "Thread the Needle Flow",
+    "equipment": ""
+  },
+  {
+    "id": "three-legged-dog",
+    "name": "Three-Legged Downward Dog",
+    "equipment": ""
+  },
+  {
+    "id": "thruster",
+    "name": "Thruster",
+    "equipment": "barbell"
+  },
+  {
+    "id": "toes-to-bar",
+    "name": "Toes to Bar",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "treadmill-running",
+    "name": "Treadmill Running",
+    "equipment": "treadmill"
+  },
+  {
+    "id": "tree-pose",
+    "name": "Tree Pose",
+    "equipment": ""
+  },
+  {
+    "id": "triangle-pose",
+    "name": "Triangle Pose",
+    "equipment": ""
+  },
+  {
+    "id": "tricep-kickback",
+    "name": "Dumbbell Tricep Kickback",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "tricep-pushdown",
+    "name": "Cable Tricep Pushdown",
+    "equipment": "cable"
+  },
+  {
+    "id": "trx-bicep-curl",
+    "name": "TRX Bicep Curl",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-chest-press",
+    "name": "TRX Chest Press",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-face-pull",
+    "name": "TRX Face Pull",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-hamstring-curl",
+    "name": "TRX Hamstring Curl",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-lunge",
+    "name": "TRX Lunge",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-pistol-squat",
+    "name": "TRX Pistol Squat",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-plank",
+    "name": "TRX Plank",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-row",
+    "name": "TRX Row",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-side-plank",
+    "name": "TRX Side Plank",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-squat",
+    "name": "TRX Squat",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-tricep-extension",
+    "name": "TRX Triceps Extension",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "trx-y-fly",
+    "name": "TRX Y-Fly",
+    "equipment": "suspension_trainer"
+  },
+  {
+    "id": "upright-row",
+    "name": "Barbell Upright Row",
+    "equipment": "barbell"
+  },
+  {
+    "id": "upward-dog",
+    "name": "Upward-Facing Dog",
+    "equipment": ""
+  },
+  {
+    "id": "v-bar-lat-pulldown",
+    "name": "V-Bar Lat Pulldown",
+    "equipment": "lat_pulldown_machine"
+  },
+  {
+    "id": "v-bar-tricep-pushdown",
+    "name": "V-Bar Tricep Pushdown",
+    "equipment": "cable"
+  },
+  {
+    "id": "v-sit",
+    "name": "V-Sit",
+    "equipment": ""
+  },
+  {
+    "id": "v-ups",
+    "name": "V Ups",
+    "equipment": ""
+  },
+  {
+    "id": "walking",
+    "name": "Walking",
+    "equipment": ""
+  },
+  {
+    "id": "walking-lunge",
+    "name": "Walking Lunge",
+    "equipment": ""
+  },
+  {
+    "id": "wall-push-ups",
+    "name": "Wall Push Ups",
+    "equipment": ""
+  },
+  {
+    "id": "wall-sit",
+    "name": "Wall Sit",
+    "equipment": ""
+  },
+  {
+    "id": "warrior-one",
+    "name": "Warrior I",
+    "equipment": ""
+  },
+  {
+    "id": "warrior-three",
+    "name": "Warrior III",
+    "equipment": ""
+  },
+  {
+    "id": "warrior-two",
+    "name": "Warrior II",
+    "equipment": ""
+  },
+  {
+    "id": "weighted-dips",
+    "name": "Weighted Dips",
+    "equipment": "dip_station"
+  },
+  {
+    "id": "weighted-pull-up",
+    "name": "Weighted Pull-Up",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "weighted-wall-crunch",
+    "name": "Weighted Wall Crunch",
+    "equipment": "plates"
+  },
+  {
+    "id": "wide-grip-bench-press",
+    "name": "Wide-Grip Bench Press",
+    "equipment": "barbell"
+  },
+  {
+    "id": "wide-grip-pull-ups",
+    "name": "Wide Grip Pull Ups",
+    "equipment": "pull_up_bar"
+  },
+  {
+    "id": "wide-grip-push-ups",
+    "name": "Wide Grip Push Ups",
+    "equipment": ""
+  },
+  {
+    "id": "wide-grip-seated-cable-row",
+    "name": "Wide Grip Seated Cable Row",
+    "equipment": "cable"
+  },
+  {
+    "id": "wide-legged-forward-fold",
+    "name": "Wide-Legged Forward Fold",
+    "equipment": ""
+  },
+  {
+    "id": "wide-stance-leg-press",
+    "name": "Wide-Stance Leg Press",
+    "equipment": "leg_press"
+  },
+  {
+    "id": "wrist-curl",
+    "name": "Bilateral Dumbbell Wrist Curl",
+    "equipment": "dumbbell"
+  },
+  {
+    "id": "wrist-roller",
+    "name": "Wrist Roller",
+    "equipment": "wrist_roller"
+  },
+  {
+    "id": "zottman-curl",
+    "name": "Zottman Curl",
+    "equipment": "dumbbell"
+  }
+]

@@ -272,6 +272,7 @@ button {
   border-radius: 14px;
   flex: none;
   overflow: hidden;
+  background: var(--card);
 }
 
 .glyph-img {
@@ -316,10 +317,7 @@ button {
   box-shadow: inset 0 0 0 1px var(--accent);
 }
 
-.style-preview {
-  display: flex;
-  gap: 6px;
-}
+.picker-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
@@ -330,7 +328,7 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 52px;
+  min-height: 56px;
   padding: 8px 12px;
   background: var(--bg-2);
   border: 1px solid var(--line);
@@ -378,6 +376,47 @@ button {
 .picker-head h2 {
   margin: 0;
   font-size: 1.15rem;
+}
+
+.catalog-search {
+  margin: 10px 0;
+}
+
+.catalog-search input {
+  min-height: 56px;
+}
+
+.picker-head .text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 56px;
+}
+
+.catalog-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.catalog-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  background: var(--bg-2);
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 8px 10px;
+  min-height: 56px;
+  cursor: pointer;
+}
+
+.catalog-row.on {
+  border-color: var(--accent);
 }
 
 .session-note {
@@ -443,16 +482,20 @@ button {
 }
 
 .step-btn {
-  width: 64px;
-  height: 64px;
-  font-size: 2rem;
+  width: 72px;
+  height: 72px;
+  font-size: 2.2rem;
   background: #232b19;
 }
 
 .step-btn.sm {
-  width: 48px;
-  height: 48px;
-  font-size: 1.5rem;
+  width: 56px;
+  height: 56px;
+  font-size: 1.6rem;
+}
+
+.exercise-screen .btn-primary {
+  min-height: 72px;
 }
 
 .btn-primary,
