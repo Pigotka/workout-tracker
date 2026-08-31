@@ -30,6 +30,7 @@ type BtDevice = {
 function bluetooth():
   | { requestDevice: (opts: unknown) => Promise<BtDevice> }
   | undefined {
+  if (typeof navigator === "undefined") return undefined;
   const nav = navigator as Navigator & {
     bluetooth?: { requestDevice: (opts: unknown) => Promise<BtDevice> };
   };
@@ -49,14 +50,29 @@ let status: HeartRateStatus = "off";
 let bpm: number | null = null;
 let device: BtDevice | null = null;
 let characteristic: BtCharacteristic | null = null;
+let snapshot: HeartRateState = { supported: false, status: "off", bpm: null };
 const listeners = new Set<() => void>();
 
+function syncSnapshot(): HeartRateState {
+  const next: HeartRateState = { supported: heartRateSupported(), status, bpm };
+  if (
+    snapshot.supported === next.supported &&
+    snapshot.status === next.status &&
+    snapshot.bpm === next.bpm
+  ) {
+    return snapshot;
+  }
+  snapshot = next;
+  return snapshot;
+}
+
 function emit(): void {
+  syncSnapshot();
   for (const listener of listeners) listener();
 }
 
 export function heartRateSnapshot(): HeartRateState {
-  return { supported: heartRateSupported(), status, bpm };
+  return syncSnapshot();
 }
 
 export function subscribeHeartRate(listener: () => void): () => void {

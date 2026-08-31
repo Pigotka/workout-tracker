@@ -12,7 +12,7 @@ import {
 } from "./prescription";
 import { hashFor, parseHash } from "./routes";
 import { catalogSrc } from "./catalog";
-import { parseHeartRate } from "./heart-rate";
+import { heartRateSnapshot, parseHeartRate } from "./heart-rate";
 import { currentStreak, thisWeekCount } from "./stats";
 import { liftPointsFor, liftWeightSeries } from "./progress";
 import { loadStore, memoryStorage, saveStore } from "./storage";
@@ -247,6 +247,10 @@ describe("heart rate", () => {
     expect(parseHeartRate(eight)).toBe(72);
     const sixteen = new DataView(new Uint8Array([1, 0xb4, 0]).buffer);
     expect(parseHeartRate(sixteen)).toBe(180);
+  });
+
+  it("returns a stable snapshot when nothing changed", () => {
+    expect(heartRateSnapshot()).toBe(heartRateSnapshot());
   });
 });
 
