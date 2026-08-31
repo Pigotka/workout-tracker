@@ -50,8 +50,5 @@ const catalog = await mapPool(exercises, 10, async (ex) => {
 });
 
 const json = JSON.stringify(catalog);
-writeFileSync(join(OUT, "exercises.json"), json);
 writeFileSync(join(ROOT, "src", "logic", "catalog-data.json"), json);
-console.log(
-  `catalog: ${catalog.length} exercises, ${catalog.length} webp, exercises.json written`,
-);
+console.log(`catalog: ${catalog.length} exercises, webps in public/catalog`);

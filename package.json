@@ -9,7 +9,6 @@
     "preview": "vite preview --host",
     "test": "vitest run",
     "test:watch": "vitest",
-    "icons": "node scripts/generate-icons.mjs",
     "catalog": "node scripts/vendor-repdb.mjs"
   },
   "dependencies": {
