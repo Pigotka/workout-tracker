@@ -12,6 +12,7 @@ import {
 } from "./prescription";
 import { hashFor, parseHash } from "./routes";
 import { catalogSrc } from "./catalog";
+import { parseHeartRate } from "./heart-rate";
 import { currentStreak, thisWeekCount } from "./stats";
 import { liftPointsFor, liftWeightSeries } from "./progress";
 import { loadStore, memoryStorage, saveStore } from "./storage";
@@ -237,6 +238,15 @@ describe("catalog", () => {
   it("puts pictures under Vite BASE_URL", () => {
     expect(catalogSrc("squat")).toBe(`${import.meta.env.BASE_URL}catalog/squat.webp`);
     expect(catalogSrc("")).toBe(`${import.meta.env.BASE_URL}catalog/squat.webp`);
+  });
+});
+
+describe("heart rate", () => {
+  it("reads 8-bit and 16-bit BLE heart-rate packets", () => {
+    const eight = new DataView(new Uint8Array([0, 72]).buffer);
+    expect(parseHeartRate(eight)).toBe(72);
+    const sixteen = new DataView(new Uint8Array([1, 0xb4, 0]).buffer);
+    expect(parseHeartRate(sixteen)).toBe(180);
   });
 });
 

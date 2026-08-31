@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { HeartRateChip } from "../components/HeartRateChip";
 import { Glyph } from "../components/Glyph";
 import { RestOverlay } from "../components/RestOverlay";
 import { liftTint } from "../logic/catalog";
@@ -56,9 +57,12 @@ export function WorkoutScreen() {
           <p className="eyebrow">{program.name}</p>
           <p className="session-timer">{formatElapsed(now - store.active.startedAt)}</p>
         </div>
-        <button type="button" className="text-link" onClick={() => setConfirmFinish(true)}>
-          Finish
-        </button>
+        <div className="session-head-end">
+          <HeartRateChip />
+          <button type="button" className="text-link" onClick={() => setConfirmFinish(true)}>
+            Finish
+          </button>
+        </div>
       </header>
 
       <ul className="exercise-list">

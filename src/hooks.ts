@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
+import { heartRateSnapshot, subscribeHeartRate } from "./logic/heart-rate";
 
 export function useNow(active = true, intervalMs = 250): number {
   const [now, setNow] = useState(() => Date.now());
@@ -67,4 +68,8 @@ export function useInstallPrompt(): { prompt: () => void; available: boolean } {
       setEvent(null);
     },
   };
+}
+
+export function useHeartRate() {
+  return useSyncExternalStore(subscribeHeartRate, heartRateSnapshot, heartRateSnapshot);
 }

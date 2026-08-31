@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { HeartRateChip } from "../components/HeartRateChip";
 import { Glyph } from "../components/Glyph";
 import { RestOverlay } from "../components/RestOverlay";
 import { WeightChart } from "../components/WeightChart";
@@ -80,9 +81,12 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
           <p className="eyebrow">{program.name}</p>
           <p className="session-timer">{formatElapsed(now - store.active.startedAt)}</p>
         </div>
-        <span className="set-chip">
-          {complete ? `Extra set` : `Set ${setIndex + 1}/${totalSets}`}
-        </span>
+        <div className="session-head-end">
+          <HeartRateChip />
+          <span className="set-chip">
+            {complete ? `Extra set` : `Set ${setIndex + 1}/${totalSets}`}
+          </span>
+        </div>
       </header>
 
       <div className="hero-block">

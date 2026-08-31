@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Glyph } from "./Glyph";
+import { useHeartRate } from "../hooks";
 import { liftTint } from "../logic/catalog";
 import { formatElapsed, formatRest } from "../logic/format";
 
@@ -26,6 +27,7 @@ export function RestOverlay({
 }) {
   const overtime = elapsedMs > targetSeconds * 1000 && targetSeconds > 0;
   const buzzed = useRef(false);
+  const hr = useHeartRate();
 
   useEffect(() => {
     if (!overtime || buzzed.current) return;
@@ -39,6 +41,7 @@ export function RestOverlay({
   return (
     <button type="button" className={overtime ? "rest-overlay over" : "rest-overlay"} onClick={onStop}>
       <p className="rest-kicker">Rest</p>
+      {hr.bpm != null ? <p className="rest-hr">{hr.bpm}</p> : null}
       <p className={overtime ? "rest-time over" : "rest-time"}>{formatElapsed(elapsedMs)}</p>
       <div className="rest-next">
         <Glyph catalogId={nextCatalogId} size="lg" color={liftTint(nextCatalogId, nextColor)} />

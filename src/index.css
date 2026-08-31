@@ -185,6 +185,24 @@ button {
   background: var(--bg-2);
 }
 
+.hr-chip {
+  min-width: 56px;
+  min-height: 56px;
+  padding: 8px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--bg-2);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.hr-chip.on {
+  border-color: var(--accent);
+  color: var(--accent-ink);
+  background: var(--accent);
+}
+
 .program-list,
 .exercise-list,
 .session-list,
@@ -442,6 +460,12 @@ button {
   gap: 10px;
 }
 
+.session-head-end {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .session-timer {
   margin: 0;
   font-size: 1.45rem;
@@ -691,6 +715,14 @@ button {
   color: var(--rest);
 }
 
+.rest-hr {
+  margin: 4px 0 0;
+  font-size: 3rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
 .rest-time {
   margin: 8px 0;
   font-size: 6rem;
@@ -895,6 +927,7 @@ button {
 
 .rest-overlay.over .rest-kicker,
 .rest-overlay.over .rest-time,
+.rest-overlay.over .rest-hr,
 .rest-overlay.over .rest-next-name,
 .rest-overlay.over .rest-reps,
 .rest-time.over {
