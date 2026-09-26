@@ -475,7 +475,8 @@ export function reduce(state: Store, action: Action): Store {
     case "set-rest-screen":
       return { ...state, restScreen: action.on };
     case "replace-store":
-      return { ...action.store, restScreen: action.store.restScreen !== false };
+      if (action.store.restScreen === true || action.store.restScreen === false) return action.store;
+      return { ...action.store, restScreen: true };
     default:
       return assertNever(action);
   }

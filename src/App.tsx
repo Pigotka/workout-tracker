@@ -1,8 +1,8 @@
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import { BottomNav } from "./components/BottomNav";
 import { useHash, useInstallPrompt } from "./hooks";
 import { parseHash } from "./logic/routes";
-import { loadStore, saveStore } from "./logic/storage";
+import { loadStore } from "./logic/storage";
 import { reduce } from "./logic/store";
 import { assertNever } from "./logic/util";
 import { ExerciseScreen } from "./screens/ExerciseScreen";
@@ -13,17 +13,15 @@ import { ProgramsScreen } from "./screens/ProgramsScreen";
 import { SetupScreen } from "./screens/SetupScreen";
 import { WorkoutScreen } from "./screens/WorkoutScreen";
 import { StoreContext } from "./store-context";
+import { useCloudSync } from "./use-cloud-sync";
 import type { Route } from "./types";
 
 export function App() {
   const [store, dispatch] = useReducer(reduce, undefined, () => loadStore(window.localStorage));
+  const cloud = useCloudSync(store, dispatch);
   const hash = useHash();
   const route = parseHash(hash);
   const install = useInstallPrompt();
-
-  useEffect(() => {
-    saveStore(window.localStorage, store);
-  }, [store]);
 
   const inSession = route.name === "workout" || route.name === "exercise";
 
@@ -55,7 +53,7 @@ export function App() {
   }
 
   return (
-    <StoreContext.Provider value={{ store, dispatch }}>
+    <StoreContext.Provider value={{ store, dispatch, cloud }}>
       <div className={inSession ? "app-shell session" : "app-shell"}>
         {install.available && route.name === "home" ? (
           <button type="button" className="install-banner" onClick={install.prompt}>
