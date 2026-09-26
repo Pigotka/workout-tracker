@@ -12,6 +12,23 @@ function media(store: Store, updatedAt: number, status = 200): Response {
   return new Response(serializeBackup(store, updatedAt), { status });
 }
 
+function history(unit: "kg" | "lb" = "kg"): Store {
+  return {
+    ...createSeedStore(),
+    weightUnit: unit,
+    sessions: [
+      {
+        id: "s1",
+        programId: "test",
+        programName: "Test",
+        startedAt: 1_000,
+        completedAt: 5_000,
+        exercises: [],
+      },
+    ],
+  };
+}
+
 describe("reconcileDrive", () => {
   it("lists app data and does not upload an untouched seed", async () => {
     const seen: string[] = [];
@@ -48,9 +65,46 @@ describe("reconcileDrive", () => {
     expect(result).toMatchObject({ wrote: true, file: { id: "file-1", etag: '"e1"' } });
   });
 
+  it("uploads local history when Drive is empty or older", async () => {
+    const localStore = history("lb");
+    let posted = "";
+    const created = await reconcileDrive(
+      "tok",
+      () => ({ store: localStore, updatedAt: 5_000 }),
+      null,
+      async (input, init) => {
+        const url = String(input);
+        if (url.includes("spaces=appDataFolder")) return json({ files: [] });
+        posted = String(init?.body);
+        return json({ id: "file-1", etag: '"e1"' });
+      },
+    );
+    expect(created.wrote).toBe(true);
+    expect(created.snapshot.store).toBe(localStore);
+    expect(posted).toContain('"completedAt":5000');
+
+    let patched = "";
+    const older = await reconcileDrive(
+      "tok",
+      () => ({ store: localStore, updatedAt: 5_000 }),
+      null,
+      async (input, init) => {
+        const url = String(input);
+        if (url.includes("spaces=appDataFolder")) return json({ files: [{ id: "file-1", etag: '"e1"' }] });
+        if (url.includes("alt=media")) return media(history(), 4_000);
+        patched = String(init?.body);
+        expect(init?.method).toBe("PATCH");
+        return json({ id: "file-1", etag: '"e2"' });
+      },
+    );
+    expect(older.wrote).toBe(true);
+    expect(older.snapshot.store).toBe(localStore);
+    expect(patched).toContain('"weightUnit":"lb"');
+  });
+
   it("keeps a newer remote file and patches with If-Match when local is newer", async () => {
-    const remote = { ...createSeedStore(), weightUnit: "kg" as const };
-    const local = { store: { ...createSeedStore(), weightUnit: "lb" as const }, updatedAt: 5 };
+    const remote = history();
+    const local = { store: history("lb"), updatedAt: 5 };
     const older = await reconcileDrive("tok", () => local, null, async (input, init) => {
       const url = String(input);
       if (url.includes("spaces=appDataFolder")) return json({ files: [{ id: "file-1", etag: '"e1"' }] });
@@ -76,8 +130,8 @@ describe("reconcileDrive", () => {
   });
 
   it("uses the newest duplicate and re-reads after an etag conflict", async () => {
-    const oldStore = { ...createSeedStore(), weightUnit: "lb" as const };
-    const newStore = { ...createSeedStore(), weightUnit: "kg" as const };
+    const oldStore = history("lb");
+    const newStore = history();
     const duplicate = await reconcileDrive(
       "tok",
       () => ({ store: createSeedStore(), updatedAt: 3 }),

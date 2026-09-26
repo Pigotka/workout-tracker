@@ -22,7 +22,14 @@ import {
   saveUserSnapshot,
   type StoreMeta,
 } from "./logic/storage";
-import { canUploadToAccount, snapshotForAccount, type Snapshot, type SyncStatus } from "./logic/sync";
+import {
+  canUploadToAccount,
+  hasUserData,
+  preferUserData,
+  snapshotForAccount,
+  type Snapshot,
+  type SyncStatus,
+} from "./logic/sync";
 import type { Action, Store } from "./types";
 
 const PUSH_DELAY_MS = 1500;
@@ -32,8 +39,11 @@ export type CloudControls = {
   signedIn: boolean;
   email: string | null;
   status: SyncStatus;
+  pendingSwitch: { email: string } | null;
   signIn: () => void;
   signOut: () => void;
+  confirmSwitch: () => void;
+  cancelSwitch: () => void;
 };
 
 export function useCloudSync(store: Store, dispatch: Dispatch<Action>): CloudControls {
@@ -48,9 +58,11 @@ export function useCloudSync(store: Store, dispatch: Dispatch<Action>): CloudCon
   const booted = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const queue = useRef(Promise.resolve());
+  const pendingSessionRef = useRef<GoogleSession | null>(null);
   const [status, setStatus] = useState<SyncStatus>({ state: "idle" });
   const [signedIn, setSignedIn] = useState(false);
   const [email, setEmail] = useState<string | null>(null);
+  const [pendingSwitch, setPendingSwitch] = useState<{ email: string } | null>(null);
 
   const applySnapshot = (nextStore: Store, updatedAt: number, ownerSub: string | null) => {
     const next = nextStore.restScreen === true || nextStore.restScreen === false
@@ -102,8 +114,9 @@ export function useCloudSync(store: Store, dispatch: Dispatch<Action>): CloudCon
     const result = await withToken((token) => reconcileDrive(token, () => snapRef.current ?? snap, fileRef.current));
     fileRef.current = result.file;
     const latest = snapRef.current ?? snap;
-    if (result.snapshot.updatedAt > latest.updatedAt) {
-      applySnapshot(result.snapshot.store, result.snapshot.updatedAt, session.profile.sub);
+    const chosen = preferUserData(latest, result.snapshot);
+    if (chosen.store !== latest.store || chosen.updatedAt !== latest.updatedAt) {
+      applySnapshot(chosen.store, chosen.updatedAt, session.profile.sub);
       return;
     }
     saveUserSnapshot(window.localStorage, session.profile.sub, latest);
@@ -128,38 +141,70 @@ export function useCloudSync(store: Store, dispatch: Dispatch<Action>): CloudCon
     }, PUSH_DELAY_MS);
   };
 
-  const connect = async (prompt: "" | "select_account") => {
-    const session = await signInWithGoogle(prompt);
+  const finishSync = async (session: GoogleSession, baseline: Snapshot) => {
+    const result = await withToken((token) =>
+      reconcileDrive(token, () => snapRef.current ?? baseline, null),
+    );
+    fileRef.current = result.file;
+    const latest = snapRef.current ?? baseline;
+    const chosen = preferUserData(latest, result.snapshot);
+    if (chosen.store !== latest.store || chosen.updatedAt !== latest.updatedAt) {
+      applySnapshot(chosen.store, chosen.updatedAt, session.profile.sub);
+      return;
+    }
+    if (metaRef.current?.ownerSub === session.profile.sub) {
+      saveUserSnapshot(window.localStorage, session.profile.sub, latest);
+    }
+  };
+
+  const adopt = async (session: GoogleSession, switching: boolean) => {
+    const visible = snapRef.current ?? { store, updatedAt: metaRef.current?.updatedAt ?? 0 };
+    const meta = metaRef.current ?? { updatedAt: visible.updatedAt, ownerSub: null };
     sessionRef.current = session;
     fileRef.current = null;
     armPush.current = true;
     setSignedIn(true);
     setEmail(session.profile.email || null);
     saveAuthHint(window.localStorage, { sub: session.profile.sub, email: session.profile.email });
-    const visible = snapRef.current ?? { store, updatedAt: 0 };
-    const meta = metaRef.current ?? { updatedAt: visible.updatedAt, ownerSub: null };
-    const picked = snapshotForAccount(
-      { ...visible, ownerSub: meta.ownerSub },
-      session.profile.sub,
-      loadUserSnapshot(window.localStorage, session.profile.sub),
+    if (switching && meta.ownerSub) {
+      saveUserSnapshot(window.localStorage, meta.ownerSub, visible);
+      const saved = loadUserSnapshot(window.localStorage, session.profile.sub);
+      const incoming = saved ?? { store: createSeedStore(), updatedAt: 0 };
+      applySnapshot(incoming.store, incoming.updatedAt, session.profile.sub);
+      await finishSync(session, incoming);
+      return;
+    }
+    const picked = preferUserData(
+      visible,
+      snapshotForAccount(
+        { ...visible, ownerSub: meta.ownerSub },
+        session.profile.sub,
+        loadUserSnapshot(window.localStorage, session.profile.sub),
+      ),
     );
-    if (picked.replaced) applySnapshot(picked.store, picked.updatedAt, session.profile.sub);
-    else {
-      metaRef.current = { updatedAt: picked.updatedAt, ownerSub: session.profile.sub };
-      snapRef.current = { store: picked.store, updatedAt: picked.updatedAt };
+    if (picked.store !== visible.store || picked.updatedAt !== visible.updatedAt) {
+      applySnapshot(picked.store, picked.updatedAt, session.profile.sub);
+    } else {
+      metaRef.current = { updatedAt: visible.updatedAt, ownerSub: session.profile.sub };
+      snapRef.current = visible;
       saveMeta(window.localStorage, metaRef.current);
-      saveUserSnapshot(window.localStorage, session.profile.sub, snapRef.current);
+      saveUserSnapshot(window.localStorage, session.profile.sub, visible);
     }
-    const result = await withToken((token) =>
-      reconcileDrive(token, () => snapRef.current ?? { store: picked.store, updatedAt: picked.updatedAt }, null),
-    );
-    fileRef.current = result.file;
-    const latest = snapRef.current ?? { store: picked.store, updatedAt: picked.updatedAt };
-    if (result.snapshot.updatedAt > latest.updatedAt) {
-      applySnapshot(result.snapshot.store, result.snapshot.updatedAt, session.profile.sub);
-    } else if (metaRef.current?.ownerSub === session.profile.sub) {
-      saveUserSnapshot(window.localStorage, session.profile.sub, latest);
+    await finishSync(session, snapRef.current ?? visible);
+  };
+
+  const connect = async (prompt: "" | "select_account"): Promise<boolean> => {
+    const session = await signInWithGoogle(prompt);
+    const owner = metaRef.current?.ownerSub ?? null;
+    const visible = snapRef.current;
+    if (owner && owner !== session.profile.sub && visible && hasUserData(visible.store)) {
+      pendingSessionRef.current = session;
+      setPendingSwitch({ email: session.profile.email || "another Google account" });
+      setStatus({ state: "idle" });
+      return true;
     }
+    await adopt(session, owner !== null && owner !== session.profile.sub);
+    return false;
   };
 
   const connectRef = useRef(connect);
@@ -194,8 +239,8 @@ export function useCloudSync(store: Store, dispatch: Dispatch<Action>): CloudCon
       if (cancelled) return;
       setStatus({ state: "syncing" });
       try {
-        await connectRef.current("");
-        if (cancelled) return;
+        const needsSwitch = await connectRef.current("");
+        if (cancelled || needsSwitch) return;
         setStatus({ state: "synced", at: Date.now() });
       } catch {
         if (cancelled) return;
@@ -214,12 +259,13 @@ export function useCloudSync(store: Store, dispatch: Dispatch<Action>): CloudCon
     signedIn,
     email,
     status,
+    pendingSwitch,
     signIn: () => {
       void run(async () => {
         setStatus({ state: "syncing" });
         try {
-          await connect("select_account");
-          setStatus({ state: "synced", at: Date.now() });
+          const needsSwitch = await connect("select_account");
+          if (!needsSwitch) setStatus({ state: "synced", at: Date.now() });
         } catch (error) {
           setSignedIn(sessionRef.current !== null);
           setEmail(sessionRef.current?.profile.email ?? null);
@@ -232,20 +278,42 @@ export function useCloudSync(store: Store, dispatch: Dispatch<Action>): CloudCon
         try {
           await pushLatest();
         } catch {
-          /* The per-account slot still has the last local copy. */
+          /* Keep the on-screen history either way. */
         }
         if (timer.current) clearTimeout(timer.current);
         timer.current = null;
         armPush.current = false;
         fileRef.current = null;
         sessionRef.current = null;
+        pendingSessionRef.current = null;
         clearGoogleSession();
         clearAuthHint(window.localStorage);
-        applySnapshot(createSeedStore(), 0, null);
+        setPendingSwitch(null);
         setSignedIn(false);
         setEmail(null);
         setStatus({ state: "idle" });
       });
+    },
+    confirmSwitch: () => {
+      void run(async () => {
+        const session = pendingSessionRef.current;
+        pendingSessionRef.current = null;
+        setPendingSwitch(null);
+        if (!session) return;
+        setStatus({ state: "syncing" });
+        try {
+          await adopt(session, true);
+          setStatus({ state: "synced", at: Date.now() });
+        } catch (error) {
+          setStatus({ state: "error", message: messageOf(error) });
+        }
+      });
+    },
+    cancelSwitch: () => {
+      pendingSessionRef.current = null;
+      clearGoogleSession();
+      setPendingSwitch(null);
+      setStatus({ state: "idle" });
     },
   };
 }

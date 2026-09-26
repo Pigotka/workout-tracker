@@ -34,11 +34,15 @@ Storage key: `train:v1` in `localStorage`. Refresh catalog pictures with `npm ru
 
 ## Google Drive backup
 
-Sign in on Plans. The app stores one file, `train-v1.json`, in that Google account's Drive **app data folder** (hidden from My Drive). It syncs when the app opens and about a second and a half after a change. If this phone and Drive both changed, the newer `updatedAt` wins.
+Sign in on Plans. The app stores one file, `train-v1.json`, in that Google account's Drive **app data folder** (hidden from My Drive). It syncs when the app opens and about a second and a half after a change.
+
+### Upgrade safety
+
+Installing or updating on a phone that already has workouts does not rewrite `train:v1`. That local copy stays the source of truth until sign-in finishes a merge. If Drive has no file yet, or an older one, the phone's copy is uploaded. Drive is pulled over the phone only when its backup is strictly newer and is not an empty template. The legacy clock is the last workout time, not the moment you open the new version, so a newer backup from another device can still win.
+
+Sign-out leaves the phone's history in place. Signing in as a different Google account asks before switching. The previous workouts stay on the phone under that account.
 
 The phone keeps working offline from `localStorage`. Export / Import on Plans still read and write the same store JSON; Import also accepts the Drive wrapper.
-
-Sign out on a shared phone. That clears the on-screen cache so the next person does not see your workouts. Signing in loads that account's Drive file. A private copy of your last data stays on the device under your account id so you can sign back in.
 
 While the OAuth app is in Testing, Google drops the grant after 7 days. Add each person as a test user, and sign in again if sync says the session expired.
 

@@ -1,6 +1,6 @@
 import { createSeedStore } from "../seed";
 import type { Store } from "../types";
-import { isStore } from "./storage";
+import { isStore, isUntouchedSeed } from "./storage";
 
 export type CloudBackup = {
   version: 1;
@@ -47,15 +47,38 @@ function backupFrom(value: unknown): CloudBackup | null {
   return { version: 1, updatedAt: record.updatedAt, store: record.store };
 }
 
-/** Last write wins by `updatedAt`. Equal timestamps stay local and skip the upload. */
+export function hasUserData(store: Store): boolean {
+  return !isUntouchedSeed(store);
+}
+
+/** An empty template never replaces workouts or edits already on the phone. */
+export function preferUserData(current: Snapshot, incoming: Snapshot): Snapshot {
+  if (hasUserData(current.store) && !hasUserData(incoming.store)) return current;
+  return incoming;
+}
+
+/**
+ * Last write wins by `updatedAt`.
+ * No Drive file, or an older one: keep local and upload when it has real data.
+ * Pull only when Drive is strictly newer and is not an empty template.
+ */
 export function decideSync(local: Snapshot, remote: CloudBackup | null): Snapshot & { upload: boolean } {
   if (!remote) {
-    return { store: local.store, updatedAt: local.updatedAt, upload: local.updatedAt > 0 };
+    return {
+      store: local.store,
+      updatedAt: local.updatedAt,
+      upload: hasUserData(local.store) || local.updatedAt > 0,
+    };
   }
   if (remote.updatedAt > local.updatedAt) {
-    return { store: remote.store, updatedAt: remote.updatedAt, upload: false };
+    const chosen = preferUserData(local, { store: remote.store, updatedAt: remote.updatedAt });
+    const keptLocal = chosen.store === local.store && chosen.updatedAt === local.updatedAt;
+    return { ...chosen, upload: keptLocal && hasUserData(local.store) };
   }
   if (local.updatedAt > remote.updatedAt) {
+    return { store: local.store, updatedAt: local.updatedAt, upload: true };
+  }
+  if (hasUserData(local.store) && !hasUserData(remote.store)) {
     return { store: local.store, updatedAt: local.updatedAt, upload: true };
   }
   return { store: local.store, updatedAt: local.updatedAt, upload: false };

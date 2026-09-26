@@ -129,6 +129,17 @@ export function ProgramsScreen() {
         </button>
       </div>      
 
+      {cloud.pendingSwitch ? (
+        <Confirm
+          title="Switch Google account?"
+          body={`This phone already has workouts on it. Switching to ${cloud.pendingSwitch.email} loads that account's Drive backup. The workouts on screen stay on this phone for the previous account.`}
+          confirmLabel="Switch account"
+          danger
+          onCancel={cloud.cancelSwitch}
+          onConfirm={cloud.confirmSwitch}
+        />
+      ) : null}
+
       {confirmReset ? (
         <Confirm
           title="Reset plans?"

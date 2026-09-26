@@ -5,9 +5,11 @@ import {
   clearAuthHint,
   ensureMeta,
   loadAuthHint,
+  loadStore,
   loadUserSnapshot,
   memoryStorage,
   saveAuthHint,
+  saveStore,
   saveUserSnapshot,
 } from "./storage";
 import {
@@ -23,18 +25,36 @@ function owned(store: Store, updatedAt: number, ownerSub: string | null) {
   return { store, updatedAt, ownerSub };
 }
 
-describe("decideSync", () => {
-  const localStore = { ...createSeedStore(), weightUnit: "lb" as const };
-  const remoteStore = { ...createSeedStore(), weightUnit: "kg" as const };
+function worked(completedAt: number, unit: "kg" | "lb" = "kg"): Store {
+  return {
+    ...createSeedStore(),
+    weightUnit: unit,
+    sessions: [
+      {
+        id: "s",
+        programId: "test",
+        programName: "Test",
+        startedAt: completedAt - 10,
+        completedAt,
+        exercises: [],
+      },
+    ],
+  };
+}
 
-  it("downloads when the remote write is newer", () => {
+describe("decideSync", () => {
+  const localStore = worked(30, "lb");
+  const remoteStore = worked(20, "kg");
+
+  it("downloads when the remote write is newer and has real data", () => {
+    const newer = worked(40);
     const decision = decideSync(
       { store: localStore, updatedAt: 10 },
-      { version: 1, updatedAt: 20, store: remoteStore },
+      { version: 1, updatedAt: 20, store: newer },
     );
     expect(decision.upload).toBe(false);
     expect(decision.updatedAt).toBe(20);
-    expect(decision.store).toBe(remoteStore);
+    expect(decision.store).toBe(newer);
   });
 
   it("uploads when the local write is newer", () => {
@@ -60,6 +80,25 @@ describe("decideSync", () => {
       upload: true,
       updatedAt: 5,
     });
+  });
+
+  it("keeps local history when Drive is empty or older, and uploads it", () => {
+    const local = { store: worked(5_000), updatedAt: 5_000 };
+    const empty = decideSync(local, null);
+    expect(empty.upload).toBe(true);
+    expect(empty.store).toBe(local.store);
+    expect(empty.updatedAt).toBe(5_000);
+
+    const older = decideSync(local, { version: 1, updatedAt: 4_000, store: worked(4_000, "lb") });
+    expect(older.upload).toBe(true);
+    expect(older.store).toBe(local.store);
+  });
+
+  it("does not replace local history with a newer empty Drive backup", () => {
+    const local = { store: worked(5_000), updatedAt: 5_000 };
+    const decision = decideSync(local, { version: 1, updatedAt: 9_000, store: createSeedStore() });
+    expect(decision.store).toBe(local.store);
+    expect(decision.upload).toBe(true);
   });
 });
 
@@ -117,15 +156,21 @@ describe("backup json", () => {
 });
 
 describe("account storage", () => {
-  it("stamps existing data once and leaves a fresh seed at zero", () => {
+  it("stamps existing history from the last workout and does not rewrite train:v1", () => {
     const fresh = memoryStorage();
-    expect(ensureMeta(fresh, createSeedStore(), 50).updatedAt).toBe(0);
-    expect(ensureMeta(fresh, createSeedStore(), 80).updatedAt).toBe(0);
+    expect(ensureMeta(fresh, createSeedStore()).updatedAt).toBe(0);
+    expect(ensureMeta(fresh, createSeedStore()).updatedAt).toBe(0);
 
     const used = memoryStorage();
+    const history = worked(2_500);
+    saveStore(used, history);
+    expect(ensureMeta(used, history)).toEqual({ updatedAt: 2_500, ownerSub: null });
+    expect(ensureMeta(used, history).updatedAt).toBe(2_500);
+    expect(loadStore(used).sessions[0]?.completedAt).toBe(2_500);
+
+    const edited = memoryStorage();
     const custom = { ...createSeedStore(), weightUnit: "lb" as const };
-    expect(ensureMeta(used, custom, 50)).toEqual({ updatedAt: 50, ownerSub: null });
-    expect(ensureMeta(used, custom, 80).updatedAt).toBe(50);
+    expect(ensureMeta(edited, custom)).toEqual({ updatedAt: 1, ownerSub: null });
   });
 
   it("keeps each account's slot and drops the auth hint on sign-out", () => {

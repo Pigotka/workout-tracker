@@ -92,11 +92,23 @@ export function saveMeta(storage: StorageLike, meta: StoreMeta): void {
   storage.setItem(META_KEY, JSON.stringify(meta));
 }
 
-/** Existing histories get a timestamp once so the first sign-in uploads them. A fresh seed stays at 0 so it cannot clobber a remote backup. */
-export function ensureMeta(storage: StorageLike, store: Store, now = Date.now()): StoreMeta {
+/** Clock for data saved before sync existed: last workout, not "now", so a newer Drive backup can still win. */
+export function contentUpdatedAt(store: Store): number {
+  if (isUntouchedSeed(store)) return 0;
+  let latest = 0;
+  for (const session of store.sessions) {
+    if (session.completedAt > latest) latest = session.completedAt;
+    if (session.startedAt > latest) latest = session.startedAt;
+  }
+  if (store.active && store.active.startedAt > latest) latest = store.active.startedAt;
+  return latest > 0 ? latest : 1;
+}
+
+/** Leaves `train:v1` untouched. A fresh seed stays at 0 so it cannot clobber a remote backup. */
+export function ensureMeta(storage: StorageLike, store: Store): StoreMeta {
   const existing = readMeta(storage);
   if (existing) return existing;
-  const meta = { updatedAt: isUntouchedSeed(store) ? 0 : now, ownerSub: null };
+  const meta = { updatedAt: contentUpdatedAt(store), ownerSub: null };
   saveMeta(storage, meta);
   return meta;
 }
