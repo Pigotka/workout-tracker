@@ -332,6 +332,18 @@ describe("prescription", () => {
   });
 });
 
+describe("replace-store", () => {
+  it("keeps an explicit rest setting and fills a missing one", () => {
+    const kept = createSeedStore();
+    expect(reduce(store(), { type: "replace-store", store: kept })).toBe(kept);
+    const off = { ...createSeedStore(), restScreen: false as const };
+    expect(reduce(store(), { type: "replace-store", store: off })).toBe(off);
+    const missing = { ...createSeedStore(), restScreen: undefined };
+    const filled = reduce(store(), { type: "replace-store", store: missing });
+    expect(filled.restScreen).toBe(true);
+  });
+});
+
 describe("storage", () => {
   it("round-trips a store and survives reload", () => {
     const mem = memoryStorage();

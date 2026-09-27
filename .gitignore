@@ -5,3 +5,6 @@ dev-dist
 *.log
 .vite
 .superpowers/
+.env
+.env.*
+!.env.example

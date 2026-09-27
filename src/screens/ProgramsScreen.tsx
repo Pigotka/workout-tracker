@@ -1,13 +1,15 @@
+import { useState } from "react";
 import { Confirm } from "../components/Confirm";
+import { storeFromJson, type SyncStatus } from "../logic/sync";
 import { go } from "../logic/routes";
-import { isStore } from "../logic/storage";
 import { createSeedStore } from "../seed";
 import { useStore } from "../store-context";
-import { useState } from "react";
+import type { CloudControls } from "../use-cloud-sync";
 import type { Program } from "../types";
+import { assertNever } from "../logic/util";
 
 export function ProgramsScreen() {
-  const { store, dispatch } = useStore();
+  const { store, dispatch, cloud } = useStore();
   const [confirmReset, setConfirmReset] = useState(false);
 
   const addProgram = () => {
@@ -35,8 +37,9 @@ export function ProgramsScreen() {
     if (!file) return;
     try {
       const parsed: unknown = JSON.parse(await file.text());
-      if (!isStore(parsed)) return;
-      dispatch({ type: "replace-store", store: parsed });
+      const next = storeFromJson(parsed);
+      if (!next) return;
+      dispatch({ type: "replace-store", store: next });
     } catch {
       /* ignore bad files */
     }
@@ -71,6 +74,25 @@ export function ProgramsScreen() {
       <button type="button" className="btn-primary" onClick={addProgram}>
         Add training
       </button>
+
+      <section className="sync-card" aria-live="polite">
+        <p className="eyebrow">Google Drive</p>
+        <p className={cloud.status.state === "error" ? "sync-error" : "muted"}>{syncLabel(cloud)}</p>
+        {cloud.signedIn ? (
+          <button type="button" className="btn-ghost" onClick={cloud.signOut}>
+            Sign out{cloud.email ? ` (${cloud.email})` : ""}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="btn-ghost"
+            onClick={cloud.signIn}
+            disabled={!cloud.configured || cloud.status.state === "syncing"}
+          >
+            Sign in with Google
+          </button>
+        )}
+      </section>
 
       <div className="plan-tools">
         <button type="button" className="btn-ghost" onClick={exportJson}>
@@ -107,6 +129,17 @@ export function ProgramsScreen() {
         </button>
       </div>      
 
+      {cloud.pendingSwitch ? (
+        <Confirm
+          title="Switch Google account?"
+          body={`This phone already has workouts on it. Switching to ${cloud.pendingSwitch.email} loads that account's Drive backup. The workouts on screen stay on this phone for the previous account.`}
+          confirmLabel="Switch account"
+          danger
+          onCancel={cloud.cancelSwitch}
+          onConfirm={cloud.confirmSwitch}
+        />
+      ) : null}
+
       {confirmReset ? (
         <Confirm
           title="Reset plans?"
@@ -126,4 +159,24 @@ export function ProgramsScreen() {
       ) : null}
     </div>
   );
+}
+
+function syncLabel(cloud: CloudControls): string {
+  if (!cloud.configured) return "Set VITE_GOOGLE_CLIENT_ID to enable Drive backup.";
+  return statusLabel(cloud.status, cloud.signedIn);
+}
+
+function statusLabel(status: SyncStatus, signedIn: boolean): string {
+  switch (status.state) {
+    case "idle":
+      return signedIn ? "Signed in" : "Not signed in";
+    case "syncing":
+      return "Syncing…";
+    case "synced":
+      return `Last synced ${new Date(status.at).toLocaleString()}`;
+    case "error":
+      return status.message;
+    default:
+      return assertNever(status);
+  }
 }

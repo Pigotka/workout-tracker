@@ -1141,3 +1141,26 @@ button {
   text-align: center;
   padding: 24px 8px;
 }
+
+.sync-card {
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sync-card p {
+  margin: 0;
+}
+
+.sync-error {
+  color: var(--danger);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
