@@ -94,7 +94,7 @@ async function listFiles(token: string, fetchFn: FetchFn): Promise<DriveFile[]> 
   const params = new URLSearchParams({
     spaces: "appDataFolder",
     q: `name = '${BACKUP_NAME}' and trashed = false`,
-    fields: "files(id,etag)",
+    fields: "files(id,name)",
     pageSize: "10",
   });
   const res = await fetchFn(`${FILES}?${params}`, { headers: authHeaders(token) });
@@ -105,7 +105,7 @@ async function listFiles(token: string, fetchFn: FetchFn): Promise<DriveFile[]> 
   if (!Array.isArray(files)) return [];
   return files.flatMap((file) => {
     const parsed = fileFrom(file);
-    return parsed ? [parsed] : [];
+    return parsed ? [{ id: parsed.id, etag: "" }] : [];
   });
 }
 
@@ -140,7 +140,7 @@ async function createFile(token: string, snapshot: Snapshot, fetchFn: FetchFn): 
     `--${boundary}--`,
     "",
   ].join("\r\n");
-  const res = await fetchFn(`${UPLOAD}?uploadType=multipart&fields=id,etag`, {
+  const res = await fetchFn(`${UPLOAD}?uploadType=multipart&fields=id`, {
     method: "POST",
     headers: {
       ...authHeaders(token),
@@ -151,7 +151,7 @@ async function createFile(token: string, snapshot: Snapshot, fetchFn: FetchFn): 
   await assertOk(res);
   const file = fileFrom(await res.json());
   if (!file) throw new Error("Drive did not return a backup file");
-  return file;
+  return { id: file.id, etag: headerEtag(res) };
 }
 
 async function updateFile(
@@ -165,30 +165,66 @@ async function updateFile(
     "Content-Type": "application/json",
   };
   if (file.etag) headers["If-Match"] = file.etag;
-  const res = await fetchFn(`${UPLOAD}/${encodeURIComponent(file.id)}?uploadType=media&fields=id,etag`, {
+  const res = await fetchFn(`${UPLOAD}/${encodeURIComponent(file.id)}?uploadType=media&fields=id`, {
     method: "PATCH",
     headers,
     body: serializeBackup(snapshot.store, snapshot.updatedAt),
   });
   if (res.status === 412) return { conflict: true };
   await assertOk(res);
-  return { conflict: false, file: fileFrom(await res.json()) ?? file };
+  const parsed = fileFrom(await res.json());
+  return { conflict: false, file: { id: parsed?.id ?? file.id, etag: headerEtag(res) } };
 }
 
 function authHeaders(token: string): Record<string, string> {
   return { Authorization: `Bearer ${token}` };
 }
 
+function headerEtag(res: Response): string {
+  return res.headers.get("ETag") || "";
+}
+
 async function assertOk(res: Response): Promise<void> {
   if (res.ok) return;
   if (res.status === 401) throw new DriveAuthError();
-  if (res.status === 403) throw new Error("Drive access was denied");
-  throw new Error(`Drive request failed (${res.status})`);
+  const detail = await errorDetail(res);
+  if (res.status === 403) {
+    throw new Error(detail ? `Drive access was denied: ${detail}` : "Drive access was denied");
+  }
+  throw new Error(detail ? `Drive request failed (${res.status}): ${detail}` : `Drive request failed (${res.status})`);
 }
 
-function fileFrom(value: unknown): DriveFile | null {
+async function errorDetail(res: Response): Promise<string> {
+  try {
+    const text = (await res.text()).trim().replace(/\s+/g, " ");
+    if (!text) return "";
+    try {
+      const parsed: unknown = JSON.parse(text);
+      if (typeof parsed === "object" && parsed !== null) {
+        const record = parsed as { error?: { message?: unknown } | string; message?: unknown };
+        const nested = record.error;
+        const message =
+          typeof nested === "object" && nested !== null && typeof nested.message === "string"
+            ? nested.message
+            : typeof nested === "string"
+              ? nested
+              : typeof record.message === "string"
+                ? record.message
+                : "";
+        if (message) return message.slice(0, 160);
+      }
+    } catch {
+      /* use the raw body */
+    }
+    return text.slice(0, 160);
+  } catch {
+    return "";
+  }
+}
+
+function fileFrom(value: unknown): { id: string } | null {
   if (typeof value !== "object" || value === null) return null;
   const record = value as Record<string, unknown>;
   if (typeof record.id !== "string" || !record.id) return null;
-  return { id: record.id, etag: typeof record.etag === "string" ? record.etag : "" };
+  return { id: record.id };
 }

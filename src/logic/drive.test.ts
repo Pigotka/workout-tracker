@@ -8,8 +8,13 @@ function json(body: unknown, status = 200, headers: Record<string, string> = {})
   return new Response(JSON.stringify(body), { status, headers });
 }
 
-function media(store: Store, updatedAt: number, status = 200): Response {
-  return new Response(serializeBackup(store, updatedAt), { status });
+function media(store: Store, updatedAt: number, status = 200, headers: Record<string, string> = {}): Response {
+  return new Response(serializeBackup(store, updatedAt), { status, headers });
+}
+
+function expectNoEtagField(url: string) {
+  const fields = new URL(url).searchParams.get("fields") ?? "";
+  expect(fields.toLowerCase()).not.toContain("etag");
 }
 
 function history(unit: "kg" | "lb" = "kg"): Store {
@@ -55,14 +60,14 @@ describe("reconcileDrive", () => {
       expect(url).toContain("uploadType=multipart");
       expect(init?.method).toBe("POST");
       body = String(init?.body);
-      return json({ id: "file-1", etag: '"e1"' });
+      return new Response(JSON.stringify({ id: "file-1" }), { status: 200, headers: { ETag: '"e1"' } });
     };
     const local = { store: { ...createSeedStore(), weightUnit: "lb" as const }, updatedAt: 10 };
     const result = await reconcileDrive("tok", () => local, null, fetchFn);
     expect(body).toContain('"parents":["appDataFolder"]');
     expect(body).toContain("train-v1.json");
     expect(body).toContain('"updatedAt":10');
-    expect(result).toMatchObject({ wrote: true, file: { id: "file-1", etag: '"e1"' } });
+    expect(result.file).toEqual({ id: "file-1", etag: '"e1"' });
   });
 
   it("uploads local history when Drive is empty or older", async () => {
@@ -94,7 +99,8 @@ describe("reconcileDrive", () => {
         if (url.includes("alt=media")) return media(history(), 4_000);
         patched = String(init?.body);
         expect(init?.method).toBe("PATCH");
-        return json({ id: "file-1", etag: '"e2"' });
+        expect((init?.headers as Record<string, string>)["If-Match"]).toBeUndefined();
+        return json({ id: "file-1" });
       },
     );
     expect(older.wrote).toBe(true);
@@ -107,8 +113,8 @@ describe("reconcileDrive", () => {
     const local = { store: history("lb"), updatedAt: 5 };
     const older = await reconcileDrive("tok", () => local, null, async (input, init) => {
       const url = String(input);
-      if (url.includes("spaces=appDataFolder")) return json({ files: [{ id: "file-1", etag: '"e1"' }] });
-      if (url.includes("alt=media")) return media(remote, 9);
+      if (url.includes("spaces=appDataFolder")) return json({ files: [{ id: "file-1", name: "train-v1.json" }] });
+      if (url.includes("alt=media")) return media(remote, 9, 200, { ETag: '"e1"' });
       throw new Error(`unexpected ${init?.method} ${url}`);
     });
     expect(older.wrote).toBe(false);
@@ -118,8 +124,8 @@ describe("reconcileDrive", () => {
     let match = "";
     const newer = await reconcileDrive("tok", () => ({ ...local, updatedAt: 12 }), null, async (input, init) => {
       const url = String(input);
-      if (url.includes("spaces=appDataFolder")) return json({ files: [{ id: "file-1", etag: '"e1"' }] });
-      if (url.includes("alt=media")) return media(remote, 9);
+      if (url.includes("spaces=appDataFolder")) return json({ files: [{ id: "file-1", name: "train-v1.json" }] });
+      if (url.includes("alt=media")) return media(remote, 9, 200, { ETag: '"e1"' });
       match = (init?.headers as Record<string, string>)["If-Match"] ?? "";
       expect(init?.method).toBe("PATCH");
       return json({ id: "file-1", etag: '"e2"' });
@@ -174,6 +180,39 @@ describe("reconcileDrive", () => {
     expect(conflict.wrote).toBe(false);
     expect(conflict.snapshot.updatedAt).toBe(30);
     expect(conflict.snapshot.store).toEqual(newStore);
+  });
+
+  it("never requests an etag field on list, create, or update", async () => {
+    const urls: string[] = [];
+    const fetchFn: typeof fetch = async (input, init) => {
+      const url = String(input);
+      urls.push(url);
+      if (url.includes("spaces=appDataFolder")) return json({ files: [] });
+      if ((init?.method ?? "GET") === "POST") {
+        return new Response(JSON.stringify({ id: "file-1" }), { status: 200, headers: { ETag: '"c"' } });
+      }
+      if (url.includes("alt=media")) return media(history(), 1, 200, { ETag: '"m"' });
+      return new Response(JSON.stringify({ id: "file-1" }), { status: 200 });
+    };
+    await reconcileDrive("tok", () => ({ store: history("lb"), updatedAt: 5_000 }), null, fetchFn);
+    await reconcileDrive(
+      "tok",
+      () => ({ store: history("lb"), updatedAt: 6_000 }),
+      { id: "file-1", etag: '"c"' },
+      fetchFn,
+    );
+    expect(urls.some((url) => url.includes("spaces=appDataFolder"))).toBe(true);
+    expect(urls.some((url) => url.includes("uploadType=multipart"))).toBe(true);
+    expect(urls.some((url) => url.includes("uploadType=media"))).toBe(true);
+    for (const url of urls) expectNoEtagField(url);
+  });
+
+  it("includes the Drive error body when a request is rejected", async () => {
+    await expect(
+      reconcileDrive("tok", () => ({ store: history(), updatedAt: 4 }), null, async () =>
+        json({ error: { code: 400, message: "Invalid field selection etag" } }, 400),
+      ),
+    ).rejects.toThrow("Drive request failed (400): Invalid field selection etag");
   });
 
   it("refuses to overwrite an unreadable backup and surfaces auth expiry", async () => {
