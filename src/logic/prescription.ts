@@ -285,6 +285,81 @@ export function isComplete(
   return (log?.sets.length ?? 0) >= setCount(schemeOf(exercise, schemes));
 }
 
+export type RestLift = {
+  name: string;
+  catalogId: string;
+  color?: string;
+  setDone: number;
+  setTotal: number;
+};
+
+export type RestPreview = {
+  name: string;
+  catalogId?: string;
+  color?: string;
+  series: string;
+  thenName?: string;
+  stay: boolean;
+  offerExtra: boolean;
+};
+
+export function restLift(
+  exercise: Exercise,
+  logs: Record<string, ExerciseLog>,
+  schemes: Record<string, string>,
+): RestLift {
+  return {
+    name: exercise.name,
+    catalogId: exercise.catalogId,
+    color: exercise.color,
+    setDone: logs[exercise.id]?.sets.length ?? 0,
+    setTotal: setCount(schemeOf(exercise, schemes)),
+  };
+}
+
+function restSeries(setDone: number, setTotal: number): string {
+  return setTotal > 0 && setDone >= setTotal ? `Extra ${setDone}` : `${setDone}/${setTotal}`;
+}
+
+export function restPreview(input: {
+  current: RestLift;
+  next?: RestLift;
+  afterNextName?: string;
+  extra?: boolean;
+}): RestPreview {
+  const plannedLeft = input.current.setTotal > 0 && input.current.setDone < input.current.setTotal;
+  const thenCurrent =
+    input.next && input.next.name !== input.current.name ? input.next.name : undefined;
+  if (plannedLeft || input.extra) {
+    return {
+      name: input.current.name,
+      catalogId: input.current.catalogId,
+      color: input.current.color,
+      series: restSeries(input.current.setDone, input.current.setTotal),
+      thenName: thenCurrent,
+      stay: true,
+      offerExtra: !plannedLeft,
+    };
+  }
+  if (input.next) {
+    return {
+      name: input.next.name,
+      catalogId: input.next.catalogId,
+      color: input.next.color,
+      series: restSeries(input.next.setDone, input.next.setTotal),
+      thenName: input.afterNextName,
+      stay: false,
+      offerExtra: true,
+    };
+  }
+  return {
+    name: "Workout complete",
+    series: "",
+    stay: false,
+    offerExtra: true,
+  };
+}
+
 export function nextAfterCurrent(
   program: Program,
   current: Exercise,

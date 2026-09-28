@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { HeartRateChip } from "../components/HeartRateChip";
 import { Glyph } from "../components/Glyph";
-import { RestOverlay } from "../components/RestOverlay";
+import { continueAfterRest, RestOverlay } from "../components/RestOverlay";
 import { liftTint } from "../logic/catalog";
 import { formatElapsed, formatWeight } from "../logic/format";
 import {
   formatScheme,
   nextAfterCurrent,
+  restLift,
   schemeOf,
   setCount,
   slotsFor,
@@ -37,10 +38,19 @@ export function WorkoutScreen() {
     store.active.restStartedAt != null ? now - store.active.restStartedAt : 0;
   const slots = slotsFor(program, store.active.choices);
   const current = activeExercise(store);
-  const thenLift = current
+  const nextLift = current
     ? nextAfterCurrent(
         program,
         current,
+        store.active.choices,
+        store.active.logs,
+        store.active.schemes,
+      )
+    : undefined;
+  const afterNext = nextLift
+    ? nextAfterCurrent(
+        program,
+        nextLift,
         store.active.choices,
         store.active.logs,
         store.active.schemes,
@@ -97,15 +107,13 @@ export function WorkoutScreen() {
 
       {store.restScreen !== false && store.active.restStartedAt != null && current ? (
         <RestOverlay
+          key={store.active.restStartedAt}
           elapsedMs={restElapsed}
           targetSeconds={store.active.restTargetSeconds}
-          nextName={current.name}
-          nextCatalogId={current.catalogId}
-          nextColor={current.color}
-          thenName={thenLift && thenLift.id !== current.id ? thenLift.name : undefined}
-          setDone={store.active.logs[current.id]?.sets.length ?? 0}
-          setTotal={setCount(schemeOf(current, store.active.schemes))}
-          onStop={() => dispatch({ type: "end-rest", now: Date.now() })}
+          current={restLift(current, store.active.logs, store.active.schemes)}
+          next={nextLift ? restLift(nextLift, store.active.logs, store.active.schemes) : undefined}
+          afterNextName={afterNext?.name}
+          onStop={(stay) => continueAfterRest(dispatch, stay, nextLift?.id)}
         />
       ) : null}
 
