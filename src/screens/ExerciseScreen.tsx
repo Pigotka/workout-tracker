@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { HeartRateChip } from "../components/HeartRateChip";
 import { Glyph } from "../components/Glyph";
-import { RestOverlay } from "../components/RestOverlay";
+import { continueAfterRest, RestOverlay } from "../components/RestOverlay";
 import { WeightChart } from "../components/WeightChart";
 import { liftTint } from "../logic/catalog";
 import { formatElapsed, formatRest, formatWeight } from "../logic/format";
@@ -9,6 +9,7 @@ import { liftPointsFor } from "../logic/progress";
 import {
   formatSetTarget,
   nextAfterCurrent,
+  restLift,
   schemeOf,
   setCount,
   supersetPartner,
@@ -64,6 +65,15 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
     store.active.logs,
     store.active.schemes,
   );
+  const afterNext = nextExercise
+    ? nextAfterCurrent(
+        program,
+        nextExercise,
+        store.active.choices,
+        store.active.logs,
+        store.active.schemes,
+      )
+    : undefined;
 
   const logSet = () => dispatch({ type: "log-set", now: Date.now() });
   const weightPoints = liftPointsFor(store.sessions, exercise.catalogId, {
@@ -201,15 +211,13 @@ export function ExerciseScreen({ exerciseId }: { exerciseId: string }) {
 
       {store.restScreen !== false && store.active.restStartedAt != null ? (
         <RestOverlay
+          key={store.active.restStartedAt}
           elapsedMs={restElapsed}
           targetSeconds={store.active.restTargetSeconds}
-          nextName={exercise.name}
-          nextCatalogId={exercise.catalogId}
-          nextColor={exercise.color}
-          thenName={nextExercise && nextExercise.id !== exercise.id ? nextExercise.name : undefined}
-          setDone={log.sets.length}
-          setTotal={totalSets}
-          onStop={() => dispatch({ type: "end-rest", now: Date.now() })}
+          current={restLift(exercise, store.active.logs, store.active.schemes)}
+          next={nextExercise ? restLift(nextExercise, store.active.logs, store.active.schemes) : undefined}
+          afterNextName={afterNext?.name}
+          onStop={(stay) => continueAfterRest(dispatch, stay, nextExercise?.id)}
         />
       ) : null}
     </div>

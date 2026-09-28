@@ -703,10 +703,32 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  border: 0;
   width: 100%;
   left: 0;
+}
+
+.rest-tap {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.rest-extra {
+  margin: 0 0 calc(20px + env(safe-area-inset-bottom));
+  min-width: 140px;
+}
+
+.rest-extra.on {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: transparent;
 }
 
 .rest-kicker {
