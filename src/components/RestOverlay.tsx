@@ -52,8 +52,18 @@ export function RestOverlay({
   }, [overtime]);
 
   return (
-    <div className={overtime ? "rest-overlay over" : "rest-overlay"}>
-      <button type="button" className="rest-tap" onClick={() => onStop(preview.stay)}>
+    <div
+      className={overtime ? "rest-overlay over" : "rest-overlay"}
+      onClick={() => onStop(preview.stay)}
+    >
+      <button
+        type="button"
+        className="rest-tap"
+        onClick={(event) => {
+          event.stopPropagation();
+          onStop(preview.stay);
+        }}
+      >
         <p className="rest-kicker">Rest</p>
         {hr.bpm != null ? <p className="rest-hr">{hr.bpm}</p> : null}
         <p className={overtime ? "rest-time over" : "rest-time"}>{formatElapsed(elapsedMs)}</p>
@@ -72,7 +82,10 @@ export function RestOverlay({
           type="button"
           className={extra ? "btn-ghost rest-extra on" : "btn-ghost rest-extra"}
           aria-pressed={extra}
-          onClick={() => setExtra((on) => !on)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setExtra((on) => !on);
+          }}
         >
           Extra
         </button>
